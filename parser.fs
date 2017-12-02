@@ -3,9 +3,6 @@ namespace OpraDB
 open OpraDB.LangTypes
 open FParsec
 
-// open FParsec.Primitives
-// open FParsec.CharParsers
-
 module Parser = 
     let nameChar<'a> : Parser<_, 'a> = asciiLetter <|> digit
     let name<'a>     : Parser<_, 'a> = many1Chars2 asciiLetter nameChar
@@ -19,11 +16,12 @@ module Parser =
               PathConstraint.create
 
     let manyWith elem prefix = 
-        pstring prefix >>. spaces >>. pchar '(' >>. spaces >>. (many elem) 
-        .>> (pchar ')' .>> spaces)
+        pstring prefix >>. spaces >>. pchar '(' >>. spaces // prefix and (
+        >>. (many elem) // list of elements
+        .>> (pchar ')' .>> spaces) // closing bracket
 
     let parseQuery<'a> : Parser<_, 'a> = 
-        pipe2 (pstring "MATCH" >>. spaces >>. (manyWith id "NODES")) 
+        pipe2 (pstring "MATCH" >>. spaces >>. (manyWith id "NODES")) // TODO: Add PATHS
               (spaces >>. manyWith pathConstraint "SUCH THAT") 
               (fun nodes pathConstrs -> { nodes = nodes 
                                           paths = []

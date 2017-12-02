@@ -1,5 +1,4 @@
-﻿// open System
-open OpraDB.Interpreter
+﻿open OpraDB.Interpreter
 open OpraDB.Parser
 open FParsec 
 
@@ -10,7 +9,7 @@ let test p str =
 
 let parseAndRun str = 
     match run parseQuery str with 
-    | Success (result, _, _) -> interpret result 
+    | Success (result, _, _)   -> interpret result 
     | Failure (errorMsg, _, _) -> printfn "Failure: %s" errorMsg
 
 [<EntryPoint>]
@@ -29,4 +28,5 @@ let main argv =
               SUCH THAT (s -[p1]-> t x-[p2]->y u-[ p3 ]->v)"
 
     parseAndRun q2
-    0 // return an integer exit code    
+
+    0
