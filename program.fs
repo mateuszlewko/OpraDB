@@ -1,5 +1,5 @@
-﻿open System
-open OpraDB.Lang
+﻿// open System
+open OpraDB.Parser
 open FParsec 
 
 let test p str =
@@ -9,8 +9,10 @@ let test p str =
 
 [<EntryPoint>]
 let main argv =
-    test (manyWith id "NODES") "NODES Ba Ab aa"
-    test (manyWith id "NODES") "NODES s t "
-    test (manyWith pathConstraint "SUCH THAT") "SUCH THAT s -[pii]-> t x-[p]->y "
+    test (manyWith id "NODES") "NODES (Ba Ab aa)"
+    test (manyWith id "NODES") "NODES (s t )"
+    test (manyWith pathConstraint "SUCH THAT") "SUCH THAT (s -[pii]-> t x-[p]->y)"
+    test parseQuery "MATCH NODES (s t x y)
+                     SUCH THAT (s -[pii]-> t x-[p]->y )"
 
-    0 // return an integer exit code
+    0 // return an integer exit code    

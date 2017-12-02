@@ -4,8 +4,9 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="parsing/parser.fs" />
-    <Compile Include="parsing/lexer.fs" />
+    <Compile Include="langTypes.fs" />
+    <Compile Include="parser.fs" />
+    <Compile Include="interpreter.fs" />
     <Compile Include="program.fs" />
   </ItemGroup>
   <ItemGroup>
