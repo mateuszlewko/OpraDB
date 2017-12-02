@@ -1,6 +1,4 @@
-﻿// Learn more about F# at http://fsharp.org
-
-open System
+﻿open System
 open OpraDB.Lang
 open FParsec 
 
@@ -11,5 +9,8 @@ let test p str =
 
 [<EntryPoint>]
 let main argv =
-    test (manyIDWith "NODES") "NODES Ba Ab aa"
+    test (manyWith id "NODES") "NODES Ba Ab aa"
+    test (manyWith id "NODES") "NODES s t "
+    test (manyWith pathConstraint "SUCH THAT") "SUCH THAT s -[pii]-> t x-[p]->y "
+
     0 // return an integer exit code
