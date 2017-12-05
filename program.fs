@@ -25,7 +25,7 @@ let main argv =
     parseAndRun q1 
 
     let q2 = "MATCH NODES (s t x y)
-              SUCH THAT (s -[p1]-> t x-[p2]->y u-[ p3 ]->v)"
+              SUCH THAT (s-[p1]->t x-[p2]->y u-[ p3 ]->v)"
 
     parseAndRun q2
 

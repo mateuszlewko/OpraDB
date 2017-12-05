@@ -13,6 +13,26 @@ module LangTypes =
             path   : Identifier
         }
 
+    type FreeVariable = Var of Identifier
+    
+    type Operator = Leq | Le | Geq | Ge | Eq
+    
+    type NodeExpression = 
+        NodeExpression of FreeVariable * Operator * FreeVariable
+        
+    type Lambda = Lambda of Identifier
+
+    type LambdaExpression = 
+        LambdaExp of Lambda * FreeVariable list
+    
+    type NodeConstraint = LambdaExpression | NodeExpression
+
+    type RegularConstraint = 
+        | NodeConstraint 
+        | AndConstraint of RegularConstraint * RegularConstraint
+        | OrConstraint of RegularConstraint * RegularConstraint
+        | StarConstraint of RegularConstraint
+
     module PathConstraint = 
         let create source path target = {
                 source = source 
@@ -21,10 +41,14 @@ module LangTypes =
             }
 
     type Query = {
-            nodes           : Nodes 
-            paths           : Paths 
-            pathConstraints : PathConstraint list
+            nodes              : Nodes 
+            paths              : Paths 
+            pathConstraints    : PathConstraint list
+            regularConstraints : RegularConstraint list
         }
 
     module Query = 
-        let empty = { nodes = []; paths = []; pathConstraints = [] }
+        let empty = { nodes              = []
+                      paths              = []
+                      pathConstraints    = []
+                      regularConstraints = [] }
