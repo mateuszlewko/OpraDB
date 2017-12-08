@@ -4,11 +4,6 @@ module LangTypes =
 
     type Identifier = ID of string 
 
-    // type Nodes = Identifier list
-
-    // /// Matched paths
-    // type Paths = Identifier list
-
     /// Path constraint is satisfied when there exists a path 
     /// from source to target
     type PathConstraint = {
@@ -23,28 +18,17 @@ module LangTypes =
     /// for example CurrNodeVar 1 is @1 and NextNodeVar 2 is @'2
     type NodeVariable = CurrNodeVar of int | NextNodeVar of int
 
-    /// LabellingFunction either checks whether there exists 
-    /// label between specified nodes (or node if only one given), 
-    /// or returns value of <para/> label 
-    // type LabellingFunction = 
-    //     Labelling of Identifier * FreeVariable list
-    // type LabellingFunction = 
-    //     Labelling of Identifier * FreeVariable list
-    
-    /// Represent int value in query
-    type IntValue = IntVal of int
-
-    /// String value (must be specified in quotes, example: "value")
-    type StringValue = StringVal of string
-
-    // type ExpressedValue = IntValue | FreeVariable
-
     /// Represents one of: <=, <, >=, >, =
     type Operator = Leq | Le | Geq | Ge | Eq
 
     type Operand = 
+        /// LabellingFunction either checks whether there exists 
+        /// label between specified nodes (or node if only one given), 
+        /// or returns value of label, example: type(@1) = "bus"
         | Labelling of Identifier * NodeVariable list
+        /// Represent int value in query
         | IntVal of int 
+        /// String value (must be specified in quotes, example: "value")
         | StringVal of string
     
     type NodeConstraint = NodeConstraint of Operand * Operator * Operand
@@ -55,8 +39,6 @@ module LangTypes =
         | AndConstraint of RegularConstraint * RegularConstraint
         | OrConstraint of RegularConstraint * RegularConstraint
         | StarConstraint of RegularConstraint
-
-    
 
     module PathConstraint = 
         let create source path target = {
