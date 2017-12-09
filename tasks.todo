@@ -4,8 +4,10 @@ When viewing this file in Visual Studio Code use Todo+ plugin
 and add following line to settings
     "todo.symbols.box": "❑"
 
-OpraDB:
-    Parser:
-        ❑ Add node constraint which returns bool (only one operand in expression)
-        ❑ Add conversion from `RegExpTail` to `RegularExpression`
-        ❑ Test query parsing
+Parser:
+    ❑ Add node constraint which returns bool (only one operand in expression)
+    ❑ Add conversion from `RegExpTail` to `RegularExpression`
+    ❑ Test query parsing
+
+Docs: 
+    ❑ Add README file 
