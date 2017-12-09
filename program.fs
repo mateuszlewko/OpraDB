@@ -3,6 +3,7 @@ open OpraDB.Parser
 open FParsec 
 
 let test p str =
+    printf "%s => " str
     match run p str with
     | Success (result, _, _)   -> printfn "Success: %A" result
     | Failure (errorMsg, _, _) -> printfn "Failure: %s" errorMsg
@@ -20,6 +21,17 @@ let main argv =
     test RegexParser.regExpParser ".*"
     test RegexParser.regExpParser "(.*..)+."
     test RegexParser.regExpParser "([attr(@1) > 10]*.)"
+    test RegexParser.regExpParser ".*..."
+    test RegexParser.regExpParser "(..)*.."
+    test RegexParser.regExpParser ".*.+."
+
+    run RegexParser.regExpParser ".*..." 
+    |> function
+       |  Success (result, _, _) -> RegexParser.parseReg result |> printfn "%A"
+
+    run RegexParser.regExpParser "([attr(@1) > 10]*.)" 
+    |> function
+       |  Success (result, _, _) -> RegexParser.parseReg result |> printfn "%A"
 
     // test nodeConstraint "[attr(@1) = 10]"
     // test nodeConstraint "[name(@1) = \"some value\"]"

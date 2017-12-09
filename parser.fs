@@ -2,7 +2,8 @@ namespace OpraDB
 
 open OpraDB.LangTypes
 open FParsec
-open FSharpx.Functional
+open FSharpx.Functional.Prelude
+open FSharp.Core
 
 module Parser = 
 
@@ -86,8 +87,10 @@ module Parser =
         and RegExpAux = 
             | Star of RegExpAux 
             | Union of RegExpTail * RegExpAux 
-            | ConcatAux of RegExpTail * RegExpAux
+            | Tail of RegExpTail 
             | Epsilon
+
+        // type RegExpAST = Tail of RegExpTail | Aux of RegExpAux
 
         let private regExp, regExpRef = 
             createParserForwardedToRef<RegExpTail, unit> ()
@@ -103,12 +106,48 @@ module Parser =
         regExpAuxRef := 
             choice [pchar '*' >>. regExpAux |>> Star 
                     pchar '+' >>. regExp .>>. regExpAux |>> Union
-                    regExp .>>. regExpAux |>> ConcatAux 
+                    regExp |>> Tail 
                     ws |>> konst Epsilon] 
     
         let regExpParser = regExp
+
+// ([attr(@1) > 10]*.) => Success: 
+// Concat
+//   (NodeCon
+//      (//NodeConstraint (Labelling (ID "attr",[CurrNodeVar 1]),Ge,IntLiteral 10),
+//       Star (ConcatAux (Any Epsilon, Epsilon)))
+//   , Epsilon)
+        //(.*..)*
+
+        let aa = curry ConcatExp
+
+        exception ParsingException of string
+
+        let rec parseAux = 
+            function 
+            | Star aux -> raise (ParsingException "** is an invalid expression / shouldn't match this case")
+            | Tail reg -> 
+                match reg with 
+                | Any aux -> ConcatExp (AnyExp, parseAux aux)
+            | Epsilon -> EpsilonExp
+            | Union (reg, aux) -> failwith "TODO"
+
+        let rec parseReg = 
+            function
+            | Concat (reg, aux) -> 
+                match aux with 
+                | Star aux -> ConcatExp (StarExp (parseReg reg), parseAux aux)
+            | Any aux ->
+                match aux with 
+                | Star aux -> ConcatExp (StarExp AnyExp, parseAux aux)
+                | Epsilon  -> AnyExp
+            | NodeCon (constr, aux) -> 
+                match aux with 
+                | Star aux -> ConcatExp (StarExp (NodeExp constr), parseAux aux)
+                | Epsilon  ->   NodeExp constr
+
         let regularExpression = 
-            regExp |>> (fun re -> RegularExpression.Epsilon)
+            regExp |>> (fun re -> EpsilonExp)
       
     let rec regularConstraint : Parser<RegularConstraint, unit> =
         pipe2 RegexParser.regularExpression

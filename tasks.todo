@@ -5,9 +5,9 @@ and add following line to settings
     "todo.symbols.box": "❑"
 
 Parser:
-    ❑ Add node constraint which returns bool (only one operand in expression)
     ❑ Add conversion from `RegExpTail` to `RegularExpression`
     ❑ Test query parsing
+    ❑ Add node constraint which returns bool (only one operand in expression)
 
 Docs: 
-    ❑ Add README file 
+    ❑ Add README file

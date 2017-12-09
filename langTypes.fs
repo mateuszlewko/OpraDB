@@ -32,7 +32,7 @@ module LangTypes =
     type NodeConstraint = NodeConstraint of Operand * Operator * Operand 
 
     type RegularExpression = 
-        | Epsilon
+        | EpsilonExp
         | AnyExp
         | NodeExp of NodeConstraint
         | ConcatExp of RegularExpression * RegularExpression
