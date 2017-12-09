@@ -29,14 +29,6 @@ module LangTypes =
         /// String value (must be specified in quotes, example: "value")
         | StringLiteral of string
     
-    // type RegularExp   = Union of UnionRE | Simple of SimpleRE
-    //  and UnionRE      = RegularExp * SimpleRE 
-    //  and SimpleRE     = Concat of ConcatRE | Basic of BasicRE
-    //  and ConcatRE     = SimpleRE * BasicRE 
-    //  and BasicRE      = Star of ElementaryRE | Elementary of ElementaryRE
-    //  and ElementaryRE = Group of GroupRE | Any 
-    //  and GroupRE      = RegularExp
-
     type NodeConstraint = NodeConstraint of Operand * Operator * Operand 
 
     type RegularExpression = 

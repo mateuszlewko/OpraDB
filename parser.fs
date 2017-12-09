@@ -4,8 +4,6 @@ open OpraDB.LangTypes
 open FParsec
 open FSharpx.Functional
 
-#nowarn "40"
-
 module Parser = 
 
     /// Parse string
@@ -110,28 +108,6 @@ module Parser =
         let regExpParser = regExp
         let regularExpression = 
             regExp |>> (fun re -> RegularExpression.Epsilon)
-
-    // let rec regularExp () = (unionRE () |>> Union) <|> (simpleRE () |>> Simple)
-    // and unionRE () = regularExp () .>>. ((pchar '+')  >>. simpleRE ())
-    // and simpleRE () = (concatRE |>> Concat) <|> (basicRE |>> Basic)
-    // and concatRE<'a> : Parser<ConcatRE, 'a> = simpleRE () .>>. basicRE
-    // and basicRE<'a> : Parser<BasicRE, 'a> = 
-    //     (elementaryRE .>> (pchar '*') |>> Star) 
-    //     <|> (elementaryRE |>> Elementary)
-    // and elementaryRE<'a> : Parser<ElementaryRE, 'a> = 
-    //     (pchar '.' |>> konst Any) <|> (groupRE |>> Group)
-    // and groupRE<'a> : Parser<GroupRE, 'a> = 
-    //     pchar '(' >>. regularExp () .>> pchar ')' 
-    
-    // let pregExp<'a> : Parser<RegularExp, 'a> = regularExp ()
-
-    // do regExpRef :=
-    //     choice [
-    //             // regExp .>> pchar '*' |>> StarExp 
-    //             pipe2 regExp (ws >>. pchar '+' >>. regExp) (curry OrExp)
-    //             // pipe2 regExp (ws >>. regExp) (curry AndExp)
-    //             pchar '.' |>> konst AnyExp]
-    //             // nodeConstraint]
       
     let rec regularConstraint : Parser<RegularConstraint, unit> =
         pipe2 RegexParser.regularExpression
@@ -143,11 +119,11 @@ module Parser =
     let parseQuery : Parser<Query, unit> = 
         pipe3 (pstring "MATCH" >>. ws >>. (manyWith id "NODES")) // parse nodes
               (manyWith pathConstraint "SUCH THAT" |> optionally []) // path constraints
-              (manyWith regularConstraint "WHERE" |> optionally [])  // path constraints
+              (manyWith regularConstraint "WHERE" |> optionally []) // regular constraints
               (fun nodes pathConstrs regularConstrs -> 
                     { Query.empty with 
                         nodes              = nodes 
                         pathConstraints    = pathConstrs 
                         regularConstraints = regularConstrs })
-        // .>> ws
+        .>> ws
         
