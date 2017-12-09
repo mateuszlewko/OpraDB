@@ -12,7 +12,7 @@ module LangTypes =
             path   : Identifier
         }
 
-    type FreeVariable = FreeVar of Identifier
+    // type FreeVariable = FreeVar of Identifier
 
     /// NodeVariable x represents either @x or @'x, 
     /// for example CurrNodeVar 1 is @1 and NextNodeVar 2 is @'2
@@ -27,18 +27,23 @@ module LangTypes =
         /// or returns value of label, example: type(@1) = "bus"
         | Labelling of Identifier * NodeVariable list
         /// Represent int value in query
-        | IntVal of int 
+        | IntLiteral of int 
         /// String value (must be specified in quotes, example: "value")
-        | StringVal of string
+        | StringLiteral of string
     
     type NodeConstraint = NodeConstraint of Operand * Operator * Operand
     
-    type RegularConstraint = 
-        | Any
+    type RegularExpression = 
+        | AnyExp
         | NodeConstraint 
-        | AndConstraint of RegularConstraint * RegularConstraint
-        | OrConstraint of RegularConstraint * RegularConstraint
-        | StarConstraint of RegularConstraint
+        | AndExp of RegularExpression * RegularExpression
+        | OrExp of RegularExpression * RegularExpression
+        | StarExp of RegularExpression
+
+    /// RegularExpression with paths applied to it,
+    /// examples: .*[attr(@1) > 100](p)
+    type RegularConstraint = 
+        RegularConstraint of RegularExpression * Identifier list
 
     module PathConstraint = 
         let create source path target = {
