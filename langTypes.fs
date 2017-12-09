@@ -39,6 +39,7 @@ module LangTypes =
 
 
     type RegularExpression = 
+        | Epsilon
         | AnyExp
         | NodeConstraint of Operand * Operator * Operand 
         | ConcatExp of RegularExpression * RegularExpression

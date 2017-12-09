@@ -17,27 +17,28 @@ let main argv =
     // test (manyWith id "NODES") "NODES (Ba Ab aa)"
     // test (manyWith id "NODES") "NODES (s t )"
     // test (manyWith pathConstraint "SUCH THAT") "SUCH THAT (s -[pii]-> t x-[p]->y)"
-    test nodeConstraint "[attr(@1) = 10]"
-    test nodeConstraint "[name(@1) = \"some value\"]"
+    test RegexParser.regularExpression ".* "
 
-    test pregExp ".*"
+    // test nodeConstraint "[attr(@1) = 10]"
+    // test nodeConstraint "[name(@1) = \"some value\"]"
 
-    let q1 = "MATCH NODES (s t x y)
-              SUCH THAT (s -[pii]-> t x-[p]->y )"
 
-    test parseQuery q1 
-    parseAndRun q1 
+    // let q1 = "MATCH NODES (s t x y)
+    //           SUCH THAT (s -[pii]-> t x-[p]->y )"
 
-    let q2 = "MATCH NODES (s t x y)
-              SUCH THAT (s-[p1]->t x-[p2]->y u-[ p3 ]->v)
-              WHERE "
+    // test parseQuery q1 
+    // parseAndRun q1 
 
-    parseAndRun q2
+    // let q2 = "MATCH NODES (s t x y)
+    //           SUCH THAT (s-[p1]->t x-[p2]->y u-[ p3 ]->v)
+    //           WHERE "
 
-    let q3 = "MATCH NODES (s t)
-              SUCH THAT (s-[p]->t)
-              WHERE ( ) "
+    // parseAndRun q2
 
-    parseAndRun q2
+    // let q3 = "MATCH NODES (s t)
+    //           SUCH THAT (s-[p]->t)
+    //           WHERE ( ) "
+
+    // parseAndRun q2
 
     0

@@ -75,6 +75,44 @@ module Parser =
     // let orExp = 
     //     ws >>. pchar '+' >>. regExp
 
+    // let regularExpression =
+    // and basicRE = 
+
+    let (<!>) (p: Parser<_,_>) label : Parser<_,_> =
+        fun stream ->
+            printfn "%A: Entering %s" stream.Position label
+            let reply = p stream
+            printfn "%A: Leaving %s (%A)" stream.Position label reply.Status
+            reply
+
+    // TODO: make private
+    module RegexParser = 
+        type RegExp = 
+            | Concat of RegExp * RegExpAux
+            | Any of RegExpAux
+        and RegExpAux = 
+            | Star of RegExpAux 
+            | Union of RegExp * RegExpAux 
+            | ConcatAux of RegExp * RegExpAux
+            | Epsilon
+
+        let private regExp, regExpRef = 
+            createParserForwardedToRef<RegExp, unit> ()
+
+        let private regExpAux, regExpAuxRef = 
+            createParserForwardedToRef<RegExpAux, unit> ()
+
+        do regExpRef :=
+            choice [betweenChars '(' ')' regExp .>>. regExpAux |>> Concat
+                    pchar '.' >>. regExpAux |>> Any]
+        do regExpAuxRef := 
+            choice [pchar '*' >>. regExpAux |>> Star 
+                    pchar '+' >>. regExp .>>. regExpAux |>> Union
+                    regExp .>>. regExpAux |>> ConcatAux 
+                    ws |>> konst Epsilon] 
+    
+        let regularExpression = regExp 
+
     let rec regularExp () = (unionRE () |>> Union) <|> (simpleRE () |>> Simple)
     and unionRE () = regularExp () .>>. ((pchar '+')  >>. simpleRE ())
     and simpleRE () = (concatRE |>> Concat) <|> (basicRE |>> Basic)
@@ -83,9 +121,9 @@ module Parser =
         (elementaryRE .>> (pchar '*') |>> Star) 
         <|> (elementaryRE |>> Elementary)
     and elementaryRE<'a> : Parser<ElementaryRE, 'a> = 
-        (groupRE |>> Group) <|> (pchar '.' |>> konst Any)
+        (pchar '.' |>> konst Any) <|> (groupRE |>> Group)
     and groupRE<'a> : Parser<GroupRE, 'a> = 
-        pchar '"' >>. regularExp () .>> pchar '"' 
+        pchar '(' >>. regularExp () .>> pchar ')' 
     
     let pregExp<'a> : Parser<RegularExp, 'a> = regularExp ()
 
