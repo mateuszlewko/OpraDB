@@ -1,9 +1,11 @@
+*** NOTE ***
 When viewing this file in Visual Studio Code use Todo+ plugin
     ext install fabiospampinato.vscode-todo-plus
-    and add following line to settings
+and add following line to settings
     "todo.symbols.box": "❑"
 
 OpraDB:
     Parser:
+        ❑ Add node constrain which returns bool (only one operand in expression)
         ❑ Add conversion from `RegExpTail` to `RegularExpression`
         ❑ Test query parsing
