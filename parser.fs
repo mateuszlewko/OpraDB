@@ -4,6 +4,8 @@ open OpraDB.LangTypes
 open FParsec
 open FSharpx.Functional
 
+#nowarn "40"
+
 module Parser = 
 
     /// Parse string
@@ -61,30 +63,48 @@ module Parser =
     /// examples: 
     /// [attr(@1) > 100] 
     /// [distance(@1 @'1) <= 10]
-    let private nodeConstraint<'a> : Parser<_, 'a> = 
+    let nodeConstraint<'a> : Parser<_, 'a> = 
         pipe3 operand operator operand 
               (curry3 NodeConstraint)
         |> betweenChars '[' ']'
 
-    let private regExp, regExpRef = 
-        createParserForwardedToRef<RegularExpression, unit> ()
+    // let private regExp, regExpRef = 
+    //     createParserForwardedToRef<RegularExp, unit> ()
 
-    /// example: [ E(@1) ](p q).* [attr(@1) > 100](p)
-    do regExpRef :=
-        choice [pchar '.' |>> konst AnyExp 
-                nodeConstraint
-                regExp .>> pchar '*' |>> StarExp 
-                pipe2 regExp (ws >>. pchar '+' >>. regExp) (curry OrExp)
-                pipe2 regExp (ws >>. regExp) (curry AndExp)]
+    /// example: [ E(@1) ](p q).* [attr(@1) > 100]
+    // let orExp = 
+    //     ws >>. pchar '+' >>. regExp
+
+    let rec regularExp () = (unionRE () |>> Union) <|> (simpleRE () |>> Simple)
+    and unionRE () = regularExp () .>>. ((pchar '+')  >>. simpleRE ())
+    and simpleRE () = (concatRE |>> Concat) <|> (basicRE |>> Basic)
+    and concatRE<'a> : Parser<ConcatRE, 'a> = simpleRE () .>>. basicRE
+    and basicRE<'a> : Parser<BasicRE, 'a> = 
+        (elementaryRE .>> (pchar '*') |>> Star) 
+        <|> (elementaryRE |>> Elementary)
+    and elementaryRE<'a> : Parser<ElementaryRE, 'a> = 
+        (groupRE |>> Group) <|> (pchar '.' |>> konst Any)
+    and groupRE<'a> : Parser<GroupRE, 'a> = 
+        pchar '"' >>. regularExp () .>> pchar '"' 
+    
+    let pregExp<'a> : Parser<RegularExp, 'a> = regularExp ()
+
+    // do regExpRef :=
+    //     choice [
+    //             // regExp .>> pchar '*' |>> StarExp 
+    //             pipe2 regExp (ws >>. pchar '+' >>. regExp) (curry OrExp)
+    //             // pipe2 regExp (ws >>. regExp) (curry AndExp)
+    //             pchar '.' |>> konst AnyExp]
+    //             // nodeConstraint]
       
-    let rec regularConstraint =
-        pipe2 !regExpRef
+    let rec regularConstraint<'a> : Parser<RegularConstraint, 'a> =
+        pipe2 pregExp
               (betweenChars '(' ')' (many id))
               (curry RegularConstraint)
 
     let private optionally ret p = p <|> (ws |>> konst ret)
 
-    let parseQuery = 
+    let parseQuery<'a> : Parser<Query, 'a> = 
         pipe3 (pstring "MATCH" >>. ws >>. (manyWith id "NODES")) // parse nodes
               (manyWith pathConstraint "SUCH THAT" |> optionally []) // path constraints
               (manyWith regularConstraint "WHERE" |> optionally [])  // path constraints
