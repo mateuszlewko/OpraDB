@@ -14,9 +14,9 @@ let parseAndRun str =
 
 [<EntryPoint>]
 let main argv =
-    test (manyWith id "NODES") "NODES (Ba Ab aa)"
-    test (manyWith id "NODES") "NODES (s t )"
-    test (manyWith pathConstraint "SUCH THAT") "SUCH THAT (s -[pii]-> t x-[p]->y)"
+    // test (manyWith id "NODES") "NODES (Ba Ab aa)"
+    // test (manyWith id "NODES") "NODES (s t )"
+    // test (manyWith pathConstraint "SUCH THAT") "SUCH THAT (s -[pii]-> t x-[p]->y)"
 
     let q1 = "MATCH NODES (s t x y)
               SUCH THAT (s -[pii]-> t x-[p]->y )"
