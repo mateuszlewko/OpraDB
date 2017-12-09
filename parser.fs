@@ -5,19 +5,43 @@ open FParsec
 open FSharpx.Functional
 
 module Parser = 
-    let nameChar<'a> : Parser<_, 'a> = asciiLetter <|> digit
-    let name<'a>     : Parser<_, 'a> = many1Chars2 asciiLetter nameChar
-    let id<'a>       : Parser<_, 'a> = name .>> spaces |>> ID
+    let private nameChar<'a> : Parser<_, 'a> = asciiLetter <|> digit
+    let private name<'a>     : Parser<_, 'a> = many1Chars2 asciiLetter nameChar
+    let private id<'a>       : Parser<_, 'a> = name .>> spaces |>> ID
 
-    // s -[ pi ]-> t
+    /// example: s -[ pi ]-> t
     let pathConstraint<'a> : Parser<_, 'a> =
         pipe3 (spaces >>. id)                                         // source node
               (pstring "-[" >>. spaces >>. id)                        // path
               (spaces >>. pstring "]->" >>. spaces >>. id .>> spaces) // target node
               PathConstraint.create 
 
-// route(p) <T>* <attr(@1) > 100>(p)
+    /// Parse string
     let private str = pstring
+
+    let stringLiteral<'a> : Parser<_, 'a> =
+        between (str "\"") (str "\"")
+                (manySatisfy ((<>) '"'))
+        <??> "string literal in double quotes"
+        |>> StringLiteral
+
+    let manyWith elem prefix = 
+        pstring prefix >>. spaces >>. pchar '(' >>. spaces // prefix and opening bracket
+        >>. (many elem)                                    // list interpreter.fsof elements
+        .>> (pchar ')' .>> spaces)                         // closing bracket
+
+    let nodeVar<'a> : Parser<_, 'a> = 
+        failwith "not implemented"
+
+    let labelling<'a> : Parser<_, 'a> = 
+        pipe2 (spaces >>. id)
+              (between (pchar '(') (pchar ')')
+                       (many nodeVar))
+              (curry Labelling)
+
+    let operand<'a> : Parser<_, 'a> = 
+        spaces >>. 
+        choice [stringLiteral; pint32 |>> IntLiteral; labelling] .>> spaces
 
     let operator<'a> : Parser<_, 'a> = 
         let op s which = str s |>> konst which 
@@ -26,28 +50,13 @@ module Parser =
         choice [op "<=" Leq; op "<" Le; op ">" Ge  ; op ">=" Geq; op "=" Eq]
         .>> spaces 
 
-    let stringLiteral<'a> : Parser<_, 'a> =
-        between (str "\"") (str "\"")
-                (manySatisfy ((<>) '"'))
-        <??> "string literal in double quotes"
-        |>> StringLiteral
-
-    let labelling = () // TODO: implement
-
-    let operand<'a> : Parser<_, 'a> = 
-        spaces >>. choice [stringLiteral; pint32 |>> IntLiteral] .>> spaces
-
+    /// example: [ E(@1) ](p q).* [attr(@1) > 100](p)
     let regularConstraint<'a> : Parser<_, 'a> =
         spaces >>. pchar '[' 
         // pipe3 (spaces >>. id)                                         // source node
         //       (pstring "-[" >>. spaces >>. id)                        // path
         //       (spaces >>. pstring "]->" >>. spaces >>. id .>> spaces) // target node
         //       PathConstraint.create 
-
-    let manyWith elem prefix = 
-        pstring prefix >>. spaces >>. pchar '(' >>. spaces // prefix and opening bracket
-        >>. (many elem)                                    // list interpreter.fsof elements
-        .>> (pchar ')' .>> spaces)                         // closing bracket
 
     let private optionally ret p = p <|> (spaces |>> konst ret)
 

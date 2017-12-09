@@ -12,8 +12,6 @@ module LangTypes =
             path   : Identifier
         }
 
-    // type FreeVariable = FreeVar of Identifier
-
     /// NodeVariable x represents either @x or @'x, 
     /// for example CurrNodeVar 1 is @1 and NextNodeVar 2 is @'2
     type NodeVariable = CurrNodeVar of int | NextNodeVar of int
@@ -31,11 +29,9 @@ module LangTypes =
         /// String value (must be specified in quotes, example: "value")
         | StringLiteral of string
     
-    type NodeConstraint = NodeConstraint of Operand * Operator * Operand
-    
     type RegularExpression = 
         | AnyExp
-        | NodeConstraint 
+        | NodeConstraint of Operand * Operator * Operand 
         | AndExp of RegularExpression * RegularExpression
         | OrExp of RegularExpression * RegularExpression
         | StarExp of RegularExpression
