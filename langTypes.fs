@@ -29,19 +29,20 @@ module LangTypes =
         /// String value (must be specified in quotes, example: "value")
         | StringLiteral of string
     
-    type RegularExp   = Union of UnionRE | Simple of SimpleRE
-     and UnionRE      = RegularExp * SimpleRE 
-     and SimpleRE     = Concat of ConcatRE | Basic of BasicRE
-     and ConcatRE     = SimpleRE * BasicRE 
-     and BasicRE      = Star of ElementaryRE | Elementary of ElementaryRE
-     and ElementaryRE = Group of GroupRE | Any 
-     and GroupRE      = RegularExp
+    // type RegularExp   = Union of UnionRE | Simple of SimpleRE
+    //  and UnionRE      = RegularExp * SimpleRE 
+    //  and SimpleRE     = Concat of ConcatRE | Basic of BasicRE
+    //  and ConcatRE     = SimpleRE * BasicRE 
+    //  and BasicRE      = Star of ElementaryRE | Elementary of ElementaryRE
+    //  and ElementaryRE = Group of GroupRE | Any 
+    //  and GroupRE      = RegularExp
 
+    type NodeConstraint = NodeConstraint of Operand * Operator * Operand 
 
     type RegularExpression = 
         | Epsilon
         | AnyExp
-        | NodeConstraint of Operand * Operator * Operand 
+        | NodeExp of NodeConstraint
         | ConcatExp of RegularExpression * RegularExpression
         | UnionExp of RegularExpression * RegularExpression
         | StarExp of RegularExpression
@@ -49,7 +50,7 @@ module LangTypes =
     /// RegularExpression with paths applied to it,
     /// examples: .*[attr(@1) > 100](p)
     type RegularConstraint = 
-        RegularConstraint of RegularExp * Identifier list
+        RegularConstraint of RegularExpression * Identifier list
 
     module PathConstraint = 
         let create source path target = {

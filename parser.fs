@@ -64,68 +64,66 @@ module Parser =
     /// [attr(@1) > 100] 
     /// [distance(@1 @'1) <= 10]
     let nodeConstraint<'a> : Parser<_, 'a> = 
+        // TODO: Add node constrain which returns bool (only one operand in expression)
         pipe3 operand operator operand 
               (curry3 NodeConstraint)
         |> betweenChars '[' ']'
 
-    // let private regExp, regExpRef = 
-    //     createParserForwardedToRef<RegularExp, unit> ()
-
-    /// example: [ E(@1) ](p q).* [attr(@1) > 100]
-    // let orExp = 
-    //     ws >>. pchar '+' >>. regExp
-
-    // let regularExpression =
-    // and basicRE = 
-
-    let (<!>) (p: Parser<_,_>) label : Parser<_,_> =
+    // TODO: Remove this (only for debugging)
+    let (<!>) (p: Parser<_,_>) label : Parser<_,_> = 
         fun stream ->
             printfn "%A: Entering %s" stream.Position label
             let reply = p stream
             printfn "%A: Leaving %s (%A)" stream.Position label reply.Status
             reply
 
-    // TODO: make private
     module RegexParser = 
-        type RegExp = 
-            | Concat of RegExp * RegExpAux
+
+        // TODO: make private
+        type RegExpTail = 
+            | Concat of RegExpTail * RegExpAux
             | Any of RegExpAux
+            | NodeCon of NodeConstraint * RegExpAux
+
         and RegExpAux = 
             | Star of RegExpAux 
-            | Union of RegExp * RegExpAux 
-            | ConcatAux of RegExp * RegExpAux
+            | Union of RegExpTail * RegExpAux 
+            | ConcatAux of RegExpTail * RegExpAux
             | Epsilon
 
         let private regExp, regExpRef = 
-            createParserForwardedToRef<RegExp, unit> ()
+            createParserForwardedToRef<RegExpTail, unit> ()
 
         let private regExpAux, regExpAuxRef = 
             createParserForwardedToRef<RegExpAux, unit> ()
 
         do regExpRef :=
             choice [betweenChars '(' ')' regExp .>>. regExpAux |>> Concat
-                    pchar '.' >>. regExpAux |>> Any]
+                    pchar '.' >>. regExpAux |>> Any
+                    nodeConstraint .>>. regExpAux |>> NodeCon]
         do regExpAuxRef := 
             choice [pchar '*' >>. regExpAux |>> Star 
                     pchar '+' >>. regExp .>>. regExpAux |>> Union
                     regExp .>>. regExpAux |>> ConcatAux 
                     ws |>> konst Epsilon] 
     
-        let regularExpression = regExp 
+        let regExpParser = regExp
+        let regularExpression = 
+            regExp |>> (fun re -> RegularExpression.Epsilon)
 
-    let rec regularExp () = (unionRE () |>> Union) <|> (simpleRE () |>> Simple)
-    and unionRE () = regularExp () .>>. ((pchar '+')  >>. simpleRE ())
-    and simpleRE () = (concatRE |>> Concat) <|> (basicRE |>> Basic)
-    and concatRE<'a> : Parser<ConcatRE, 'a> = simpleRE () .>>. basicRE
-    and basicRE<'a> : Parser<BasicRE, 'a> = 
-        (elementaryRE .>> (pchar '*') |>> Star) 
-        <|> (elementaryRE |>> Elementary)
-    and elementaryRE<'a> : Parser<ElementaryRE, 'a> = 
-        (pchar '.' |>> konst Any) <|> (groupRE |>> Group)
-    and groupRE<'a> : Parser<GroupRE, 'a> = 
-        pchar '(' >>. regularExp () .>> pchar ')' 
+    // let rec regularExp () = (unionRE () |>> Union) <|> (simpleRE () |>> Simple)
+    // and unionRE () = regularExp () .>>. ((pchar '+')  >>. simpleRE ())
+    // and simpleRE () = (concatRE |>> Concat) <|> (basicRE |>> Basic)
+    // and concatRE<'a> : Parser<ConcatRE, 'a> = simpleRE () .>>. basicRE
+    // and basicRE<'a> : Parser<BasicRE, 'a> = 
+    //     (elementaryRE .>> (pchar '*') |>> Star) 
+    //     <|> (elementaryRE |>> Elementary)
+    // and elementaryRE<'a> : Parser<ElementaryRE, 'a> = 
+    //     (pchar '.' |>> konst Any) <|> (groupRE |>> Group)
+    // and groupRE<'a> : Parser<GroupRE, 'a> = 
+    //     pchar '(' >>. regularExp () .>> pchar ')' 
     
-    let pregExp<'a> : Parser<RegularExp, 'a> = regularExp ()
+    // let pregExp<'a> : Parser<RegularExp, 'a> = regularExp ()
 
     // do regExpRef :=
     //     choice [
@@ -135,14 +133,14 @@ module Parser =
     //             pchar '.' |>> konst AnyExp]
     //             // nodeConstraint]
       
-    let rec regularConstraint<'a> : Parser<RegularConstraint, 'a> =
-        pipe2 pregExp
+    let rec regularConstraint : Parser<RegularConstraint, unit> =
+        pipe2 RegexParser.regularExpression
               (betweenChars '(' ')' (many id))
               (curry RegularConstraint)
 
     let private optionally ret p = p <|> (ws |>> konst ret)
 
-    let parseQuery<'a> : Parser<Query, 'a> = 
+    let parseQuery : Parser<Query, unit> = 
         pipe3 (pstring "MATCH" >>. ws >>. (manyWith id "NODES")) // parse nodes
               (manyWith pathConstraint "SUCH THAT" |> optionally []) // path constraints
               (manyWith regularConstraint "WHERE" |> optionally [])  // path constraints

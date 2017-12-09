@@ -17,7 +17,9 @@ let main argv =
     // test (manyWith id "NODES") "NODES (Ba Ab aa)"
     // test (manyWith id "NODES") "NODES (s t )"
     // test (manyWith pathConstraint "SUCH THAT") "SUCH THAT (s -[pii]-> t x-[p]->y)"
-    test RegexParser.regularExpression ".* "
+    test RegexParser.regExpParser ".*"
+    test RegexParser.regExpParser "(.*..)+."
+    test RegexParser.regExpParser "([attr(@1) > 10]*.)"
 
     // test nodeConstraint "[attr(@1) = 10]"
     // test nodeConstraint "[name(@1) = \"some value\"]"
