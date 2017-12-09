@@ -62,7 +62,7 @@ module Parser =
     /// [attr(@1) > 100] 
     /// [distance(@1 @'1) <= 10]
     let nodeConstraint<'a> : Parser<_, 'a> = 
-        // TODO: Add node constrain which returns bool (only one operand in expression)
+        // TODO: Add node constraint which returns bool (only one operand in expression)
         pipe3 operand operator operand 
               (curry3 NodeConstraint)
         |> betweenChars '[' ']'
@@ -95,11 +95,12 @@ module Parser =
         let private regExpAux, regExpAuxRef = 
             createParserForwardedToRef<RegExpAux, unit> ()
 
-        do regExpRef :=
+        regExpRef :=
             choice [betweenChars '(' ')' regExp .>>. regExpAux |>> Concat
                     pchar '.' >>. regExpAux |>> Any
                     nodeConstraint .>>. regExpAux |>> NodeCon]
-        do regExpAuxRef := 
+
+        regExpAuxRef := 
             choice [pchar '*' >>. regExpAux |>> Star 
                     pchar '+' >>. regExp .>>. regExpAux |>> Union
                     regExp .>>. regExpAux |>> ConcatAux 

@@ -6,6 +6,6 @@ and add following line to settings
 
 OpraDB:
     Parser:
-        ❑ Add node constrain which returns bool (only one operand in expression)
+        ❑ Add node constraint which returns bool (only one operand in expression)
         ❑ Add conversion from `RegExpTail` to `RegularExpression`
         ❑ Test query parsing
