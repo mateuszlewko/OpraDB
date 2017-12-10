@@ -34,7 +34,7 @@ module Parser =
 
     let private manyWith elem prefix = 
         pstring prefix >>. ws >>. pchar '(' >>. ws // prefix and opening bracket
-        >>. (many elem)                            // TODO: what? list interpreter.fsof elements
+        >>. (many elem)                            // list of elements
         .>> (pchar ')' .>> ws)                     // closing bracket
 
     let private betweenChars first last = 
