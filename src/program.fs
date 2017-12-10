@@ -9,7 +9,7 @@ let test p str =
     | Failure (errorMsg, _, _) -> printfn "Failure: %s" errorMsg
 
 let parseAndRun str = 
-    match run parseQuery str with 
+    match run query str with 
     | Success (result, _, _)   -> printfn "Success: %A" result; interpret result 
     | Failure (errorMsg, _, _) -> printfn "Failure: %s" errorMsg
 
@@ -47,5 +47,10 @@ let main argv =
               WHERE (.*[type (@1 @'1) = \"some type\"] *.<p>  .+..(.*)..<p p2>)"
 
     parseAndRun q4
+
+    let q5 =  "MATCH NODES (s t)
+               WHERE (.*[type (@1 @'1) = \"some type\"]*.<p> 
+                      .+(..(.*))..<p p2> )" 
+    parseAndRun q5
 
     0

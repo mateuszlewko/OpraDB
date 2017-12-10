@@ -32,7 +32,7 @@ module Parser =
         <??> "string literal in double quotes"
         |>> StringLiteral
 
-    let manyWith elem prefix = 
+    let private manyWith elem prefix = 
         pstring prefix >>. ws >>. pchar '(' >>. ws // prefix and opening bracket
         >>. (many elem)                            // TODO: what? list interpreter.fsof elements
         .>> (pchar ')' .>> ws)                     // closing bracket
@@ -63,14 +63,14 @@ module Parser =
     /// examples: 
     /// [attr(@1) > 100] 
     /// [distance(@1 @'1) <= 10]
-    let nodeConstraint<'a> : Parser<_, 'a> = 
+    let private nodeConstraint<'a> : Parser<_, 'a> = 
         // TODO: Add node constraint which returns bool (only one operand in expression)
         pipe3 operand operator operand 
               (curry3 NodeConstraint)
         |> betweenChars '[' ']'
 
     /// Used for debugging parser
-    let (<!>) (p: Parser<_,_>) label : Parser<_,_> = 
+    let private (<!>) (p: Parser<_,_>) label : Parser<_,_> = 
         fun stream ->
             printfn "%A: Entering %s" stream.Position label
             let reply = p stream
@@ -142,14 +142,14 @@ module Parser =
         let regularExpression = 
             regExp |>> parseReg []
       
-    let rec regularConstraint : Parser<RegularConstraint, unit> =
+    let rec private regularConstraint =
         pipe2 regularExpression
-              (betweenChars '<' '>' (many id))
+              (betweenChars '<' '>' (many id) .>> ws)
               (curry RegularConstraint)
 
     let private optionally ret p = p <|> (ws |>> konst ret)
 
-    let parseQuery : Parser<Query, unit> = 
+    let query = 
         pipe3 (pstring "MATCH" >>. ws >>. (manyWith id "NODES")) // parse nodes
               (manyWith pathConstraint "SUCH THAT" |> optionally []) // path constraints
               (manyWith regularConstraint "WHERE" |> optionally []) // regular constraints
