@@ -18,20 +18,25 @@ let main argv =
     // test (manyWith id "NODES") "NODES (Ba Ab aa)"
     // test (manyWith id "NODES") "NODES (s t )"
     // test (manyWith pathConstraint "SUCH THAT") "SUCH THAT (s -[pii]-> t x-[p]->y)"
+    test RegParser2.expr ".^(.+.^.*)+.^."
+
     test RegexParser.regExpParser ".*"
     test RegexParser.regExpParser "(.*..)+."
     test RegexParser.regExpParser "([attr(@1) > 10]*.)"
     test RegexParser.regExpParser ".*..."
     test RegexParser.regExpParser "(..)*.."
     test RegexParser.regExpParser ".*.+."
+    test RegexParser.regExpParser ".*.+.+.."
+    test RegexParser.regExpParser "...(.(..)*.+.)...."
+
 
     run RegexParser.regExpParser ".*..." 
     |> function
-       |  Success (result, _, _) -> RegexParser.parseReg result |> printfn "%A"
+       |  Success (result, _, _) -> RegexParser.parseReg [] result |> printfn "%A"
 
     run RegexParser.regExpParser "([attr(@1) > 10]*.)" 
     |> function
-       |  Success (result, _, _) -> RegexParser.parseReg result |> printfn "%A"
+       |  Success (result, _, _) -> RegexParser.parseReg [] result |> printfn "%A"
 
     // test nodeConstraint "[attr(@1) = 10]"
     // test nodeConstraint "[name(@1) = \"some value\"]"

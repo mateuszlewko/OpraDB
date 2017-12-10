@@ -76,75 +76,107 @@ module Parser =
             printfn "%A: Leaving %s (%A)" stream.Position label reply.Status
             reply
 
+
+    module RegParser2 =
+        let opp = new OperatorPrecedenceParser<RegularExpression,unit,unit>()
+        let expr = opp.ExpressionParser
+        
+        do 
+            opp.TermParser <- choice [pchar '.' |>> konst AnyExp
+                                      nodeConstraint |>> NodeExp
+                                      betweenChars '(' ')' expr]
+
+            InfixOperator ("+", ws, 1, Associativity.Left, curry UnionExp)
+            |> opp.AddOperator
+            
+            PostfixOperator ("*", ws, 3, false, StarExp)
+            |> opp.AddOperator
+
+            InfixOperator ("^", ws, 2, Associativity.Left, curry ConcatExp)
+            |> opp.AddOperator
+
+        // type RegExp = Unions list 
+        // and Unions = Concats list
+        // and Concats = Term list 
+        // and Term = RE of RegExp | 
+        
+        // let private regExp, regExpRef = 
+        //     createParserForwardedToRef<RegExpTail, unit> ()
+            
+        // let private regExpAux, regExpAuxRef = 
+        //     createParserForwardedToRef<RegExpAux, unit> ()
+
     module RegexParser = 
 
         // TODO: make private
         type RegExpTail = 
             | Concat of RegExpTail * RegExpAux
             | Any of RegExpAux
+            | Star of RegExpAux 
             | NodeCon of NodeConstraint * RegExpAux
 
         and RegExpAux = 
-            | Star of RegExpAux 
-            | Union of RegExpTail * RegExpAux 
+            | Union of RegExpTail 
             | Tail of RegExpTail 
             | Epsilon
 
-        // type RegExpAST = Tail of RegExpTail | Aux of RegExpAux
-
         let private regExp, regExpRef = 
             createParserForwardedToRef<RegExpTail, unit> ()
-
+            
         let private regExpAux, regExpAuxRef = 
             createParserForwardedToRef<RegExpAux, unit> ()
 
         regExpRef :=
             choice [betweenChars '(' ')' regExp .>>. regExpAux |>> Concat
                     pchar '.' >>. regExpAux |>> Any
+                    pchar '*' >>. regExpAux |>> Star 
                     nodeConstraint .>>. regExpAux |>> NodeCon]
 
         regExpAuxRef := 
-            choice [pchar '*' >>. regExpAux |>> Star 
-                    pchar '+' >>. regExp .>>. regExpAux |>> Union
+            choice [pchar '+' >>. regExp |>> Union
                     regExp |>> Tail 
                     ws |>> konst Epsilon] 
     
         let regExpParser = regExp
 
-// ([attr(@1) > 10]*.) => Success: 
-// Concat
-//   (NodeCon
-//      (//NodeConstraint (Labelling (ID "attr",[CurrNodeVar 1]),Ge,IntLiteral 10),
-//       Star (ConcatAux (Any Epsilon, Epsilon)))
-//   , Epsilon)
-        //(.*..)*
-
-        let aa = curry ConcatExp
-
         exception ParsingException of string
 
-        let rec parseAux = 
-            function 
-            | Star aux -> raise (ParsingException "** is an invalid expression / shouldn't match this case")
-            | Tail reg -> 
-                match reg with 
-                | Any aux -> ConcatExp (AnyExp, parseAux aux)
-            | Epsilon -> EpsilonExp
-            | Union (reg, aux) -> failwith "TODO"
+        let toConcats stack =
+            let rec concats =
+                function
+                | [] -> EpsilonExp
+                | x::xs -> ConcatExp (x, concats xs)
 
-        let rec parseReg = 
+            stack |> List.rev |> concats
+
+        let rec parseAux (stack : RegularExpression list) = 
+            function 
+            | Tail reg -> parseReg stack reg
+            | Epsilon -> toConcats stack
+            | Union reg -> UnionExp (toConcats stack, parseReg [] reg)
+
+        and parseReg stack = 
             function
+            | Star aux -> 
+                match stack with 
+                | StarExp _ :: stack ->
+                    raise (ParsingException "'**' is an invalid expression")
+                | term :: stack  -> parseAux (StarExp term :: stack) aux
+                | [] -> 
+                    raise (ParsingException "'*' can't be first character in expression")
             | Concat (reg, aux) -> 
-                match aux with 
-                | Star aux -> ConcatExp (StarExp (parseReg reg), parseAux aux)
-            | Any aux ->
-                match aux with 
-                | Star aux -> ConcatExp (StarExp AnyExp, parseAux aux)
-                | Epsilon  -> AnyExp
-            | NodeCon (constr, aux) -> 
-                match aux with 
-                | Star aux -> ConcatExp (StarExp (NodeExp constr), parseAux aux)
-                | Epsilon  ->   NodeExp constr
+                let inner = parseReg [] reg
+                parseAux (inner::stack) aux
+                // match aux with 
+                // | Star aux -> ConcatExp (StarExp (parseReg reg), parseAux aux)
+            | Any aux -> parseAux (AnyExp::stack) aux
+                // match aux with 
+                // | Star aux -> ConcatExp (StarExp AnyExp, parseAux aux)
+                // | Epsilon  -> AnyExp
+            | NodeCon (constr, aux) -> parseAux (NodeExp constr::stack) aux
+                // match aux with 
+                // | Star aux -> ConcatExp (StarExp (NodeExp constr), parseAux aux)
+                // | Epsilon  ->   NodeExp constr
 
         let regularExpression = 
             regExp |>> (fun re -> EpsilonExp)
