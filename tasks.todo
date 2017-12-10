@@ -7,13 +7,16 @@ and add following line to settings
 Parser:
     ✔ Add conversion from `RegExpTail` to `RegularExpression` @done(17-12-10 03:45)
     ✔ Handle whitespaces in regular expression parsing @done(17-12-10 14:09)
-    ❑ Test query parsing
-    ❑ Add node constraint which returns bool (only one operand in expression) or add bool value
+    ✔ Test query parsing @done(17-12-10 15:59)
+    ❑ @low Add node constraint which returns bool (only one operand in expression) or add bool value
 
-Query Execution:
+Query execution / Interpeter:
+    ❑ Regular expression matching 
 
-Storage:
-
+Graph / Data storage:
+    ❑ Basic graph representation
+    ❑ Sample graph data
+    
 Client:
 
 Docs: 
