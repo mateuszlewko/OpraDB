@@ -10,7 +10,7 @@ let test p str =
 
 let parseAndRun str = 
     match run parseQuery str with 
-    | Success (result, _, _)   -> interpret result 
+    | Success (result, _, _)   -> printfn "Success: %A" result; interpret result 
     | Failure (errorMsg, _, _) -> printfn "Failure: %s" errorMsg
 
 [<EntryPoint>]
@@ -18,46 +18,38 @@ let main argv =
     // test (manyWith id "NODES") "NODES (Ba Ab aa)"
     // test (manyWith id "NODES") "NODES (s t )"
     // test (manyWith pathConstraint "SUCH THAT") "SUCH THAT (s -[pii]-> t x-[p]->y)"
-    test RegParser2.expr ".^(.+.^.*)+.^."
+    test regularExpression ".(.+..*)+.."
 
-    test RegexParser.regExpParser ".*"
-    test RegexParser.regExpParser "(.*..)+."
-    test RegexParser.regExpParser "([attr(@1) > 10]*.)"
-    test RegexParser.regExpParser ".*..."
-    test RegexParser.regExpParser "(..)*.."
-    test RegexParser.regExpParser ".*.+."
-    test RegexParser.regExpParser ".*.+.+.."
-    test RegexParser.regExpParser "...(.(..)*.+.)...."
+    test regularExpression ".*"
+    test regularExpression "(.*..)+."
+    test regularExpression "([attr(@1) > 10]*.)"
+    test regularExpression ".*..."
+    test regularExpression "(..)*.."
+    test regularExpression ".*.+."
+    test regularExpression ".*.+.+.."
+    test regularExpression "...(.(..)*.+.)...."
 
+    let q1 = "MATCH NODES (s t x y)
+              SUCH THAT (s-[p1]->t x-[p2]->y)"
 
-    run RegexParser.regExpParser ".*..." 
-    |> function
-       |  Success (result, _, _) -> RegexParser.parseReg [] result |> printfn "%A"
+    parseAndRun q1
 
-    run RegexParser.regExpParser "([attr(@1) > 10]*.)" 
-    |> function
-       |  Success (result, _, _) -> RegexParser.parseReg [] result |> printfn "%A"
+    let q2 = "MATCH NODES (s t)
+              SUCH THAT (s-[p]->t)
+              WHERE (..*<p>)"
 
-    // test nodeConstraint "[attr(@1) = 10]"
-    // test nodeConstraint "[name(@1) = \"some value\"]"
+    parseAndRun q2
 
+    let q3 = "MATCH NODES (s t)
+              SUCH THAT (s-[p]->t)
+              WHERE ([attr(@1) > 10]*.+..(.*)<p>)"
 
-    // let q1 = "MATCH NODES (s t x y)
-    //           SUCH THAT (s -[pii]-> t x-[p]->y )"
+    parseAndRun q3
 
-    // test parseQuery q1 
-    // parseAndRun q1 
+    let q4 = "MATCH NODES (s t)
+              SUCH THAT (s-[p]->t s-[p2]->t)
+              WHERE (.*[type(@1 @'1) = 1]*.<p>)"
 
-    // let q2 = "MATCH NODES (s t x y)
-    //           SUCH THAT (s-[p1]->t x-[p2]->y u-[ p3 ]->v)
-    //           WHERE "
-
-    // parseAndRun q2
-
-    // let q3 = "MATCH NODES (s t)
-    //           SUCH THAT (s-[p]->t)
-    //           WHERE ( ) "
-
-    // parseAndRun q2
+    parseAndRun q4
 
     0

@@ -41,8 +41,10 @@ module Parser =
  
     /// Parse @x or @'x where x is integer
     let private nodeVar<'a> : Parser<_, 'a> = 
-        pchar '@' >>. pint32 |>> CurrNodeVar 
-        <|> (pstring "@'" >>. pint32 |>> NextNodeVar)
+        ws >>.
+        (pstring "@'" >>. pint32 |>> NextNodeVar
+         <|> (pchar '@' >>. pint32 |>> CurrNodeVar))
+        .>> ws
 
     let private labelling<'a> : Parser<_, 'a> = 
         pipe2 (ws >>. id)
@@ -76,55 +78,26 @@ module Parser =
             printfn "%A: Leaving %s (%A)" stream.Position label reply.Status
             reply
 
-
-    module RegParser2 =
-        let opp = new OperatorPrecedenceParser<RegularExpression,unit,unit>()
-        let expr = opp.ExpressionParser
-        
-        do 
-            opp.TermParser <- choice [pchar '.' |>> konst AnyExp
-                                      nodeConstraint |>> NodeExp
-                                      betweenChars '(' ')' expr]
-
-            InfixOperator ("+", ws, 1, Associativity.Left, curry UnionExp)
-            |> opp.AddOperator
-            
-            PostfixOperator ("*", ws, 3, false, StarExp)
-            |> opp.AddOperator
-
-            InfixOperator ("^", ws, 2, Associativity.Left, curry ConcatExp)
-            |> opp.AddOperator
-
-        // type RegExp = Unions list 
-        // and Unions = Concats list
-        // and Concats = Term list 
-        // and Term = RE of RegExp | 
-        
-        // let private regExp, regExpRef = 
-        //     createParserForwardedToRef<RegExpTail, unit> ()
-            
-        // let private regExpAux, regExpAuxRef = 
-        //     createParserForwardedToRef<RegExpAux, unit> ()
-
+    [<AutoOpen>]
     module RegexParser = 
 
-        // TODO: make private
-        type RegExpTail = 
+        type private RegExpTail = 
             | Concat of RegExpTail * RegExpAux
             | Any of RegExpAux
             | Star of RegExpAux 
             | NodeCon of NodeConstraint * RegExpAux
 
-        and RegExpAux = 
+        and private RegExpAux = 
             | Union of RegExpTail 
             | Tail of RegExpTail 
             | Epsilon
 
-        let private regExp, regExpRef = 
-            createParserForwardedToRef<RegExpTail, unit> ()
-            
-        let private regExpAux, regExpAuxRef = 
-            createParserForwardedToRef<RegExpAux, unit> ()
+        let private reg = createParserForwardedToRef<RegExpTail, unit> ()
+        let private regAux = createParserForwardedToRef<RegExpAux, unit> ()
+        let private regExp = fst reg 
+        let private regExpRef = snd reg 
+        let private regExpAux = fst regAux
+        let private regExpAuxRef = snd regAux 
 
         regExpRef :=
             choice [betweenChars '(' ')' regExp .>>. regExpAux |>> Concat
@@ -136,12 +109,10 @@ module Parser =
             choice [pchar '+' >>. regExp |>> Union
                     regExp |>> Tail 
                     ws |>> konst Epsilon] 
-    
-        let regExpParser = regExp
 
         exception ParsingException of string
 
-        let toConcats stack =
+        let private toConcats stack =
             let rec concats =
                 function
                 | [] -> EpsilonExp
@@ -149,41 +120,31 @@ module Parser =
 
             stack |> List.rev |> concats
 
-        let rec parseAux (stack : RegularExpression list) = 
+        let rec private parseAux (stack : RegularExpression list) = 
             function 
             | Tail reg -> parseReg stack reg
             | Epsilon -> toConcats stack
             | Union reg -> UnionExp (toConcats stack, parseReg [] reg)
 
-        and parseReg stack = 
+        and private parseReg stack = 
+            let (!!) s = raise (ParsingException s)
+
             function
             | Star aux -> 
                 match stack with 
-                | StarExp _ :: stack ->
-                    raise (ParsingException "'**' is an invalid expression")
-                | term :: stack  -> parseAux (StarExp term :: stack) aux
-                | [] -> 
-                    raise (ParsingException "'*' can't be first character in expression")
-            | Concat (reg, aux) -> 
-                let inner = parseReg [] reg
-                parseAux (inner::stack) aux
-                // match aux with 
-                // | Star aux -> ConcatExp (StarExp (parseReg reg), parseAux aux)
-            | Any aux -> parseAux (AnyExp::stack) aux
-                // match aux with 
-                // | Star aux -> ConcatExp (StarExp AnyExp, parseAux aux)
-                // | Epsilon  -> AnyExp
+                | StarExp _ :: stack -> !! "'**' is an invalid expression"
+                | term :: stack      -> parseAux (StarExp term :: stack) aux
+                | []                 -> !! "The token preceding '*' is not quantifiable"
+            | Concat (reg, aux)     -> parseAux (parseReg [] reg::stack) aux
+            | Any aux               -> parseAux (AnyExp::stack) aux
             | NodeCon (constr, aux) -> parseAux (NodeExp constr::stack) aux
-                // match aux with 
-                // | Star aux -> ConcatExp (StarExp (NodeExp constr), parseAux aux)
-                // | Epsilon  ->   NodeExp constr
 
         let regularExpression = 
-            regExp |>> (fun re -> EpsilonExp)
+            regExp |>> parseReg []
       
     let rec regularConstraint : Parser<RegularConstraint, unit> =
-        pipe2 RegexParser.regularExpression
-              (betweenChars '(' ')' (many id))
+        pipe2 regularExpression
+              (betweenChars '<' '>' (many id))
               (curry RegularConstraint)
 
     let private optionally ret p = p <|> (ws |>> konst ret)
