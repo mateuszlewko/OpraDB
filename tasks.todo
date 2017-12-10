@@ -6,9 +6,15 @@ and add following line to settings
 
 Parser:
     ✔ Add conversion from `RegExpTail` to `RegularExpression` @done(17-12-10 03:45)
-    ❑ Handle whitespaces in regular expression parsing 
+    ✔ Handle whitespaces in regular expression parsing @done(17-12-10 14:09)
     ❑ Test query parsing
-    ❑ Add node constraint which returns bool (only one operand in expression)
+    ❑ Add node constraint which returns bool (only one operand in expression) or add bool value
+
+Query Execution:
+
+Storage:
+
+Client:
 
 Docs: 
     ❑ Add README.md file

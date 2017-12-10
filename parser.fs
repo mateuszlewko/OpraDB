@@ -25,6 +25,7 @@ module Parser =
               (ws >>. pstring "]->" >>. ws >>. id .>> ws)
               PathConstraint.create 
 
+    /// example: "string"
     let private stringLiteral<'a> : Parser<_, 'a> =
         between (str "\"") (str "\"")
                 (manySatisfy ((<>) '"'))
@@ -41,10 +42,8 @@ module Parser =
  
     /// Parse @x or @'x where x is integer
     let private nodeVar<'a> : Parser<_, 'a> = 
-        ws >>.
-        (pstring "@'" >>. pint32 |>> NextNodeVar
-         <|> (pchar '@' >>. pint32 |>> CurrNodeVar))
-        .>> ws
+        ws >>. choice [pstring "@'" >>. pint32 |>> NextNodeVar
+                       pchar '@'    >>. pint32 |>> CurrNodeVar] .>> ws
 
     let private labelling<'a> : Parser<_, 'a> = 
         pipe2 (ws >>. id)
@@ -70,7 +69,7 @@ module Parser =
               (curry3 NodeConstraint)
         |> betweenChars '[' ']'
 
-    // TODO: Remove this (only for debugging)
+    /// Used for debugging parser
     let (<!>) (p: Parser<_,_>) label : Parser<_,_> = 
         fun stream ->
             printfn "%A: Entering %s" stream.Position label
@@ -92,23 +91,24 @@ module Parser =
             | Tail of RegExpTail 
             | Epsilon
 
+        // Added in order to use mutually recursive parsers
         let private reg = createParserForwardedToRef<RegExpTail, unit> ()
         let private regAux = createParserForwardedToRef<RegExpAux, unit> ()
         let private regExp = fst reg 
-        let private regExpRef = snd reg 
         let private regExpAux = fst regAux
-        let private regExpAuxRef = snd regAux 
 
-        regExpRef :=
+        snd reg :=
             choice [betweenChars '(' ')' regExp .>>. regExpAux |>> Concat
                     pchar '.' >>. regExpAux |>> Any
                     pchar '*' >>. regExpAux |>> Star 
                     nodeConstraint .>>. regExpAux |>> NodeCon]
+            |> between ws ws
 
-        regExpAuxRef := 
+        snd regAux := 
             choice [pchar '+' >>. regExp |>> Union
                     regExp |>> Tail 
-                    ws |>> konst Epsilon] 
+                    ws |>> konst Epsilon]
+            |> between ws ws
 
         exception ParsingException of string
 
@@ -119,7 +119,7 @@ module Parser =
                 | x::xs -> ConcatExp (x, concats xs)
 
             stack |> List.rev |> concats
-
+            
         let rec private parseAux (stack : RegularExpression list) = 
             function 
             | Tail reg -> parseReg stack reg
@@ -159,4 +159,3 @@ module Parser =
                         pathConstraints    = pathConstrs 
                         regularConstraints = regularConstrs })
         .>> ws
-        

@@ -15,11 +15,7 @@ let parseAndRun str =
 
 [<EntryPoint>]
 let main argv =
-    // test (manyWith id "NODES") "NODES (Ba Ab aa)"
-    // test (manyWith id "NODES") "NODES (s t )"
-    // test (manyWith pathConstraint "SUCH THAT") "SUCH THAT (s -[pii]-> t x-[p]->y)"
     test regularExpression ".(.+..*)+.."
-
     test regularExpression ".*"
     test regularExpression "(.*..)+."
     test regularExpression "([attr(@1) > 10]*.)"
@@ -42,13 +38,13 @@ let main argv =
 
     let q3 = "MATCH NODES (s t)
               SUCH THAT (s-[p]->t)
-              WHERE ([attr(@1) > 10]*.+..(.*)<p>)"
+              WHERE ([attr(@1) >10] *. +..( .*)<p>)"
 
     parseAndRun q3
 
     let q4 = "MATCH NODES (s t)
               SUCH THAT (s-[p]->t s-[p2]->t)
-              WHERE (.*[type(@1 @'1) = 1]*.<p>)"
+              WHERE (.*[type (@1 @'1) = \"some type\"] *.<p>  .+..(.*)..<p p2>)"
 
     parseAndRun q4
 
