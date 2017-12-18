@@ -1,22 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <NoWarn>NU1602;NU1701</NoWarn>
   </PropertyGroup>
-  
   <ItemGroup>
+    <Compile Include="graph.fs" />
     <Compile Include="langTypes.fs" />
+    <Compile Include="regexNFA.fs" />
+    <Compile Include="regularConstraints.fs" />
     <Compile Include="parser.fs" />
     <Compile Include="interpreter.fs" />
     <Compile Include="program.fs" />
   </ItemGroup>
-  
   <ItemGroup>
     <PackageReference Include="FParsec" Version="1.0.3" />
     <PackageReference Include="FSharpx.Collections" Version="1.17.0" />
     <PackageReference Include="FSharpx.Extras" Version="2.2.1" />
   </ItemGroup>
-  
 </Project>

@@ -11,8 +11,9 @@ Parser:
     ❑ @low Add node constraint which returns bool (only one operand in expression) or add bool value
 
 Query execution / Interpreter:
-    ❑ Build NFA
+    ✔ Build NFA @done(17-12-18 23:16)
     ❑ Regular expression matching
+    ❑ Node constraints checking
     ❑ Match nodes that satisfy regular constraints
 
 Graph / Data storage:

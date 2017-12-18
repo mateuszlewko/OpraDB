@@ -1,5 +1,7 @@
 ﻿open OpraDB.Interpreter
 open OpraDB.Parser
+open OpraDB.LangTypes
+open OpraDB.RegexNFA
 open FParsec 
 
 let test p str =
@@ -52,5 +54,14 @@ let main argv =
                WHERE (.*[type (@1 @'1) = \"some type\"]*.<p> 
                       .+(..(.*))..<p p2> )" 
     parseAndRun q5
+
+    let regexAst = 
+        ConcatExp 
+            (AnyExp, // .
+             ConcatExp 
+                (StarExp AnyExp, // .*
+                 EpsilonExp))
+
+    build Matched regexAst |> printfn "%A"
 
     0

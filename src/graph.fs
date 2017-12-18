@@ -13,3 +13,4 @@ module Graph =
             data       : Properties
             neighbours : NodeMap
         }
+    
