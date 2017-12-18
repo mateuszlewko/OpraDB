@@ -10,8 +10,10 @@ Parser:
     ✔ Test query parsing @done(17-12-10 15:59)
     ❑ @low Add node constraint which returns bool (only one operand in expression) or add bool value
 
-Query execution / Interpeter:
-    ❑ Regular expression matching 
+Query execution / Interpreter:
+    ❑ Build NFA
+    ❑ Regular expression matching
+    ❑ Match nodes that satisfy regular constraints
 
 Graph / Data storage:
     ❑ Basic graph representation
