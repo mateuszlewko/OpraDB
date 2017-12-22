@@ -46,13 +46,12 @@ module Parser =
                                                        target  = ID "t"
                                                        path    = ID "p"}]
                                    regularConstraints = 
-                                    [RegularConstraint
-                                        (ConcatExp 
-                                            (AnyExp, // .
-                                             ConcatExp 
-                                                (StarExp AnyExp, // .*
-                                                 EpsilonExp)) 
-                                        , [ID "p"]) // <p>
+                                    [ConcatExp 
+                                         (AnyExp, // .
+                                          ConcatExp 
+                                             (StarExp AnyExp, // .*
+                                              EpsilonExp)) 
+                                     , [ID "p"] // <p>
                                     ]}
                     "ast parsed correctly"
             }
@@ -68,26 +67,24 @@ module Parser =
                                   paths = [];
                                   pathConstraints = [];
                                   regularConstraints =
-                                   [RegularConstraint
-                                      (ConcatExp
-                                         (StarExp AnyExp,
-                                          ConcatExp
-                                            (StarExp
-                                               (NodeExp
-                                                  (NodeConstraint
-                                                     (Labelling (ID "type",[CurrNodeVar 1; NextNodeVar 1]),Eq,
-                                                      StringLiteral "some type"))),ConcatExp (AnyExp,EpsilonExp))),
+                                   [(ConcatExp
+                                      (StarExp AnyExp,
+                                       ConcatExp
+                                         (StarExp
+                                            (NodeExp
+                                               (NodeConstraint
+                                                  (Labelling (ID "type",[CurrNodeVar 1; NextNodeVar 1]),Eq,
+                                                   StringLiteral "some type"))),ConcatExp (AnyExp,EpsilonExp))),
                                        [ID "p"]);
-                                    RegularConstraint
-                                      (UnionExp
-                                         (ConcatExp (AnyExp,EpsilonExp),
-                                          ConcatExp
-                                            (ConcatExp
+                                    (UnionExp
+                                      (ConcatExp (AnyExp,EpsilonExp),
+                                       ConcatExp
+                                         (ConcatExp
+                                            (AnyExp,
+                                             ConcatExp
                                                (AnyExp,
-                                                ConcatExp
-                                                  (AnyExp,
-                                                   ConcatExp (ConcatExp (StarExp AnyExp,EpsilonExp),EpsilonExp))),
-                                             ConcatExp (AnyExp,ConcatExp (AnyExp,EpsilonExp)))),[ID "p"; ID "p2"])];}
+                                                ConcatExp (ConcatExp (StarExp AnyExp,EpsilonExp),EpsilonExp))),
+                                          ConcatExp (AnyExp,ConcatExp (AnyExp,EpsilonExp)))),[ID "p"; ID "p2"])];}
 
                     "ast parsed correctly"
             }

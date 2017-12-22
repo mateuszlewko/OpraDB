@@ -143,9 +143,8 @@ module Parser =
             regExp |>> parseReg []
       
     let rec private regularConstraint =
-        pipe2 regularExpression
-              (betweenChars '<' '>' (many id) .>> ws)
-              (curry RegularConstraint)
+        regularExpression .>>. (betweenChars '<' '>' (many id) .>> ws)
+              
 
     let private optionally ret p = p <|> (ws |>> konst ret)
 
