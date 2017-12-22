@@ -3,6 +3,8 @@
 OpraDB is graph database that uses [OPRA query language](https://arxiv.org/abs/1710.04419) and is written in [F#](http://fsharp.org/) with [dotnet core](https://www.microsoft.com/net/learn/get-started/linuxubuntu).
 Main purpose of this project is to show expressive power of [OPRA](https://arxiv.org/pdf/1710.04419.pdf) queries.
 
+This is a work in progress.
+
 ## How to build (Linux):
 - Install [dotnet core](https://www.microsoft.com/net/learn/get-started/linuxubuntu)
 - `git clone https://github.com/mateuszlewko/OpraDB.git`

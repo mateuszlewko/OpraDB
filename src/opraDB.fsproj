@@ -8,6 +8,7 @@
     <Compile Include="graph.fs" />
     <Compile Include="langTypes.fs" />
     <Compile Include="regexNFA.fs" />
+    <Compile Include="nodeConstraints.fs" />
     <Compile Include="regularConstraints.fs" />
     <Compile Include="parser.fs" />
     <Compile Include="interpreter.fs" />

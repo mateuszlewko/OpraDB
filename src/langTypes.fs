@@ -41,8 +41,7 @@ module LangTypes =
 
     /// RegularExpression with paths applied to it,
     /// examples: .*[attr(@1) > 100](p)
-    type RegularConstraint = 
-        RegularConstraint of RegularExpression * Identifier list
+    type RegularConstraint = RegularExpression * Identifier list
 
     module PathConstraint = 
         let create source path target = {

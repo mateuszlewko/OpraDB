@@ -62,6 +62,6 @@ let main argv =
                 (StarExp AnyExp, // .*
                  EpsilonExp))
 
-    build Matched regexAst |> printfn "%A"
+    State.ofRegExp regexAst |> printfn "%A"
 
     0
