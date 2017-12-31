@@ -11,7 +11,7 @@ module RegularConstraints =
     type MatchedNode = {
             source   : int 
             lastEdge : Edge 
-            nfsStates : NextState list list
+            nfsStates : Transition list list
         }
 
     let matchingNodes (graph : Graph) (query : Query) =

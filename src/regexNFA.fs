@@ -5,38 +5,39 @@ open FSharpx
 
 module RegexNFA = 
 
+    [<NoComparison; NoEquality>]
     type State = 
         | Matched 
-        | Constraint of NodeConstraint * NextState 
-        | Any of NextState
-        | Pass of NextState
-    and NextState = {
+        | Constraint of NodeConstraint * Transition 
+        | Any of Transition
+        | Empty of Transition
+    and [<NoComparison; NoEquality>] Transition = {
         next            : State
         mutable nextAlt : State option
     }
 
-    module NextState = 
+    module Transition = 
         let create next = {next = next; nextAlt = None}
         let createAlt next nextAlt = {next = next; nextAlt = Some nextAlt}
 
     module State = 
-        open NextState
+        open Transition
 
         let ofRegExp = 
-            let rec build continueWith =
+            let rec build continuation =
                 function 
                 | EpsilonExp         -> Matched
-                | AnyExp             -> create continueWith |> Any
-                | NodeExp constr     -> create continueWith 
+                | AnyExp             -> create continuation |> Any
+                | NodeExp constr     -> create continuation 
                                         |> curry Constraint constr
-                | ConcatExp (e1, e2) -> build (build Matched e2) e1
+                | ConcatExp (e1, e2) -> build (build continuation e2) e1
                 | StarExp e          -> 
-                    let curr = create continueWith 
-                    let state = Pass curr
+                    let curr = create continuation 
+                    let state = Empty curr
                     curr.nextAlt <- build state e |> Some
                     state
                 | UnionExp (e1, e2)  -> 
-                    createAlt (build continueWith e1) (build continueWith e2)
-                    |> Pass
+                    createAlt (build continuation e1) (build continuation e2)
+                    |> Empty
             
             build Matched

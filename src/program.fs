@@ -3,6 +3,7 @@ open OpraDB.Parser
 open OpraDB.LangTypes
 open OpraDB.RegexNFA
 open FParsec 
+open MBrace.FsPickler
 
 let test p str =
     printf "%s => " str
@@ -64,4 +65,58 @@ let main argv =
 
     State.ofRegExp regexAst |> printfn "%A"
 
+    let regexAst = 
+        ConcatExp 
+            (AnyExp, // .
+             ConcatExp 
+                (StarExp AnyExp, // .*
+                 ConcatExp
+                    (AnyExp,    // . 
+                     AnyExp)))  // .
+
+    let nfa = State.ofRegExp regexAst 
+    nfa |> printfn "%A"
+
+    let ser = FsPickler.CreateXmlSerializer (indent = true)
+    printfn "Serialized: %s\n" (ser.PickleToString nfa)
+(*
+<?xml version="1.0" encoding="utf-16"?>
+<FsPickler version="4.0.0.0" type="OpraDB.RegexNFA+State">
+  <value>
+    <Case>Any</Case>
+    <Item>
+      <next>
+        <Case>Empty</Case>
+        <Item>
+          <next>
+            <Case>Any</Case>
+            <Item>
+              <next>
+                <Case>Any</Case>
+                <Item>
+                  <next>
+                    <Case>Matched</Case>
+                  </next>
+                  <nextAlt flags="null" />
+                </Item>
+              </next>
+              <nextAlt flags="null" />
+            </Item>
+          </next>
+          <nextAlt>
+            <Some>
+              <Case>Any</Case>
+              <Item>
+                <next flags="cyclic" id="3" />
+                <nextAlt flags="null" />
+              </Item>
+            </Some>
+          </nextAlt>
+        </Item>
+      </next>
+      <nextAlt flags="null" />
+    </Item>
+  </value>
+</FsPickler>
+*)
     0
