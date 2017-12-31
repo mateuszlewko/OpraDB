@@ -18,5 +18,6 @@
     <PackageReference Include="FParsec" Version="1.0.3" />
     <PackageReference Include="FSharpx.Collections" Version="1.17.0" />
     <PackageReference Include="FSharpx.Extras" Version="2.2.1" />
+    <PackageReference Include="hekate" Version="3.2.1" />
   </ItemGroup>
 </Project>
