@@ -5,7 +5,7 @@
     <NoWarn>NU1602;NU1701</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="graph.fs" />
+    <Compile Include="data.fs" />
     <Compile Include="langTypes.fs" />
     <Compile Include="regexNFA.fs" />
     <Compile Include="nodeConstraints.fs" />
@@ -19,5 +19,6 @@
     <PackageReference Include="FSharpx.Collections" Version="1.17.0" />
     <PackageReference Include="FSharpx.Extras" Version="2.2.1" />
     <PackageReference Include="FsPickler" Version="4.5" />
+    <PackageReference Include="hekate" Version="3.2.1" />
   </ItemGroup>
 </Project>

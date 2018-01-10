@@ -16,8 +16,8 @@ module LangTypes =
     /// for example CurrNodeVar 1 is @1 and NextNodeVar 2 is @'2
     type NodeVariable = CurrNodeVar of int | NextNodeVar of int
 
-    /// Represents one of: <=, <, >=, >, =
-    type Operator = Leq | Le | Geq | Ge | Eq
+    /// Represents one of: <=, <, >=, >, =, <>
+    type Operator = Leq | Le | Geq | Ge | Eq | Neq
 
     type Operand = 
         /// LabellingFunction either checks whether there exists 

@@ -7,6 +7,7 @@ open MBrace.FsPickler
 
 module RegexNFA = 
     let private ser = FsPickler.CreateXmlSerializer (indent = true)
+    
     /// removes whitespace from string 
     let noWS = String.filter (System.Char.IsWhiteSpace >> not)
 
@@ -14,7 +15,7 @@ module RegexNFA =
     let ``state machine tests (ofRegExp) `` =
         testList "correct output" [
             test "simple test with concats" {
-                let regexAst = 
+                let regexAst = // ..*..
                     ConcatExp 
                         (AnyExp, // .
                          ConcatExp 

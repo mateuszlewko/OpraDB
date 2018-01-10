@@ -1,21 +1,24 @@
 namespace OpraDB
 
-open OpraDB.Graph
+open OpraDB.Data
 open OpraDB.LangTypes
 open OpraDB.RegexNFA
 open OpraDB.NodeConstraints
 open FSharpx.Prelude
 open FSharpx.Collections 
+open Hekate
 
 module RegularConstraints =
+
     type MatchedNode = {
-            source   : int 
-            lastEdge : Edge 
-            nfsStates : Transition list list
+            source    : int Node 
+            lastEdge  : int Edge
+            nfaStates : State list list
         }
 
     let matchingNodes (graph : Graph) (query : Query) =
-        let nfaStates = List.map (fst >> State.ofRegExp) query.regularConstraints
+        let nfa = List.map (fun (e, ids) -> State.ofRegExp e, ids) 
+                           query.regularConstraints
         // let nodeStates node = 
         //     List.fold 
         ()
