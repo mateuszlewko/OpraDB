@@ -1,4 +1,5 @@
 namespace OpraDB
 
 module NodeConstraints = 
-    let check node nodeConstraint = failwith "Not implemented."
+    let check edge graph constr ids = 
+        failwith "Not implemented."
