@@ -5,7 +5,7 @@ open FSharpx
 
 module RegexNFA =
 
-    [<NoComparison; NoEquality>]
+    [<NoComparison>]
     type State =
         | Matched
         | Constraint of NodeConstraint * Transition
