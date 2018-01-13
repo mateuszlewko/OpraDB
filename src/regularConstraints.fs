@@ -1,8 +1,8 @@
 namespace OpraDB
 
-open OpraDB.Data
 open OpraDB.LangTypes
 open OpraDB.RegexNFA
+
 open FSharpx.Collections
 open FSharpx
 open Hekate
@@ -24,8 +24,10 @@ module RegularConstraints =
     /// Move to states reachable within one transition in single nfa
     /// for a given edge
     let private moveEdge graph mNode =
-        let outEdges = Graph.Nodes.outward (snd mNode.lastEdge) graph
-                       |> Option.defaultValue []
+        let currNode = snd mNode.lastEdge
+        let sinkNode = currNode, -1, Map.empty
+        let outEdges = Graph.Nodes.outward currNode graph
+                       |> Option.getOrElse [sinkNode]
 
         /// Move to states reachable within one transition in single nfa
         /// for a given edge
@@ -69,6 +71,7 @@ module RegularConstraints =
         // MatchedEdge is an edge that has at least one state in every nfa
         outEdges |> List.choose moveEdge
 
+    /// Get nodes that match regular constraints in a given query
     let matchingNodes (graph : Data.Graph) (query : Query) =
         let nfaStates = List.map (fun (e, ids) -> [State.ofRegExp e], ids)
                            query.regularConstraints

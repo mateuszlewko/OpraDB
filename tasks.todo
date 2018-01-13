@@ -13,7 +13,7 @@ Parser:
 Query execution / Interpreter:
     ✔ Build NFA @done(17-12-18 23:16)
     ❑ Regular expression matching (with single path) @today
-    ❑ Node constraints checking (with single path) @today
+    ✔ Node constraints checking (with single path) @today @done(18-01-13 17:10)
     ❑ Regular expression matching (with many paths)
     ❑ Node constraints checking (with many path)
     ❑ Match nodes that satisfy regular constraints
@@ -26,4 +26,5 @@ Graph / Data storage:
 Client:
 
 Docs:
+    ❑ Examples of usage
     ✔ Add README.md file @done(17-12-10 16:24)

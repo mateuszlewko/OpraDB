@@ -1,7 +1,6 @@
 namespace OpraDB
 
 open Hekate
-open OpraDB.LangTypes
 
 module Data =
 

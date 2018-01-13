@@ -2,7 +2,7 @@
 open OpraDB.Parser
 open OpraDB.LangTypes
 open OpraDB.RegexNFA
-open FParsec 
+open FParsec
 open MBrace.FsPickler
 
 let test p str =
@@ -11,9 +11,9 @@ let test p str =
     | Success (result, _, _)   -> printfn "Success: %A" result
     | Failure (errorMsg, _, _) -> printfn "Failure: %s" errorMsg
 
-let parseAndRun str = 
-    match run query str with 
-    | Success (result, _, _)   -> printfn "Success: %A" result; interpret result 
+let parseAndRun str =
+    match run query str with
+    | Success (result, _, _)   -> printfn "Success: %A" result; interpret result
     | Failure (errorMsg, _, _) -> printfn "Failure: %s" errorMsg
 
 [<EntryPoint>]
@@ -52,29 +52,29 @@ let main argv =
     parseAndRun q4
 
     let q5 =  "MATCH NODES (s t)
-               WHERE (.*[type (@1 @'1) = \"some type\"]*.<p> 
-                      .+(..(.*))..<p p2> )" 
+               WHERE (.*[type (@1 @'1) = \"some type\"]*.<p>
+                      .+(..(.*))..<p p2> )"
     parseAndRun q5
 
-    let regexAst = 
-        ConcatExp 
+    let regexAst =
+        ConcatExp
             (AnyExp, // .
-             ConcatExp 
+             ConcatExp
                 (StarExp AnyExp, // .*
                  EpsilonExp))
 
     State.ofRegExp regexAst |> printfn "%A"
 
-    let regexAst = 
-        ConcatExp 
+    let regexAst =
+        ConcatExp
             (AnyExp, // .
-             ConcatExp 
+             ConcatExp
                 (StarExp AnyExp, // .*
                  ConcatExp
-                    (AnyExp,    // . 
+                    (AnyExp,    // .
                      AnyExp)))  // .
 
-    let nfa = State.ofRegExp regexAst 
+    let nfa = State.ofRegExp regexAst
     nfa |> printfn "%A"
 
     let ser = FsPickler.CreateXmlSerializer (indent = true)
