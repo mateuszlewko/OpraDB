@@ -12,7 +12,7 @@ module RegularConstraints =
     type MatchedEdge = {
             source    : int Node
             lastEdge  : int Edge
-            nfaStates : (State list * Identifier list) list
+            nfaStates : (Transition list * Identifier list) list
         }
 
     module MatchedEdge =
@@ -29,21 +29,20 @@ module RegularConstraints =
 
         /// Move to states reachable within one transition in single nfa
         /// for a given edge
-        let rec moveState edge ids  =
-            let ok t = match t.nextAlt with
-                       | Some s -> [t.next; s]
-                       | None   -> [t.next]
-            function
+        let rec moveState edge ids transition =
+            let ok t = [t.next; t.nextAlt] |> List.choose id
+
+            match transition.state with
             | Matched -> []
-            | Constraint (constr, transition) ->
+            | Constraint constr ->
                 if NodeConstraints.check edge graph constr ids
                 then ok transition
                 else []
-            | Any transition   -> ok transition
-            | Empty transition ->
-                moveState edge ids transition.next
-                    @ (Option.map (moveState edge ids) transition.nextAlt
-                       |> Option.defaultValue [])
+            | Any -> ok transition
+            | Empty ->
+                let moveFurther = Option.map (moveState edge ids)
+                                  >> Option.defaultValue []
+                moveFurther transition.next @ moveFurther transition.nextAlt
 
         /// Move all states in single nfa
         let moveNFA edge (states, ids) =
@@ -77,7 +76,8 @@ module RegularConstraints =
                      |> List.map (fst >> MatchedEdge.create nfaStates)
 
         let checkMatched node =
-            node.nfaStates |> List.forall (fst >> List.exists ((=) Matched))
+            node.nfaStates
+            |> List.forall (fst >> List.exists (fun t -> t.state = Matched))
 
         let rec bfs mNodes =
             let nodesMatched, rest =

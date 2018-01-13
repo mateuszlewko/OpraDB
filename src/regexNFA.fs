@@ -1,24 +1,26 @@
 namespace OpraDB
 
 open OpraDB.LangTypes
-open FSharpx
 
 module RegexNFA =
 
-    [<NoComparison>]
     type State =
         | Matched
-        | Constraint of NodeConstraint * Transition
-        | Any of Transition
-        | Empty of Transition
+        | Constraint of NodeConstraint
+        | Any
+        | Empty
     and [<NoComparison; NoEquality>] Transition = {
-        next            : State
-        mutable nextAlt : State option
+        state           : State
+        next            : Transition option
+        mutable nextAlt : Transition option
     }
 
     module Transition =
-        let create next = {next = next; nextAlt = None}
-        let createAlt next nextAlt = {next = next; nextAlt = Some nextAlt}
+        let matched = {state = Matched; next = None; nextAlt = None}
+        let create state next =
+            {state = state; next = Some next; nextAlt = None}
+        let createAlt state next nextAlt =
+            {state = state; next = Some next; nextAlt = Some nextAlt}
 
     module State =
         open Transition
@@ -26,18 +28,15 @@ module RegexNFA =
         let ofRegExp =
             let rec build continuation =
                 function
-                | EpsilonExp         -> Matched
-                | AnyExp             -> create continuation |> Any
-                | NodeExp constr     -> create continuation
-                                        |> curry Constraint constr
+                | EpsilonExp         -> matched
+                | AnyExp             -> create Any continuation
+                | NodeExp constr     -> create (Constraint constr) continuation
                 | ConcatExp (e1, e2) -> build (build continuation e2) e1
                 | StarExp e          ->
-                    let curr = create continuation
-                    let state = Empty curr
-                    curr.nextAlt <- build state e |> Some
-                    state
+                    let curr = create Empty continuation
+                    curr.nextAlt <- build curr e |> Some
+                    curr
                 | UnionExp (e1, e2)  ->
-                    createAlt (build continuation e1) (build continuation e2)
-                    |> Empty
+                    createAlt Empty (build continuation e1) (build continuation e2)
 
-            build Matched
+            build matched

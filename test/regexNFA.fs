@@ -5,10 +5,10 @@ open OpraDB.LangTypes
 open Expecto
 open MBrace.FsPickler
 
-module RegexNFA = 
+module RegexNFA =
     let private ser = FsPickler.CreateXmlSerializer (indent = true)
-    
-    /// removes whitespace from string 
+
+    /// removes whitespace from string
     let noWS = String.filter (System.Char.IsWhiteSpace >> not)
 
     [<Tests>]
@@ -16,15 +16,15 @@ module RegexNFA =
         testList "correct output" [
             test "simple test with concats" {
                 let regexAst = // ..*..
-                    ConcatExp 
+                    ConcatExp
                         (AnyExp, // .
-                         ConcatExp 
+                         ConcatExp
                             (StarExp AnyExp, // .*
                              ConcatExp
-                                (AnyExp,    // . 
+                                (AnyExp,    // .
                                  AnyExp)))  // .
 
-                let nfa = State.ofRegExp regexAst 
+                let nfa = State.ofRegExp regexAst
                 let nfsStr = ser.PickleToString nfa
                 Expect.equal (noWS nfsStr)
                     <| noWS """<?xml version="1.0" encoding="utf-16"?>
