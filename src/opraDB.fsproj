@@ -15,10 +15,10 @@
     <Compile Include="program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FParsec" Version="1.0.3" />
-    <PackageReference Include="FSharpx.Collections" Version="1.17.0" />
-    <PackageReference Include="FSharpx.Extras" Version="2.2.1" />
-    <PackageReference Include="FsPickler" Version="4.5" />
-    <PackageReference Include="hekate" Version="3.2.1" />
+    <PackageReference Include="FParsec" Version="*" />
+    <PackageReference Include="FSharpx.Collections" Version="*" />
+    <PackageReference Include="FSharpx.Extras" Version="*" />
+    <PackageReference Include="FsPickler" Version="*" />
+    <PackageReference Include="hekate" Version="*" />
   </ItemGroup>
 </Project>
