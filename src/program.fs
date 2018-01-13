@@ -2,8 +2,11 @@
 open OpraDB.Parser
 open OpraDB.LangTypes
 open OpraDB.RegexNFA
+open OpraDB.Data
+
 open FParsec
 open MBrace.FsPickler
+open Hekate
 
 let test p str =
     printf "%s => " str
@@ -14,6 +17,14 @@ let test p str =
 let parseAndRun str =
     match run query str with
     | Success (result, _, _)   -> printfn "Success: %A" result; interpret result
+    | Failure (errorMsg, _, _) -> printfn "Failure: %s" errorMsg
+
+let parseAndMatchingNodes str graph =
+    match run query str with
+    | Success (result, _, _)   ->
+        printfn "Success: %A" result
+        printfn "matchingNodes result: %A"
+            <| OpraDB.RegularConstraints.matchingNodes graph result
     | Failure (errorMsg, _, _) -> printfn "Failure: %s" errorMsg
 
 [<EntryPoint>]
@@ -71,52 +82,39 @@ let main argv =
              ConcatExp
                 (StarExp AnyExp, // .*
                  ConcatExp
-                    (AnyExp,    // .
-                     AnyExp)))  // .
+                    (AnyExp,     // .
+                     AnyExp)))   // .
 
     let nfa = State.ofRegExp regexAst
     nfa |> printfn "%A"
 
     let ser = FsPickler.CreateXmlSerializer (indent = true)
     printfn "Serialized: %s\n" (ser.PickleToString nfa)
-(*
-<?xml version="1.0" encoding="utf-16"?>
-<FsPickler version="4.0.0.0" type="OpraDB.RegexNFA+State">
-  <value>
-    <Case>Any</Case>
-    <Item>
-      <next>
-        <Case>Empty</Case>
-        <Item>
-          <next>
-            <Case>Any</Case>
-            <Item>
-              <next>
-                <Case>Any</Case>
-                <Item>
-                  <next>
-                    <Case>Matched</Case>
-                  </next>
-                  <nextAlt flags="null" />
-                </Item>
-              </next>
-              <nextAlt flags="null" />
-            </Item>
-          </next>
-          <nextAlt>
-            <Some>
-              <Case>Any</Case>
-              <Item>
-                <next flags="cyclic" id="3" />
-                <nextAlt flags="null" />
-              </Item>
-            </Some>
-          </nextAlt>
-        </Item>
-      </next>
-      <nextAlt flags="null" />
-    </Item>
-  </value>
-</FsPickler>
-*)
+
+    let pathG : Graph =
+        let me = Map.empty
+        let edge = Map.ofList ["edge", StringVal "link"]
+
+        Graph.create [1, Map.ofList ["type", StringVal "bus"]; 2, me; 3, me;
+                      4, me; 5, me; 10, Map.ofList ["dest", StringVal "end"];
+                      11, me]
+                     [1, 2, edge; 2, 3, edge; 3, 4, edge; 4, 5, edge;
+                      3, 10, edge]
+
+    let pathQuery = "MATCH NODES (s t)
+                     SUCH THAT (s-[p]->t)
+                     WHERE ([type(@1) = \"bus\"].*<p>
+                            .*[dest(@1) = \"end\"]<p>
+                            [edge(@1 @'1) = \"link\"]*.<p> )"
+
+    parseAndMatchingNodes pathQuery pathG
+
+    let pathQuery = "MATCH NODES (s t)
+                     SUCH THAT (s-[p]->t)
+                     WHERE ([type(@1) = \"bus\"].*<p>
+                            .*([dest(@1) = \"end\"] + .)<p>
+                            [edge(@1 @'1) = \"link\"]*.<p> )"
+
+    parseAndMatchingNodes pathQuery pathG
+
     0

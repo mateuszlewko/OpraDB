@@ -2,6 +2,7 @@ namespace OpraDB
 
 open OpraDB.LangTypes
 open OpraDB.RegexNFA
+open OpraDB.Data
 
 open FSharpx.Collections
 open FSharpx
@@ -21,36 +22,37 @@ module RegularConstraints =
                                       nfaStates = nfaStates
                                     }
 
-    /// Move to states reachable within one transition in single nfa
-    /// for a given edge
+    /// Get all outward edges of a given node, which have at least one
+    /// state in every NFA they belong to.
     let private moveEdge graph mNode =
-        let currNode = snd mNode.lastEdge
-        let sinkNode = currNode, -1, Map.empty
-        let outEdges = Graph.Nodes.outward currNode graph
-                       |> Option.getOrElse [sinkNode]
-
-        /// Move to states reachable within one transition in single nfa
-        /// for a given edge
+        /// Move to states reachable within one transition in single NFA
+        /// for a given edge. Skips empty states.
         let rec moveState edge ids transition =
-            let ok t = [t.next; t.nextAlt] |> List.choose id
+            let rec skipEmpty t =
+                let moveFurther = Option.map skipEmpty
+                                  >> Option.defaultValue []
+                if t.state = Empty
+                then moveFurther t.next @ moveFurther t.nextAlt
+                else [t]
+
+            let ok t = [t.next; t.nextAlt]
+                       |> List.choose (Option.map skipEmpty) |> List.concat
 
             match transition.state with
-            | Matched -> []
+            | Matched           -> []
             | Constraint constr ->
                 if NodeConstraints.check edge graph constr
                 then ok transition
                 else []
-            | Any -> ok transition
-            | Empty ->
-                let moveFurther = Option.map (moveState edge ids)
-                                  >> Option.defaultValue []
-                moveFurther transition.next @ moveFurther transition.nextAlt
+            | Any   -> ok transition
+            | Empty -> skipEmpty transition
+                       |> List.collect (moveState edge ids)
 
-        /// Move all states in single nfa
+        /// Move every state in a single NFA.
         let moveNFA edge (states, ids) =
             List.collect (moveState edge ids) states, ids
 
-        /// Try to move each state in every nfa for a given edge
+        /// Try to move every state in all NFAs for a given edge.
         let moveEdge edge =
             let rec collectStates nfaStates =
                 function
@@ -67,12 +69,21 @@ module RegularConstraints =
                                 nfaStates = nfaStates
                             })
 
+        let currNode = snd mNode.lastEdge
+        let sinkNode = currNode, -1, Map.empty
+        let outEdges = Graph.Nodes.outward currNode graph
+                       |> Option.map (List.cons sinkNode)
+                       |> Option.getOrElse []
+
+        // printfn "outward edges for %d: %A" currNode
+        //     (List.map (fun (u, v, _) -> u, v) outEdges)
+
         // map neighbouring edges to MatchedEdges.
-        // MatchedEdge is an edge that has at least one state in every nfa
+        // MatchedEdge is an edge that has at least one state in every nfa.
         outEdges |> List.choose moveEdge
 
-    /// Get nodes that match regular constraints in a given query
-    let matchingNodes (graph : Data.Graph) (query : Query) =
+    /// Get nodes that match regular constraints in a given query.
+    let matchingNodes (graph : Graph) (query : Query) =
         let nfaStates = List.map (fun (e, ids) -> [State.ofRegExp e], ids)
                            query.regularConstraints
         let mNodes = Graph.Nodes.toList graph
@@ -82,12 +93,17 @@ module RegularConstraints =
             node.nfaStates
             |> List.forall (fst >> List.exists (fun t -> t.state = Matched))
 
-        let rec bfs mNodes =
-            let nodesMatched, rest =
-                List.collect (moveEdge graph) mNodes
-                |> List.partition checkMatched
+        let rec bfs result mNodes =
+            if List.isEmpty mNodes
+            then result
+            else
+                let nextNodes          = List.collect (moveEdge graph) mNodes
+                let nodesMatched, rest = List.partition checkMatched nextNodes
 
-            printfn "Matched nodes:\n %A" nodesMatched
-            bfs rest
+                // printfn "Nodes:\n %A" mNodes
+                // printfn "Matched nodes:\n %A" nodesMatched
+                // printfn "Rest of nodes:\n %A" rest
+                bfs (nodesMatched @ result) nextNodes
 
-        List.collect (moveEdge graph) mNodes |> bfs
+        List.collect (moveEdge graph) mNodes |> bfs []
+        |> List.map (fun n -> n.source, fst n.lastEdge) |> List.distinct

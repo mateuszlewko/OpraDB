@@ -35,7 +35,7 @@ module NodeConstraints =
                         | CurrNodeVar v -> sprintf "@%d" v
                         | NextNodeVar v -> sprintf "@'%d" v
 
-                printfn "WARNING: Labelling contains reference to node other than current one: %s" n
+                printfn "WARNING: Labelling contains reference to node other than current one: %s. Edge %d -> %d." n u v
                 IntLiteral 0
             | None ->
                 let nodeLabelling node =
@@ -50,7 +50,8 @@ module NodeConstraints =
                 | [CurrNodeVar 1] -> nodeLabelling u
                 | [NextNodeVar 1] -> nodeLabelling v
                 | other           ->
-                    printfn "WARNING: Unsupported labelling %A." other
+                    printfn "WARNING: Unsupported labelling %A. Edge %d -> %d."
+                        other u v
                     IntLiteral 0
 
         let rec pred lhs rhs =
@@ -62,8 +63,8 @@ module NodeConstraints =
             | lhs, Labelling (name, vars) ->
                 pred lhs (valueOfLabelling name vars)
             | lhs, rhs ->
-                printfn "WARNING: Mismatched types of operands %A and %A"
-                    lhs rhs
+                printfn "WARNING: Mismatched types of operands %A and %A. Edge %d -> %d."
+                    lhs rhs u v
                 false
 
         pred lhs rhs
