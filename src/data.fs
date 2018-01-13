@@ -1,12 +1,13 @@
 namespace OpraDB
 
 open Hekate
+open OpraDB.LangTypes
 
 module Data =
 
     // type Edge = int * int
 
-    type LabelValue = IntVal of int | StringVal of int
+    type LabelValue = IntVal of int | StringVal of string
 
     type Labels = Map<string, LabelValue>
 

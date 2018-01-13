@@ -5,8 +5,8 @@
     <NoWarn>NU1602;NU1701</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="data.fs" />
     <Compile Include="langTypes.fs" />
+    <Compile Include="data.fs" />
     <Compile Include="regexNFA.fs" />
     <Compile Include="nodeConstraints.fs" />
     <Compile Include="regularConstraints.fs" />

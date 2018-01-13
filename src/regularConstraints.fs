@@ -35,7 +35,7 @@ module RegularConstraints =
             match transition.state with
             | Matched -> []
             | Constraint constr ->
-                if NodeConstraints.check edge graph constr ids
+                if NodeConstraints.check edge graph constr
                 then ok transition
                 else []
             | Any -> ok transition

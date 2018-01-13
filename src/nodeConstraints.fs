@@ -1,6 +1,9 @@
 namespace OpraDB
 
 open OpraDB.LangTypes
+open OpraDB.Data
+open Hekate
+open FSharpx
 
 module NodeConstraints =
 
@@ -13,9 +16,42 @@ module NodeConstraints =
         | Eq  -> (=)
         | Neq -> (<>)
 
-    let check edge graph (NodeConstraint (lhs, op, rhs)) ids =
+    let labellingValue name labels =
+        match Map.tryFind name labels with
+        | None -> IntLiteral 0
+          // TODO: Find a better way to handle this case
+        | Some (IntVal i)    -> IntLiteral i
+        | Some (StringVal s) -> StringLiteral s
+
+    /// Check whether node constraint is satisfied for a given edge (u -> v)
+    let check ((u, v, edgeLabels)) graph (NodeConstraint (lhs, op, rhs)) =
         let op l r = getOperator op l r
-        let valueOfLabelling name vars = IntLiteral 2
+
+        let valueOfLabelling (ID name) vars =
+            match List.tryFind (fun v -> v <> CurrNodeVar 1
+                                      && v <> NextNodeVar 1) vars with
+            | Some n ->
+                let n = match n with
+                        | CurrNodeVar v -> sprintf "@%d" v
+                        | NextNodeVar v -> sprintf "@'%d" v
+
+                printfn "WARNING: Labelling contains reference to node other than current one: %s" n
+                IntLiteral 0
+            | None ->
+                let nodeLabelling node =
+                    Graph.Nodes.tryFind node graph
+                    |> Option.map (snd >> labellingValue name)
+                    // TODO: Find a better way to handle node not found
+                    |> Option.defaultValue (IntLiteral 0)
+
+                match vars with
+                | [CurrNodeVar 1; NextNodeVar 1] ->
+                    labellingValue name edgeLabels
+                | [CurrNodeVar 1] -> nodeLabelling u
+                | [NextNodeVar 1] -> nodeLabelling v
+                | other           ->
+                    printfn "WARNING: Unsupported labelling %A." other
+                    IntLiteral 0
 
         let rec pred lhs rhs =
             match lhs, rhs with
