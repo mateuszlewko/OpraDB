@@ -75,6 +75,7 @@ module RegularConstraints =
                        |> Option.map (List.cons sinkNode)
                        |> Option.getOrElse []
 
+        //  TODO: Use logary
         // printfn "outward edges for %d: %A" currNode
         //     (List.map (fun (u, v, _) -> u, v) outEdges)
 

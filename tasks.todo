@@ -15,7 +15,7 @@ Parser:
     ❑ Parse ontologies
 
 
-Query execution / Interpreter:
+Query execution:
     ✔ Build NFA @done(17-12-18 23:16)
     ✔ Regular expression matching (with single path) @today @done(18-01-13 21:00)
     ✔ Node constraints checking (with single path) @today @done(18-01-13 17:10)
@@ -30,7 +30,11 @@ Graph / Data storage:
     ❑ Optimized graph representation @low
 
 Client / General:
+    ❑ Separate client from service:
+        ❑ Handle communication between client and service
+        ❑ Command line interface
     ❑ Logging with Logary
+    ❑ Results visualisation (possibly other, web-based client)
 
 Docs:
     ❑ Examples of usage
