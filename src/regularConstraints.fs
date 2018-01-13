@@ -69,7 +69,7 @@ module RegularConstraints =
         // MatchedEdge is an edge that has at least one state in every nfa
         outEdges |> List.choose moveEdge
 
-    let matchingNodes (graph : Graph) (query : Query) =
+    let matchingNodes (graph : Data.Graph) (query : Query) =
         let nfaStates = List.map (fun (e, ids) -> [State.ofRegExp e], ids)
                            query.regularConstraints
         let mNodes = Graph.Nodes.toList graph

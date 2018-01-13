@@ -2,11 +2,11 @@ namespace OpraDB
 
 open Hekate
 
-module Data = 
+module Data =
 
-    // type Edge = int * int 
+    // type Edge = int * int
 
-    type LabelValue = IntVal of int | StringVal of int 
+    type LabelValue = IntVal of int | StringVal of int
 
     type Labels = Map<string, LabelValue>
 
@@ -15,11 +15,11 @@ module Data =
     type Graph = MGraph<int, Labels, Labels>
 
     // type Node = {
-    //         id         : int 
+    //         id         : int
     //         data       : Properties
-    //         neighbours : int Set            
+    //         neighbours : int Set
     //     }
-    
+
     // type Graph = {
     //         nodes    : Map<int, Node>
     //         edgeData : EdgeData

@@ -9,7 +9,9 @@ module RegexNFA =
         | Constraint of NodeConstraint
         | Any
         | Empty
-    and [<NoComparison; NoEquality>] Transition = {
+
+    [<NoComparison; NoEquality>]
+    type Transition = {
         state           : State
         next            : Transition option
         mutable nextAlt : Transition option
