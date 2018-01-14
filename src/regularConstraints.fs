@@ -10,17 +10,20 @@ open Hekate
 
 module RegularConstraints =
 
+    type NFA = Transition list * Identifier list
+
     type MatchedEdge = {
+            path      : Identifier
             source    : int Node
             lastEdge  : int Edge
-            nfaStates : (Transition list * Identifier list) list
+            nfaStates : NFA list
         }
 
     module MatchedEdge =
-        let create nfaStates node = { source    = node
-                                      lastEdge  = -1, node
-                                      nfaStates = nfaStates
-                                    }
+        let create path nfaStates node = { source    = node
+                                           path      = path
+                                           lastEdge  = -1, node
+                                           nfaStates = nfaStates }
 
     /// Get all outward edges of a given node, which have at least one
     /// state in every NFA they belong to.
@@ -84,11 +87,25 @@ module RegularConstraints =
         outEdges |> List.choose moveEdge
 
     /// Get nodes that match regular constraints in a given query.
-    let matchingNodes (graph : Graph) (query : Query) =
-        let nfaStates = List.map (fun (e, ids) -> [State.ofRegExp e], ids)
-                           query.regularConstraints
-        let mNodes = Graph.Nodes.toList graph
-                     |> List.map (fst >> MatchedEdge.create nfaStates)
+    let matchEdges (graph : Graph) (query : Query) =
+        let nfaStates : Map<_, NFA list> =
+            let allPathsIDs =
+                List.collect snd query.regularConstraints
+                |> List.distinct |> List.map (fun i -> i, []) |> Map.ofList
+
+            query.regularConstraints
+            |> List.fold (fun m (e, ids) ->
+                let nfa = [State.ofRegExp e], ids
+                List.fold (fun m id ->
+                    Map.add id (nfa :: Map.find id m) m) m ids
+                ) allPathsIDs
+
+        let mNodes =
+            let allNodes = Graph.Nodes.toList graph
+            let createEdges (path, nfaStates) =
+                List.map (fst >> MatchedEdge.create path nfaStates) allNodes
+
+            nfaStates |> Map.toList |> List.collect createEdges
 
         let checkMatched node =
             node.nfaStates
@@ -107,4 +124,4 @@ module RegularConstraints =
                 bfs (nodesMatched @ result) nextNodes
 
         List.collect (moveEdge graph) mNodes |> bfs []
-        |> List.map (fun n -> n.source, fst n.lastEdge) |> List.distinct
+        |> List.distinctBy (fun n -> n.source, fst n.lastEdge)

@@ -1,8 +1,8 @@
-﻿open OpraDB.Interpreter
-open OpraDB.Parser
+﻿open OpraDB.Parser
 open OpraDB.LangTypes
 open OpraDB.RegexNFA
 open OpraDB.Data
+open OpraDB
 
 open FParsec
 open MBrace.FsPickler
@@ -14,17 +14,20 @@ let test p str =
     | Success (result, _, _)   -> printfn "Success: %A" result
     | Failure (errorMsg, _, _) -> printfn "Failure: %s" errorMsg
 
-let parseAndRun str =
-    match run query str with
-    | Success (result, _, _)   -> printfn "Success: %A" result; interpret result
-    | Failure (errorMsg, _, _) -> printfn "Failure: %s" errorMsg
+let parseAndRun = test query
 
-let parseAndMatchingNodes str graph =
+let printQueryResult str graph =
     match run query str with
-    | Success (result, _, _)   ->
-        printfn "Success: %A" result
-        printfn "matchingNodes result: %A"
-            <| OpraDB.RegularConstraints.matchingNodes graph result
+    | Success (query, _, _)   ->
+        printfn " -- RESULTS -- "
+
+        for result in QueryExecution.execute graph query do
+            printfn " { "
+            for (ID id, v) in result do
+                printfn "\t%s => %d" id v
+            printfn " } "
+
+        printfn ""
     | Failure (errorMsg, _, _) -> printfn "Failure: %s" errorMsg
 
 [<EntryPoint>]
@@ -97,9 +100,9 @@ let main argv =
 
         Graph.create [1, Map.ofList ["type", StringVal "bus"]; 2, me; 3, me;
                       4, me; 5, me; 10, Map.ofList ["dest", StringVal "end"];
-                      11, me]
+                      11, me; 12, Map.ofList ["type", StringVal "bus"];]
                      [1, 2, edge; 2, 3, edge; 3, 4, edge; 4, 5, edge;
-                      3, 10, edge]
+                      3, 10, edge; 12, 2, edge]
 
     let pathQuery = "MATCH NODES (s t)
                      SUCH THAT (s-[p]->t)
@@ -107,14 +110,14 @@ let main argv =
                             .*[dest(@1) = \"end\"]<p>
                             [edge(@1 @'1) = \"link\"]*.<p> )"
 
-    parseAndMatchingNodes pathQuery pathG
+    printQueryResult pathQuery pathG
 
-    let pathQuery = "MATCH NODES (s t)
-                     SUCH THAT (s-[p]->t)
+    let pathQuery = "MATCH NODES (u v)
+                     SUCH THAT (u-[p]->v)
                      WHERE ([type(@1) = \"bus\"].*<p>
                             .*([dest(@1) = \"end\"] + .)<p>
                             [edge(@1 @'1) = \"link\"]*.<p> )"
 
-    parseAndMatchingNodes pathQuery pathG
+    printQueryResult pathQuery pathG
 
     0

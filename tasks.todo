@@ -17,10 +17,12 @@ Parser:
 
 Query execution:
     ✔ Build NFA @done(17-12-18 23:16)
-    ✔ Regular expression matching (with single path) @today @done(18-01-13 21:00)
-    ✔ Node constraints checking (with single path) @today @done(18-01-13 17:10)
-    ❑ Regular expression matching (with many paths)
-    ❑ Node constraints checking (with many path)
+    ✔ Regular expression matching (1-node constraints) @today @done(18-01-13 21:00)
+    ✔ 1-Node constraints checking @today @done(18-01-13 17:10)
+    ✔ Instantiate free variables with found nodes (basic) @done(18-01-14 01:49)
+    ❑ k-node constraints checking @high
+    ❑ Handle k-path constraints @high
+    ❑ Regular expression matching (k-node constraints) @high 
     ❑ Match nodes that satisfy regular constraints
 
 Graph / Data storage:
