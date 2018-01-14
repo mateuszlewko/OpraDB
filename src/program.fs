@@ -7,6 +7,8 @@ open OpraDB
 open FParsec
 open MBrace.FsPickler
 open Hekate
+open PrettyTable
+open FSharpx
 
 let test p str =
     printf "%s => " str
@@ -19,15 +21,21 @@ let parseAndRun = test query
 let printQueryResult str graph =
     match run query str with
     | Success (query, _, _)   ->
-        printfn " -- RESULTS -- "
+        let ofId (ID s) = s
+        let headers = query.nodes |> List.map ofId
+        let hsIdx = headers |> List.indexed |> List.map swap |> Map.ofList
+        let results =
+            QueryExecution.execute graph query
+            |> List.map (List.sortBy
+                (fun (ID id, node) -> Map.tryFind id hsIdx)
+                >> List.filter (fst >> ofId >> (flip Map.containsKey hsIdx))
+                >> List.map (snd >> sprintf "%A"))
 
-        for result in QueryExecution.execute graph query do
-            printfn " { "
-            for (ID id, v) in result do
-                printfn "\t%s => %d" id v
-            printfn " } "
+        prettyTable results |> withHeaders headers |> printTable
+        // |> printf "%s"
 
-        printfn ""
+        let rowsCnt = List.length results
+        printfn "%d %s\n" rowsCnt (if rowsCnt <> 1 then "rows" else "row")
     | Failure (errorMsg, _, _) -> printfn "Failure: %s" errorMsg
 
 [<EntryPoint>]

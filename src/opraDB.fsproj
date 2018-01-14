@@ -2,6 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
+    <NoWarn>NU1602;NU1701</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="langTypes.fs" />
@@ -18,6 +19,7 @@
     <PackageReference Include="FSharpx.Collections" Version="*" />
     <PackageReference Include="FSharpx.Extras" Version="*" />
     <PackageReference Include="FsPickler" Version="*" />
+    <PackageReference Include="FsPrettyTable" Version="0.1.0" />
     <PackageReference Include="hekate" Version="*" />
   </ItemGroup>
 </Project>
