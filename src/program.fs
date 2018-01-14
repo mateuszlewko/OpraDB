@@ -1,5 +1,5 @@
 ﻿open OpraDB.Parser
-open OpraDB.LangTypes
+open OpraDB.AST
 open OpraDB.RegexNFA
 open OpraDB.Data
 open OpraDB

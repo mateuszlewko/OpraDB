@@ -1,6 +1,6 @@
 namespace OpraDB
 
-open OpraDB.LangTypes
+open OpraDB.AST
 open OpraDB.Data
 open Hekate
 open FSharpx

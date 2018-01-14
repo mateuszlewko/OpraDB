@@ -1,7 +1,7 @@
 namespace OpraDB
 
 open OpraDB.RegularConstraints
-open OpraDB.LangTypes
+open OpraDB.AST
 open FSharpx
 // open OpraDB.Data
 // open Hekate

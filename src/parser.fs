@@ -1,6 +1,6 @@
 namespace OpraDB
 
-open OpraDB.LangTypes
+open OpraDB.AST
 open FParsec
 open FSharpx.Functional.Prelude
 open FSharp.Core

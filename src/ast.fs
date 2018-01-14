@@ -1,6 +1,6 @@
 namespace OpraDB
 
-module LangTypes =
+module AST =
 
     type Identifier = ID of string
 

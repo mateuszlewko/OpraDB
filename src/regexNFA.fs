@@ -1,6 +1,6 @@
 namespace OpraDB
 
-open OpraDB.LangTypes
+open OpraDB.AST
 
 module RegexNFA =
 
