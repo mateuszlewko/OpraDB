@@ -31,8 +31,8 @@ let printQueryResult str graph =
                 >> List.filter (fst >> ofId >> (flip Map.containsKey hsIdx))
                 >> List.map (snd >> sprintf "%A"))
 
-        prettyTable results |> withHeaders headers |> printTable
-        // |> printf "%s"
+        prettyTable results |> withHeaders headers |> sprintTable
+        |> printf "Query:\n\n%s\n\nResults:\n%s" str
 
         let rowsCnt = List.length results
         printfn "%d %s\n" rowsCnt (if rowsCnt <> 1 then "rows" else "row")
@@ -40,67 +40,67 @@ let printQueryResult str graph =
 
 [<EntryPoint>]
 let main argv =
-    test regularExpression ".(.+..*)+.."
-    test regularExpression ".*"
-    test regularExpression "(.*..)+."
-    test regularExpression "([attr(@1) > 10]*.)"
-    test regularExpression ".*..."
-    test regularExpression "(..)*.."
-    test regularExpression ".*.+."
-    test regularExpression ".*.+.+.."
-    test regularExpression "...(.(..)*.+.)...."
+    // test regularExpression ".(.+..*)+.."
+    // test regularExpression ".*"
+    // test regularExpression "(.*..)+."
+    // test regularExpression "([attr(@1) > 10]*.)"
+    // test regularExpression ".*..."
+    // test regularExpression "(..)*.."
+    // test regularExpression ".*.+."
+    // test regularExpression ".*.+.+.."
+    // test regularExpression "...(.(..)*.+.)...."
 
-    let q1 = "MATCH NODES (s t x y)
-              SUCH THAT (s-[p1]->t x-[p2]->y)"
+    // let q1 = "MATCH NODES (s t x y)
+    //           SUCH THAT (s-[p1]->t x-[p2]->y)"
 
-    parseAndRun q1
+    // parseAndRun q1
 
-    let q2 = "MATCH NODES (s t)
-              SUCH THAT (s-[p]->t)
-              WHERE (..*<p>)"
+    // let q2 = "MATCH NODES (s t)
+    //           SUCH THAT (s-[p]->t)
+    //           WHERE (..*<p>)"
 
-    parseAndRun q2
+    // parseAndRun q2
 
-    let q3 = "MATCH NODES (s t)
-              SUCH THAT (s-[p]->t)
-              WHERE ([attr(@1) >10] *. +..( .*)<p>)"
+    // let q3 = "MATCH NODES (s t)
+    //           SUCH THAT (s-[p]->t)
+    //           WHERE ([attr(@1) >10] *. +..( .*)<p>)"
 
-    parseAndRun q3
+    // parseAndRun q3
 
-    let q4 = "MATCH NODES (s t)
-              SUCH THAT (s-[p]->t s-[p2]->t)
-              WHERE (.*[type (@1 @'1) = \"some type\"] *.<p>  .+..(.*)..<p p2>)"
+    // let q4 = "MATCH NODES (s t)
+    //           SUCH THAT (s-[p]->t s-[p2]->t)
+    //           WHERE (.*[type (@1 @'1) = \"some type\"] *.<p>  .+..(.*)..<p p2>)"
 
-    parseAndRun q4
+    // parseAndRun q4
 
-    let q5 =  "MATCH NODES (s t)
-               WHERE (.*[type (@1 @'1) = \"some type\"]*.<p>
-                      .+(..(.*))..<p p2> )"
-    parseAndRun q5
+    // let q5 =  "MATCH NODES (s t)
+    //            WHERE (.*[type (@1 @'1) = \"some type\"]*.<p>
+    //                   .+(..(.*))..<p p2> )"
+    // parseAndRun q5
 
-    let regexAst =
-        ConcatExp
-            (AnyExp, // .
-             ConcatExp
-                (StarExp AnyExp, // .*
-                 EpsilonExp))
+    // let regexAst =
+    //     ConcatExp
+    //         (AnyExp, // .
+    //          ConcatExp
+    //             (StarExp AnyExp, // .*
+    //              EpsilonExp))
 
-    State.ofRegExp regexAst |> printfn "%A"
+    // State.ofRegExp regexAst |> printfn "%A"
 
-    let regexAst =
-        ConcatExp
-            (AnyExp, // .
-             ConcatExp
-                (StarExp AnyExp, // .*
-                 ConcatExp
-                    (AnyExp,     // .
-                     AnyExp)))   // .
+    // let regexAst =
+    //     ConcatExp
+    //         (AnyExp, // .
+    //          ConcatExp
+    //             (StarExp AnyExp, // .*
+    //              ConcatExp
+    //                 (AnyExp,     // .
+    //                  AnyExp)))   // .
 
-    let nfa = State.ofRegExp regexAst
-    nfa |> printfn "%A"
+    // let nfa = State.ofRegExp regexAst
+    // nfa |> printfn "%A"
 
-    let ser = FsPickler.CreateXmlSerializer (indent = true)
-    printfn "Serialized: %s\n" (ser.PickleToString nfa)
+    // let ser = FsPickler.CreateXmlSerializer (indent = true)
+    // printfn "Serialized: %s\n" (ser.PickleToString nfa)
 
     let pathG : Graph =
         let me = Map.empty
@@ -112,19 +112,19 @@ let main argv =
                      [1, 2, edge; 2, 3, edge; 3, 4, edge; 4, 5, edge;
                       3, 10, edge; 12, 2, edge]
 
-    let pathQuery = "MATCH NODES (s t)
-                     SUCH THAT (s-[p]->t)
-                     WHERE ([type(@1) = \"bus\"].*<p>
-                            .*[dest(@1) = \"end\"]<p>
-                            [edge(@1 @'1) = \"link\"]*.<p> )"
+    let pathQuery = "MATCH NODES (s t)                        \
+                   \nSUCH THAT (s-[p]->t)                     \
+                   \nWHERE ([type(@1) = \"bus\"].*<p>         \
+                   \n       .*[dest(@1) = \"end\"]<p>         \
+                   \n       [edge(@1 @'1) = \"link\"]*.<p> )"
 
     printQueryResult pathQuery pathG
 
-    let pathQuery = "MATCH NODES (u v)
-                     SUCH THAT (u-[p]->v)
-                     WHERE ([type(@1) = \"bus\"].*<p>
-                            .*([dest(@1) = \"end\"] + .)<p>
-                            [edge(@1 @'1) = \"link\"]*.<p> )"
+    let pathQuery = "MATCH NODES (u v)                        \
+                   \nSUCH THAT (u-[p]->v)                     \
+                   \nWHERE ([type(@1) = \"bus\"].*<p>         \
+                   \n       .*([dest(@1) = \"end\"] + .)<p>   \
+                   \n       [edge(@1 @'1) = \"link\"]*.<p> )"
 
     printQueryResult pathQuery pathG
 
