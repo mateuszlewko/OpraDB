@@ -26,8 +26,8 @@ let printQueryResult str graph =
         let hsIdx = headers |> List.indexed |> List.map swap |> Map.ofList
         let results =
             QueryExecution.execute graph query
-            |> List.map (List.sortBy
-                (fun (ID id, node) -> Map.tryFind id hsIdx)
+            |> List.map (
+                List.sortBy (fun (ID id, node) -> Map.tryFind id hsIdx)
                 >> List.filter (fst >> ofId >> (flip Map.containsKey hsIdx))
                 >> List.map (snd >> sprintf "%A"))
 

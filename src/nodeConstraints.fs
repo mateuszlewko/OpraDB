@@ -18,13 +18,13 @@ module NodeConstraints =
 
     let labellingValue name labels =
         match Map.tryFind name labels with
-        | None -> IntLiteral 0
           // TODO: Find a better way to handle this case
+        | None -> IntLiteral 0
         | Some (IntVal    i) -> IntLiteral i
         | Some (StringVal s) -> StringLiteral s
 
     /// Checks whether node constraint is satisfied for a given edge (u -> v)
-    let check ((u, v, edgeLabels)) graph (NodeConstraint (lhs, op, rhs)) =
+    let check (u, v, edgeLabels) graph (NodeConstraint (lhs, op, rhs)) =
         let op l r = getOperator op l r
 
         let valueOfLabelling (ID name) vars =

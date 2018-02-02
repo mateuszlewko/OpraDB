@@ -38,6 +38,7 @@ module RegularConstraints =
                 then moveFurther t.next @ moveFurther t.nextAlt
                 else [t]
 
+            /// get all reachable states
             let ok t = [t.next; t.nextAlt]
                        |> List.choose (Option.map skipEmpty) |> List.concat
 
