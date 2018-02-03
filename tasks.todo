@@ -26,6 +26,7 @@ Query execution:
     ❑ Matching same final-nodes used in different paths
     ❑ Match nodes that satisfy regular constraints
     ❑ Sequence of nodes in path constraints
+    ❑ Matching arithmetic constraints
 
 Graph / Data storage:
     ✔ Basic graph representation @done(18-01-13 16:03)
