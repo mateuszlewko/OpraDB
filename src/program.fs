@@ -106,26 +106,69 @@ let main argv =
         let me = Map.empty
         let edge = Map.ofList ["edge", StringVal "link"]
 
-        Graph.create [1, Map.ofList ["type", StringVal "bus"]; 2, me; 3, me;
-                      4, me; 5, me; 10, Map.ofList ["dest", StringVal "end"];
-                      11, me; 12, Map.ofList ["type", StringVal "bus"];]
-                     [1, 2, edge; 2, 3, edge; 3, 4, edge; 4, 5, edge;
-                      3, 10, edge; 12, 2, edge]
+        Graph.create // nodes
+                     [ 1 , Map.ofList ["type", StringVal "bus"]
+                       2 , me
+                       3 , me
+                       4 , me
+                       5 , me
+                       10, Map.ofList ["dest", StringVal "end"]
+                       11, me
+                       12, Map.ofList ["type", StringVal "bus"] ]                  
+                     // edges
+                     [ 1 , 2 , edge 
+                       2 , 3 , edge 
+                       3 , 4 , edge 
+                       4 , 5 , edge
+                       3 , 10, edge
+                       12, 2 , edge ]
+
+    // let pathQuery = "MATCH NODES (s t)                        \
+    //                \nSUCH THAT (s-[p]->t)                     \
+    //                \nWHERE ([type(@1) = \"bus\"].*<p>         \
+    //                \n       .*[dest(@1) = \"end\"]<p>         \
+    //                \n       [edge(@1 @'1) = \"link\"]*.<p> )"
+
+    // printQueryResult pathQuery pathG
 
     let pathQuery = "MATCH NODES (s t)                        \
-                   \nSUCH THAT (s-[p]->t)                     \
+                   \nSUCH THAT (s-[p]->t x-[q]->y )           \
                    \nWHERE ([type(@1) = \"bus\"].*<p>         \
                    \n       .*[dest(@1) = \"end\"]<p>         \
-                   \n       [edge(@1 @'1) = \"link\"]*.<p> )"
+                   \n       [edge(@1 @'1) = \"link\"]*.<p>    \
+                   \n                                         \
+                   \n       [type(@1) = \"bus\"].*<q>         \
+                   \n       .*[dest(@1) = \"end\"]<q>         \
+                   \n       [edge(@1 @'1) = \"link\"]*.<q> )"
+
+    // let pathQuery = "MATCH NODES (s t)                        \
+    //                \nSUCH THAT (p: s->t, s1: a..b )           \
+    //                \nWHERE ([type(@1) = \"bus\"].*<p>         \
+    //                \n       .*[dest(@1) = \"end\"]<p>         \
+    //                \n       [edge(@1 @'1) = \"link\"]*.<p>    \
+    //                \n                                         \
+    //                \n       [type(@1) = \"bus\"].*<q>         \
+    //                \n       .*[dest(@1) = \"end\"]<q>         \
+    //                \n       [edge(@1 @'1) = \"link\"]*.<q> )"
+
+    // let pathQuery = "MATCH NODES (s t)                        \
+    //                \nSUCH THAT (s->t as p, a..b as s1)           \
+    //                \nWHERE ([type(@p) = \"bus\"].*          \
+    //                \n       .*[dest(@p) = \"end\"]         \
+    //                \n       [edge(@p @'p) = \"link\"]*.<p>    \
+    //                \n                                         \
+    //                \n       [type(@1) = \"bus\"].*<q>         \
+    //                \n       .*[dest(@1) = \"end\"]<q>         \
+    //                \n       [edge(@1 @'1) = \"link\"]*.<q> )"
 
     printQueryResult pathQuery pathG
 
-    let pathQuery = "MATCH NODES (u v)                        \
-                   \nSUCH THAT (u-[p]->v)                     \
-                   \nWHERE ([type(@1) = \"bus\"].*<p>         \
-                   \n       .*([dest(@1) = \"end\"] + .)<p>   \
-                   \n       [edge(@1 @'1) = \"link\"]*.<p> )"
+    // let pathQuery = "MATCH NODES (u v)                        \
+    //                \nSUCH THAT (u-[p]->v)                     \
+    //                \nWHERE ([type(@1) = \"bus\"].*<p>         \
+    //                \n       .*([dest(@1) = \"end\"] + .)<p>   \
+    //                \n       [edge(@1 @'1) = \"link\"]*.<p> )"
 
-    printQueryResult pathQuery pathG
+    // printQueryResult pathQuery pathG
 
     0
