@@ -30,7 +30,7 @@ module RegexNFA =
         let ofRegExp =
             let rec build continuation =
                 function
-                | EpsilonExp         -> matched
+                | EpsilonExp         -> continuation
                 | AnyExp             -> create Any continuation
                 | NodeExp constr     -> create (Constraint constr) continuation
                 | ConcatExp (e1, e2) -> build (build continuation e2) e1

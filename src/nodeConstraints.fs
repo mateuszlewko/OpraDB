@@ -23,6 +23,9 @@ module NodeConstraints =
         | Some (IntVal    i) -> IntLiteral i
         | Some (StringVal s) -> StringLiteral s
 
+    let checkEdges edges graph (NodeConstraint (lhs, op, rhs)) =
+       true
+
     /// Checks whether node constraint is satisfied for a given edge (u -> v)
     let check (u, v, edgeLabels) graph (NodeConstraint (lhs, op, rhs)) =
         let op l r = getOperator op l r
