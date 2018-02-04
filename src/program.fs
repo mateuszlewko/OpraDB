@@ -26,16 +26,17 @@ let printQueryResult str graph =
         let hsIdx = headers |> List.indexed |> List.map swap |> Map.ofList
         let results =
             QueryExecution.execute graph query
-            |> List.map (
-                List.sortBy (fun (ID id, node) -> Map.tryFind id hsIdx)
-                >> List.filter (fst >> ofId >> (flip Map.containsKey hsIdx))
-                >> List.map (snd >> sprintf "%A"))
+            // |> List.map (
+            //     List.sortBy (fun (ID id, node) -> Map.tryFind id hsIdx)
+            //     >> List.filter (fst >> ofId >> (flip Map.containsKey hsIdx))
+            //     >> List.map (snd >> sprintf "%A"))
 
-        prettyTable results |> withHeaders headers |> sprintTable
-        |> printf "Query:\n\n%s\n\nResults:\n%s" str
+        // prettyTable results |> withHeaders headers |> sprintTable
+        // |> printf "Query:\n\n%s\n\nResults:\n%s" str
 
-        let rowsCnt = List.length results
-        printfn "%d %s\n" rowsCnt (if rowsCnt <> 1 then "rows" else "row")
+        // let rowsCnt = List.length results
+        // printfn "%d %s\n" rowsCnt (if rowsCnt <> 1 then "rows" else "row")
+        ()
     | Failure (errorMsg, _, _) -> printfn "Failure: %s" errorMsg
 
 [<EntryPoint>]

@@ -25,6 +25,7 @@ module NodeConstraints =
 
     let checkEdges edges graph (NodeConstraint (lhs, op, rhs)) =
        true
+       // TODO: implement checkEdges
 
     /// Checks whether node constraint is satisfied for a given edge (u -> v)
     let check (u, v, edgeLabels) graph (NodeConstraint (lhs, op, rhs)) =

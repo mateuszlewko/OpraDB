@@ -21,11 +21,12 @@ Query execution:
     ✔ 1-Node constraints checking @today @done(18-01-13 17:10)
     ✔ Instantiate free variables with found nodes (basic) @done(18-01-14 01:49)
     ❑ k-node constraints checking @high
-    ❑ Handle k-path constraints @high
-    ❑ Regular expression matching (k-node constraints) @high 
-    ❑ Matching same final-nodes used in different paths
-    ❑ Match nodes that satisfy regular constraints
-    ❑ Sequence of nodes in path constraints
+    ✔ Handle k-path constraints (basic) @high @done(18-02-04 02:17)
+    ❑ Regular expression matching (k-node constraints, basic version) @high 
+    ❑ Optimisation: Neighbour queries for k-node constraints @high 
+    ❑ Matching same final-nodes used in different paths @high 
+    ❑ Sequence of nodes in path constraints (registers?)
+    ❑ Match nodes that satisfy regular constraints (as a whole) @high 
     ❑ Matching arithmetic constraints
 
 Graph / Data storage:

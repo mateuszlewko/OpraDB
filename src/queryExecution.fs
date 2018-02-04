@@ -3,6 +3,7 @@ namespace OpraDB
 open OpraDB.RegularConstraints
 open OpraDB.AST
 open FSharpx
+open FSharpx.Collections
 open FSharpx.Functional
 // open OpraDB.Data
 // open Hekate
@@ -20,7 +21,10 @@ module QueryExecution =
         let returnNodes = Set.ofList query.nodes
 
         matchEdges graph query
-        |>! List.map ^ fun e -> printfn "Matched edges %A" (e.path, e.source, fst e.lastEdge)
-        |> List.choose getStartEndNodes
-        |> List.map (List.filter (fst >> (flip Set.contains returnNodes)))
-        |> List.filter (List.isEmpty >> not)
+        |> List.map (fun me -> Map.valueList me.edges 
+                               |> List.map MatchedEdge.basicInfo)
+        |> printfn "%A"
+        // |>! List.map ^ fun e -> printfn "Matched edges %A" (e.path, e.source, fst e.lastEdge)
+        // |> List.choose getStartEndNodes
+        // |> List.map (List.filter (fst >> (flip Set.contains returnNodes)))
+        // |> List.filter (List.isEmpty >> not)

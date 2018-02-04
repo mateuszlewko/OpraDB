@@ -54,7 +54,7 @@ module RegularConstraints =
 
     /// Get all outward edges of a given node, which have at least one
     /// state in every NFA they belong to.
-    let private moveKEdges graph (mKEdges : MatchedKEdges list) =
+    let private nextKEdges graph (mKEdges : MatchedKEdges list) =
         /// Move to states reachable within one transition in single NFA
         /// for a given kEdges. Skips empty states.
         let rec moveState kEdges ids transition =
@@ -170,7 +170,7 @@ module RegularConstraints =
             if List.isEmpty mNodes
             then result
             else
-                let nextNodes          = List.collect (moveKEdges graph) mNodes
+                let nextNodes          = nextKEdges graph mNodes
                 let nodesMatched, rest = List.partition checkMatched nextNodes
 
                 let mapInfo = List.map basicInfo
@@ -179,5 +179,6 @@ module RegularConstraints =
                 // printfn "Rest of nodes:\n %A" ^ mapInfo rest
                 bfs (nodesMatched @ result) nextNodes
 
-        List.collect (moveKEdges graph) mKEdges |> bfs []
-        |> List.distinctBy basicInfo
+        nextKEdges graph mKEdges |> bfs []
+        |> List.distinctBy (fun me -> Map.valueList me.edges 
+                                      |> List.map basicInfo)
