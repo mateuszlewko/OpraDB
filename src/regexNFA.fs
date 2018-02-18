@@ -39,6 +39,7 @@ module RegexNFA =
                     curr.nextAlt <- build curr e |> Some
                     curr
                 | UnionExp (e1, e2)  ->
-                    createAlt Empty (build continuation e1) (build continuation e2)
+                    createAlt Empty (build continuation e1) 
+                                    (build continuation e2)
 
             build matched

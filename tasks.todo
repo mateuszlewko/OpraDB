@@ -22,6 +22,7 @@ Query execution:
     ✔ Instantiate free variables with found nodes (basic) @done(18-01-14 01:49)
     ❑ k-node constraints checking @high
     ✔ Handle k-path constraints (basic) @high @done(18-02-04 02:17)
+    ❑ Bool type
     ❑ Regular expression matching (k-node constraints, basic version) @high 
     ❑ Optimisation: Neighbour queries for k-node constraints @high 
     ❑ Matching same final-nodes used in different paths @high 

@@ -4,6 +4,8 @@ open FSharpx.Functional
 
 open OpraDB.AST
 open OpraDB.RegexNFA
+open OpraDB.QueryData
+open OpraDB.QueryData.MatchedEdge
 open OpraDB.Data
 
 open FSharpx.Collections
@@ -11,34 +13,6 @@ open FSharpx
 open Hekate
 
 module RegularConstraints =
-
-    /// All current states in a single NFA, along with
-    /// id of paths applied to it
-    type NFAState = Transition list * Identifier list
-
-    type MatchedEdge = {
-            path      : Identifier
-            source    : int Node
-            lastEdge  : int Edge
-        }
-
-    type KEdges = Map<Identifier, MatchedEdge>
-
-    type MatchedKEdges = {
-            edges     : KEdges
-            nfaStates : NFAState list
-        }
-
-    let [<Literal>] NULL_NODE = -1
-
-    module MatchedEdge =
-        let create path node = { source    = node
-                                 path      = path
-                                 lastEdge  = NULL_NODE, node }
-                                         
-        let basicInfo e = e.path, e.source, fst e.lastEdge
-
-    open MatchedEdge
 
     // TODO: Move it to some utils
     let rec cartesian =
@@ -57,7 +31,7 @@ module RegularConstraints =
     let private nextKEdges graph (mKEdges : MatchedKEdges list) =
         /// Move to states reachable within one transition in single NFA
         /// for a given kEdges. Skips empty states.
-        let rec moveState kEdges ids transition =
+        let rec moveState (kEdges : KEdges) ids transition =
             /// Get all states after skipping all empty ones.
             let rec skipEmpty t =
                 let moveFurther = Option.map skipEmpty >> Option.defaultValue []
@@ -73,7 +47,7 @@ module RegularConstraints =
             match transition.state with
             | Matched           -> []
             | Constraint constr ->
-                if NodeConstraints.checkEdges kEdges graph constr
+                if NodeConstraints.checkKEdges kEdges graph constr ids
                 then ok transition
                 else []
             | Any   -> ok transition
@@ -85,19 +59,19 @@ module RegularConstraints =
             List.collect (moveState edges ids) states, ids
 
         /// Try to move every state in all NFAs for a given k-edge.
-        let moveKEdges kEdges =
+        let moveKEdges mKEdges =
             let rec collectStates nfaStates =
                 function
                 | []           -> Some nfaStates
                 | states::rest ->
                     // states - all states in a single nfa that 
                     //          k-edge is currently in
-                    match moveNFA kEdges states with
+                    match moveNFA mKEdges.currEdges states with
                     | [], _ -> None
                     | nfa   -> collectStates (nfa::nfaStates) rest
 
-            collectStates [] kEdges.nfaStates
-            |> Option.map (fun ns -> { kEdges with nfaStates = ns })
+            collectStates [] mKEdges.nfaStates
+            |> Option.map (fun ns -> { mKEdges with nfaStates = ns })
 
         // let currNode = snd mKEdges.lastEdge
         let sinkNode node = node, NULL_NODE, Map.empty
@@ -107,7 +81,7 @@ module RegularConstraints =
         let outKEdges =
             mKEdges
             |> List.collect (fun kEdges -> 
-                let pathIDs, edges = Map.toList kEdges.edges |> List.unzip
+                let pathIDs, edges = Map.toList kEdges.currEdges |> List.unzip
                 let nextEdges =
                     List.map2 (fun path e -> 
                         getOutEdges e.lastEdge 
@@ -116,12 +90,13 @@ module RegularConstraints =
                         pathIDs edges
                 
                 cartesian nextEdges
-                |> List.map (fun es -> { kEdges with edges = Map.ofList es })
+                |> List.map (fun es -> { kEdges with currEdges = Map.ofList es })
             )
 
         //  TODO: Use logary
-        // printfn "outward edges for %d: %A" currNode
-        //     (List.map (fun (u, v, _) -> u, v) outEdges)
+        let mapMk = List.map (fun mk -> mk.currEdges)
+        // printfn "outward edges for %A, are: %A" (mapMk mKEdges)
+        //     (mapMk outKEdges)
 
         // Map neighbouring edges to MatchedEdges.
         // MatchedEdge is an edge that has at least one state in every nfa.
@@ -154,7 +129,7 @@ module RegularConstraints =
             // map them to MatchedKEdges
             |> List.map (fun es -> 
                 { nfaStates = allNFAs
-                  edges     = List.map2 (fun p (e, _) -> p, create p e) 
+                  currEdges     = List.map2 (fun p (e, _) -> p, create p e) 
                                         allPaths es |> Map.ofList })
 
             // let createEdges (path, nfaStates) =
@@ -172,13 +147,14 @@ module RegularConstraints =
             else
                 let nextNodes          = nextKEdges graph mNodes
                 let nodesMatched, rest = List.partition checkMatched nextNodes
+                let mapMk = List.map (fun mk -> mk.currEdges)
 
                 let mapInfo = List.map basicInfo
-                // printfn "Nodes:\n %A"         ^ mapInfo mNodes
-                // printfn "Matched nodes:\n %A" ^ mapInfo nodesMatched
-                // printfn "Rest of nodes:\n %A" ^ mapInfo rest
+                printfn "Nodes:\n %A"         ^ mapMk mNodes
+                printfn "Matched nodes:\n %A" ^ mapMk nodesMatched
+                printfn "Rest of nodes:\n %A" ^ mapMk rest
                 bfs (nodesMatched @ result) nextNodes
 
         nextKEdges graph mKEdges |> bfs []
-        |> List.distinctBy (fun me -> Map.valueList me.edges 
+        |> List.distinctBy (fun me -> Map.valueList me.currEdges 
                                       |> List.map basicInfo)

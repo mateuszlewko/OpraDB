@@ -5,10 +5,12 @@
     <NoWarn>NU1602;NU1701</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="commonUtils.fs" />
     <Compile Include="ast.fs" />
     <Compile Include="data.fs" />
     <Compile Include="parser.fs" />
     <Compile Include="regexNFA.fs" />
+    <Compile Include="queryData.fs" />
     <Compile Include="nodeConstraints.fs" />
     <Compile Include="regularConstraints.fs" />
     <Compile Include="queryExecution.fs" />

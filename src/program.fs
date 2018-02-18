@@ -23,7 +23,7 @@ let printQueryResult str graph =
     | Success (query, _, _)   ->
         let ofId (ID s) = s
         let headers = query.nodes |> List.map ofId
-        let hsIdx = headers |> List.indexed |> List.map swap |> Map.ofList
+        let hsIdx   = headers |> List.indexed |> List.map swap |> Map.ofList
         let results =
             QueryExecution.execute graph query
             // |> List.map (
