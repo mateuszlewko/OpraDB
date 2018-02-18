@@ -28,6 +28,7 @@ module AST =
         | IntLiteral of int
         /// String value (must be specified in quotes, example: "value")
         | StringLiteral of string
+        // | NodeVariable TODO: Handle this case
 
     type NodeConstraint = NodeConstraint of Operand * Operator * Operand
 

@@ -83,12 +83,7 @@ module RegularConstraints =
                 List.cartesian nextEdges
                 |> List.map (fun es -> { kEdges with currEdges = Map.ofList es })
             )
-
-        //  TODO: Use logary
-        let mapMk = List.map (fun mk -> mk.currEdges)
-        // printfn "outward edges for %A, are: %A" (mapMk mKEdges)
-        //     (mapMk outKEdges)
-
+            
         // Map neighbouring edges to MatchedEdges.
         // MatchedEdge is an edge that has at least one state in every nfa.
         outKEdges |> List.choose moveKEdges
@@ -113,25 +108,15 @@ module RegularConstraints =
         let allNFAs  = Map.values nfaStates |> List.concat
         let allPaths = Map.keys nfaStates |> List.ofSeq
         let mKEdges  =
-            let nl _ = printfn ""
             // all k-nodes
             Graph.Nodes.toList graph |> List.map fst
             |> konst |> List.init (Map.count nfaStates) |> List.cartesian
-            // |>! List.iter (List.iter (printf "%d ") >> nl)
             // map them to MatchedKEdges
             |> List.map (fun es -> 
-                // List.iter (printf "%d ") es 
-                // printfn ""
-
                 let kEdges = List.map2 (fun p e -> p, create p e) allPaths es 
                 { nfaStates = allNFAs
                   currEdges = kEdges |> Map.ofList }
             )
-
-            // let createEdges (path, nfaStates) =
-            //     List.map (fst >> MatchedEdge.create path nfaStates) allNodes
-
-            // nfaStates |> Map.toList |> List.collect createEdges
 
         let checkMatched mKEdges =
             mKEdges.nfaStates
