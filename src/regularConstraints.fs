@@ -7,23 +7,14 @@ open OpraDB.RegexNFA
 open OpraDB.QueryData
 open OpraDB.QueryData.MatchedEdge
 open OpraDB.Data
+open OpraDB.CommonUtils
 
 open FSharpx.Collections
 open FSharpx
 open Hekate
 
 module RegularConstraints =
-
-    // TODO: Move it to some utils
-    let rec cartesian =
-        function
-        | []   -> []
-        | [h]  -> List.fold (fun acc elem -> [elem]::acc) [] h
-        | h::t ->
-            List.fold (fun cacc celem ->
-                (List.fold (fun acc elem -> (elem::celem)::acc) [] h) @ cacc
-            ) [] (cartesian t)
-
+          
     let private basicEdge (u, v, _) = u, v
 
     /// Get all outward edges of a given node, which have at least one
@@ -89,7 +80,7 @@ module RegularConstraints =
                             fun x -> path, { e with lastEdge = basicEdge x })) 
                         pathIDs edges
                 
-                cartesian nextEdges
+                List.cartesian nextEdges
                 |> List.map (fun es -> { kEdges with currEdges = Map.ofList es })
             )
 
@@ -125,7 +116,7 @@ module RegularConstraints =
             let nl _ = printfn ""
             // all k-nodes
             Graph.Nodes.toList graph |> List.map fst
-            |> konst |> List.init (Map.count nfaStates) |> cartesian
+            |> konst |> List.init (Map.count nfaStates) |> List.cartesian
             // |>! List.iter (List.iter (printf "%d ") >> nl)
             // map them to MatchedKEdges
             |> List.map (fun es -> 
