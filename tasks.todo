@@ -24,13 +24,15 @@ Query execution:
     ✔ Handle k-path constraints (basic) @high @done(18-02-04 02:17)
     ❑ Bool type
     ✔ Regular expression matching (k-node constraints, basic version) @high @done(18-02-18 20:16)
-    ❑ Optimisation: Neighbour queries for k-node constraints @high 
-    ❑ Handle cycles @critical
-    ❑ Existentially qualified paths and nodes
+    ❑ Optimisation: Neighbour queries for k-node constraints @high @today
     ❑ Matching same final-nodes used in different paths @high 
-    ❑ Sequence of nodes in path constraints (registers?)
+    ❑ Existentially qualified paths and nodes
+    ❑ Handle cycles (only with matched nodes) @critical
+    ❑ Sequence of nodes in node constraints (registers?)
     ❑ Match nodes that satisfy regular constraints (as a whole) @high 
     ❑ Matching arithmetic constraints
+    ❑ Ontologies (let expressions)
+    ❑ Return paths
 
 Graph / Data storage:
     ✔ Basic graph representation @done(18-01-13 16:03)
@@ -44,7 +46,9 @@ Client / General:
         ❑ Command line interface
     ❑ Logging with Logary
     ❑ Results visualisation (possibly other, web-based client)
+    ❑ Docker installation
 
 Docs:
     ❑ Examples of usage
+    ❑ Description of files
     ✔ Add README.md file @done(17-12-10 16:24)
