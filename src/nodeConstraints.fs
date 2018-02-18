@@ -39,7 +39,7 @@ module NodeConstraints =
         | NextNodeVar v -> getNode v snd
 
     let checkKEdges kEdges graph (NodeConstraint (lhs, op, rhs)) ids =
-        let indexToPath = List.indexed ids |> Map.ofList
+        let indexToPath = List.mapi (fun i x -> i + 1, x) ids |> Map.ofList
         let op l r      = getOperator op l r
         let ofVar       = nodeVarTo indexToPath kEdges
 

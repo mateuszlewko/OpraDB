@@ -20,11 +20,13 @@ Query execution:
     ✔ Regular expression matching (1-node constraints) @today @done(18-01-13 21:00)
     ✔ 1-Node constraints checking @today @done(18-01-13 17:10)
     ✔ Instantiate free variables with found nodes (basic) @done(18-01-14 01:49)
-    ❑ k-node constraints checking @high
+    ✔ k-node constraints checking @high @done(18-02-18 20:17)
     ✔ Handle k-path constraints (basic) @high @done(18-02-04 02:17)
     ❑ Bool type
-    ❑ Regular expression matching (k-node constraints, basic version) @high 
+    ✔ Regular expression matching (k-node constraints, basic version) @high @done(18-02-18 20:16)
     ❑ Optimisation: Neighbour queries for k-node constraints @high 
+    ❑ Handle cycles @critical
+    ❑ Existentially qualified paths and nodes
     ❑ Matching same final-nodes used in different paths @high 
     ❑ Sequence of nodes in path constraints (registers?)
     ❑ Match nodes that satisfy regular constraints (as a whole) @high 

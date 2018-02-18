@@ -122,15 +122,20 @@ module RegularConstraints =
         let allNFAs  = Map.values nfaStates |> List.concat
         let allPaths = Map.keys nfaStates |> List.ofSeq
         let mKEdges  =
+            let nl _ = printfn ""
             // all k-nodes
-            Graph.Nodes.toList graph
-            |> konst |> List.init (Map.count nfaStates)
-            |> cartesian
+            Graph.Nodes.toList graph |> List.map fst
+            |> konst |> List.init (Map.count nfaStates) |> cartesian
+            // |>! List.iter (List.iter (printf "%d ") >> nl)
             // map them to MatchedKEdges
             |> List.map (fun es -> 
+                // List.iter (printf "%d ") es 
+                // printfn ""
+
+                let kEdges = List.map2 (fun p e -> p, create p e) allPaths es 
                 { nfaStates = allNFAs
-                  currEdges     = List.map2 (fun p (e, _) -> p, create p e) 
-                                        allPaths es |> Map.ofList })
+                  currEdges = kEdges |> Map.ofList }
+            )
 
             // let createEdges (path, nfaStates) =
             //     List.map (fst >> MatchedEdge.create path nfaStates) allNodes
@@ -150,9 +155,9 @@ module RegularConstraints =
                 let mapMk = List.map (fun mk -> mk.currEdges)
 
                 let mapInfo = List.map basicInfo
-                printfn "Nodes:\n %A"         ^ mapMk mNodes
-                printfn "Matched nodes:\n %A" ^ mapMk nodesMatched
-                printfn "Rest of nodes:\n %A" ^ mapMk rest
+                // printfn "Nodes:\n %A"         ^ mapMk mNodes
+                // printfn "Matched nodes:\n %A" ^ mapMk nodesMatched
+                // printfn "Rest of nodes:\n %A" ^ mapMk rest
                 bfs (nodesMatched @ result) nextNodes
 
         nextKEdges graph mKEdges |> bfs []

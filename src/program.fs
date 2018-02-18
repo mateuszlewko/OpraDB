@@ -108,21 +108,21 @@ let main argv =
         let edge = Map.ofList ["edge", StringVal "link"]
 
         Graph.create // nodes
-                     [ 1 , Map.ofList ["type", StringVal "bus"]
-                       2 , me
-                       3 , me
-                       4 , me
-                       5 , me
-                       10, Map.ofList ["dest", StringVal "end"]
-                       11, me
-                       12, Map.ofList ["type", StringVal "bus"] ]                  
+                     [ 1, Map.ofList ["type", StringVal "bus"]
+                       2, me
+                       3, me
+                       4, me
+                       5, me
+                       6, Map.ofList ["dest", StringVal "end"]
+                       7, me
+                       8, Map.ofList ["type", StringVal "bus"] ]                  
                      // edges
-                     [ 1 , 2 , edge 
-                       2 , 3 , edge 
-                       3 , 4 , edge 
-                       4 , 5 , edge
-                       3 , 10, edge
-                       12, 2 , edge ]
+                     [ 1, 2, edge 
+                       2, 3, edge 
+                       3, 4, edge 
+                       4, 5, edge
+                       3, 6, edge
+                       8, 2, edge ]
 
     // let pathQuery = "MATCH NODES (s t)                        \
     //                \nSUCH THAT (s-[p]->t)                     \
