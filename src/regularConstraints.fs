@@ -118,10 +118,35 @@ module RegularConstraints =
                   currEdges = kEdges |> Map.ofList }
             )
 
-        let checkMatched mKEdges =
+        let checkFinalNodes mKEdges =
+            let endNodeNames = query.pathConstraints 
+                               |> List.map (fun p -> p.path, p.target) 
+                               |> Map.ofList
+
+            let rec checkAll endNodeMappings = 
+                function
+                | []      -> true 
+                | me::mes ->
+                    let currEndNode = fst me.lastEdge
+                    match Map.tryFind me.path endNodeNames with 
+                    | None          -> checkAll endNodeMappings mes
+                    | Some nodeName ->
+                        match Map.tryFind nodeName endNodeMappings with 
+                        | None -> Map.add nodeName currEndNode endNodeMappings 
+                                  |> flip checkAll mes
+                        | Some endNode -> if endNode <> currEndNode
+                                          then false 
+                                          else checkAll endNodeMappings mes
+
+            checkAll Map.empty (Map.valueList mKEdges.currEdges)
+
+        let checkNFAsInMatchedStates mKEdges =
             mKEdges.nfaStates
             |> List.forall (fst >> List.exists (fun t -> t.state = Matched))
 
+        let checkMatched mKEdges = 
+            checkNFAsInMatchedStates mKEdges && checkFinalNodes mKEdges
+            
         let rec bfs visited result mNodes =
             if List.isEmpty mNodes
             then result
