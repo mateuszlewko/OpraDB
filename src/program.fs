@@ -139,7 +139,7 @@ let main argv =
     // printQueryResult pathQuery pathG
 
     let pathQuery = "MATCH NODES (s t)                        \
-                   \nSUCH THAT (s-[p]->t x-[q]->t )           \
+                   \nSUCH THAT (s-[p]->t s-[q]->t )           \
                    \nWHERE ([type(@1) = \"bus\"].*<p>         \
                    \n       .*[dest(@1) = \"end\"]<p>         \
                    \n       [edge(@1 @'1) = \"link\"]*.<p>    \

@@ -106,14 +106,28 @@ module RegularConstraints =
                 ) 
 
         let allNFAs  = Map.values nfaStates |> List.concat
-        let allPaths = Map.keys nfaStates |> List.ofSeq
         let mKEdges  =
+            let nodeFromIndex = 
+                let rec getIndex ixMap (p : PathConstraint) = 
+                    match Map.tryFind p.source ixMap with 
+                    | None    -> Map.add p.source (Map.count ixMap) ixMap
+                    | Some ix -> ixMap
+
+                List.fold getIndex Map.empty query.pathConstraints
+
             // all k-nodes
             Graph.Nodes.toList graph |> List.map fst
-            |> konst |> List.init (Map.count nfaStates) |> List.cartesian
+            |> konst |> List.init (Map.count nodeFromIndex) |> List.cartesian
             // map them to MatchedKEdges
             |> List.map (fun es -> 
-                let kEdges = List.map2 (fun p e -> p, create p e) allPaths es 
+                let esArr  = Array.ofList es
+                let kEdges = 
+                    query.pathConstraints
+                    |> List.map (fun (p : PathConstraint) -> 
+                        let ix = Map.find p.source nodeFromIndex
+                        p.path, create p.path esArr.[ix]
+                    )                         
+
                 { nfaStates = allNFAs
                   currEdges = kEdges |> Map.ofList }
             )

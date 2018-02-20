@@ -23,7 +23,7 @@ Query execution:
     ✔ k-node constraints checking @high @done(18-02-18 20:17)
     ✔ Handle k-path constraints (basic) @high @done(18-02-04 02:17)
     ✔ Regular expression matching (k-node constraints, basic version) @high @done(18-02-18 20:16)
-    ❑ Matching same final-nodes used in different paths @high @today
+    ✔ Matching same final-nodes used in different paths @high @today @done(18-02-21 00:23)
     ❑ Existentially qualified paths and nodes
     ❑ Optimisation: Neighbour queries for k-node constraints @high
     ❑ Bool type
