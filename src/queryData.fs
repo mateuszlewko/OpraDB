@@ -31,3 +31,7 @@ module QueryData =
                                  lastEdge  = NULL_NODE, node }
                                          
         let basicInfo e = e.path, e.source, fst e.lastEdge
+        let info e = e.path, e.source, e.lastEdge
+
+    module MatchedKEdges =
+        let basicInfo mkEs = Map.toList mkEs.currEdges |> List.map snd 

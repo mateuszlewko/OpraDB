@@ -27,7 +27,7 @@ Query execution:
     ❑ Optimisation: Neighbour queries for k-node constraints @high @today
     ❑ Matching same final-nodes used in different paths @high 
     ❑ Existentially qualified paths and nodes
-    ❑ Handle cycles (only with matched nodes) @critical
+    ✔ Handle cycles (only with matched nodes) @critical @done(18-02-20 02:01)
     ❑ Sequence of nodes in path constraints (p: u..v)
     ❑ Match nodes that satisfy regular constraints (as a whole) @high 
     ❑ Matching arithmetic constraints

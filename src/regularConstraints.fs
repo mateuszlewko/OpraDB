@@ -22,7 +22,7 @@ module RegularConstraints =
     let private nextKEdges graph (mKEdges : MatchedKEdges list) =
         /// Move to states reachable within one transition in single NFA
         /// for a given kEdges. Skips empty states.
-        let rec moveState (kEdges : KEdges) ids transition =
+        let rec moveState kEdges ids transition =
             /// Get all states after skipping all empty ones.
             let rec skipEmpty t =
                 let moveFurther = Option.map skipEmpty >> Option.defaultValue []
@@ -64,15 +64,14 @@ module RegularConstraints =
             collectStates [] mKEdges.nfaStates
             |> Option.map (fun ns -> { mKEdges with nfaStates = ns })
 
-        // let currNode = snd mKEdges.lastEdge
-        let sinkNode node = node, NULL_NODE, Map.empty
-        let getOutEdges (u, v) = Graph.Nodes.outward v graph
-                              |> Option.map (List.cons ^ sinkNode v)
-                              |> Option.getOrElse []
+        let sinkNode node      = node, NULL_NODE, Map.empty
+        let getOutEdges (_, v) = Graph.Nodes.outward v graph
+                                 |> Option.map (List.cons ^ sinkNode v)
+                                 |> Option.getOrElse []
         let outKEdges =
             mKEdges
-            |> List.collect (fun kEdges -> 
-                let pathIDs, edges = Map.toList kEdges.currEdges |> List.unzip
+            |> List.collect (fun mkEdges -> 
+                let pathIDs, edges = Map.toList mkEdges.currEdges |> List.unzip
                 let nextEdges =
                     List.map2 (fun path e -> 
                         getOutEdges e.lastEdge 
@@ -81,9 +80,10 @@ module RegularConstraints =
                         pathIDs edges
                 
                 List.cartesian nextEdges
-                |> List.map (fun es -> { kEdges with currEdges = Map.ofList es })
+                |> List.map (fun es -> { mkEdges with 
+                                            currEdges = Map.ofList es })
             )
-            
+
         // Map neighbouring edges to MatchedEdges.
         // MatchedEdge is an edge that has at least one state in every nfa.
         outKEdges |> List.choose moveKEdges
@@ -122,20 +122,40 @@ module RegularConstraints =
             mKEdges.nfaStates
             |> List.forall (fst >> List.exists (fun t -> t.state = Matched))
 
-        let rec bfs result mNodes =
+        let rec bfs visited result mNodes =
             if List.isEmpty mNodes
             then result
             else
-                let nextNodes          = nextKEdges graph mNodes
-                let nodesMatched, rest = List.partition checkMatched nextNodes
-                let mapMk = List.map (fun mk -> mk.currEdges)
+                let nextNodes           = nextKEdges graph mNodes
+                let nodesMatched, rest  = List.partition checkMatched nextNodes
+                let nextVis = 
+                    List.map MatchedKEdges.basicInfo nextNodes 
+                    |> List.filter (flip Set.contains visited)
+                    |> Set.ofList
 
-                let mapInfo = List.map basicInfo
+                let nextNotVis = nextNodes |> List.filter (
+                                    MatchedKEdges.basicInfo 
+                                    >> flip Set.contains nextVis >> not) 
+
+                let mapMk = 
+                    List.map (fun mk -> 
+                        Map.toList mk.currEdges 
+                        |> List.map (fun (ID p, e) -> p, e.lastEdge)
+                        |> List.distinct
+                    )
+
                 // printfn "Nodes:\n %A"         ^ mapMk mNodes
                 // printfn "Matched nodes:\n %A" ^ mapMk nodesMatched
                 // printfn "Rest of nodes:\n %A" ^ mapMk rest
-                bfs (nodesMatched @ result) nextNodes
+                // printfn "next of nodes not vis:\n %A" ^ mapMk nextNotVis
+                // printfn "vis:\n %A" (Set.toList visited 
+                //                      |> List.map ^ List.map info)
+                
+                let visited = List.map MatchedKEdges.basicInfo nextNodes
+                              |> Set.ofList |> Set.union visited
 
-        nextKEdges graph mKEdges |> bfs []
+                bfs visited (nodesMatched @ result) nextNotVis
+
+        nextKEdges graph mKEdges |> bfs Set.empty []
         |> List.distinctBy (fun me -> Map.valueList me.currEdges 
                                       |> List.map basicInfo)
