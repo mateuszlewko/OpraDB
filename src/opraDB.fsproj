@@ -4,10 +4,24 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <NoWarn>NU1602;NU1701</NoWarn>
   </PropertyGroup>
+
+  <Import Project="tools/FsLexYacc.targets" />
+
+
   <ItemGroup>
+    <Compile Include="JsonValue.fs" />
+    <FsYacc Include="YParser.fsy">
+      <OtherFlags>--module YParser</OtherFlags>
+    </FsYacc>
+    <FsLex Include="Lexer.fsl">
+      <OtherFlags>--unicode</OtherFlags>
+    </FsLex>
     <Compile Include="commonUtils.fs" />
     <Compile Include="ast.fs" />
     <Compile Include="data.fs" />
+    <Compile Include="YParser.fsi" />
+    <Compile Include="YParser.fs" />
+    <Compile Include="Lexer.fs" />
     <Compile Include="parser.fs" />
     <Compile Include="regexNFA.fs" />
     <Compile Include="queryData.fs" />
@@ -18,6 +32,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FParsec" Version="*" />
+    <PackageReference Include="FsLexYacc" Version="7.0.6" />
     <PackageReference Include="FSharp.Core" Version="4.3.3" />
     <PackageReference Include="FSharpx.Collections" Version="*" />
     <PackageReference Include="FSharpx.Extras" Version="*" />

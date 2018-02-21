@@ -158,7 +158,7 @@ module RegularConstraints =
             mKEdges.nfaStates
             |> List.forall (fst >> List.exists (fun t -> t.state = Matched))
 
-        let checkMatched mKEdges = 
+        let checkMatched mKEdges =
             checkNFAsInMatchedStates mKEdges && checkFinalNodes mKEdges
             
         let rec bfs visited result mNodes =
