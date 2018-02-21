@@ -27,7 +27,7 @@ Query execution:
     ❑ Existentially qualified paths and nodes
     ❑ Optimisation: Neighbour queries for k-node constraints @high
     ❑ Bool type
-    ❑ Handle cycles (only with matched nodes) @critical
+    ✔ Handle cycles (only with matched nodes) @critical @done(18-02-21 16:26)
     ❑ Sequence of nodes in path constraints (p: u..v)
     ❑ Match nodes that satisfy regular constraints (as a whole) @high 
     ❑ Matching arithmetic constraints

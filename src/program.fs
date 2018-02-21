@@ -108,7 +108,7 @@ let main argv =
         let me = Map.empty
         let edge = Map.ofList ["edge", StringVal "link"]
         let edge2 = Map.ofList ["edge", StringVal "link"
-                                "a", IntVal 1]
+                                "a", StringVal "ok"]
 
         // Graph.create // nodes
         //              [ 0, Map.ofList ["dest", StringVal "end"]
@@ -134,26 +134,17 @@ let main argv =
         //              ]
 
         Graph.create // nodes
-                     [ 0, me //Map.ofList ["dest", StringVal "end"]
-                       1, Map.ofList ["type", StringVal "beg"]
+                     [ 0, Map.ofList ["type", StringVal "beg"]
+                       1, me
                        2, me
-                       3, me
-                       4, me
-                       5, me
-                       6, Map.ofList ["dest", StringVal "end"]
-                       7, me
-                       8, Map.ofList ["type", StringVal "beg"] 
+                       3, Map.ofList ["type", StringVal "end"] 
                      ]                  
                      // edges
                      [ //0, 8, edge
-                       1, 2, edge 
-                       2, 3, edge 
-                       3, 4, edge 
-                       4, 5, edge2
-                       5, 4, edge2
-                       5, 6, edge
-                       6, 2, edge 
-                       6, 0, edge 
+                       0, 1, edge 
+                       1, 2, edge2 
+                       2, 1, edge2
+                       2, 3, edge
                      ]
 
     // let pathQuery = "MATCH NODES (s t)                        \
@@ -164,16 +155,26 @@ let main argv =
 
     // printQueryResult pathQuery pathG
 
-    let pathQuery = "MATCH NODES (s t)                        \
-                   \nSUCH THAT (s-[p]->t x-[q]->y )           \
-                   \nWHERE ([type(@1) = \"beg\"].*<p>         \
-                   \n       .*[dest(@1) = \"end\"]<p>         \
-                   \n       [edge(@1 @'1) = \"link\"]*.<p>    \
-                   \n       .*[a(@1 @'1) = 1][a(@1 @'1) = 1]*.<p>    \
-                   \n                                         \
-                   \n       [type(@1) = \"beg\"].*<q>         \
-                   \n       .*[dest(@1) = \"end\"]<q>         \
-                   \n       [edge(@1 @'1) = \"link\"]*.<q> )"
+    // let pathQuery = "MATCH NODES (s t)                        \
+    //                \nSUCH THAT (s-[p]->t)           \
+    //                \nWHERE ([type(@1) = \"beg\"].*<p>         \
+    //                \n       .*[dest(@1) = \"end\"]<p>         \
+    //                \n       [edge(@1 @'1) = \"link\"]*.<p>    \
+    //                \n       .*[a(@1 @'1) = 1][a(@1 @'1) = 1]*.<p>    \
+    //                \n                                         \
+    //                \n       [type(@1) = \"beg\"].*<q>         \
+    //                \n       .*[dest(@1) = \"end\"]<q>         \
+    //                \n       [edge(@1 @'1) = \"link\"]*.<q> )"
+
+    let pathQuery = "MATCH NODES (s t)
+                    SUCH THAT (s-[p]->t)
+                    WHERE (
+                        [type(@1) = \"beg\"].*<p>
+                        .*[type(@1) = \"end\"]<p>
+                        [edge(@1 @'1) = \"link\"]*.<p>
+                        .*[a(@1 @'1) = \"ok\"][a(@1 @'1) = \"ok\"][a(@1 @'1) = \"ok\"].*<p>
+                    )
+                    "
 
     // let pathQuery = "MATCH NODES (s t)                        \
     //                \nSUCH THAT (p: s->t, s1: a..b )           \

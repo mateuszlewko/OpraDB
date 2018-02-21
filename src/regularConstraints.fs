@@ -47,7 +47,7 @@ module RegularConstraints =
 
         /// Move every state in a single NFA.
         let moveNFA edges (states, ids) =
-            List.collect (moveState edges ids) states, ids
+            List.collect (moveState edges ids) states |> List.distinct, ids
 
         /// Try to move every state in all NFAs for a given k-edge.
         let moveKEdges mKEdges =
@@ -188,14 +188,14 @@ module RegularConstraints =
                 // printfn "Nodes:\n %A"         ^ mapMk mNodes
                 // printfn "Matched nodes:\n %A" ^ mapMk nodesMatched
                 // printfn "Rest of nodes:\n %A" ^ mapMk rest
-                printfn "next of nodes not vis:\n %A" ^ mapMk nextNotVis
-                printfn "vis:\n %A" 
-                    (Set.toList visited 
-                     |> List.map (
-                        fun me -> (Map.valueList me.currEdges |> List.map info)
-                                  , List.map (fun (nf,_) -> List.map (fun t -> t.tid) nf) 
-                                            me.nfaStates)
-                    )
+                // printfn "next of nodes not vis:\n %A" ^ mapMk nextNotVis
+                // printfn "vis:\n %A" 
+                //     (Set.toList visited 
+                //      |> List.map (
+                //         fun me -> (Map.valueList me.currEdges |> List.map info)
+                //                   , List.map (fun (nf,_) -> List.map (fun t -> t.tid) nf) 
+                //                             me.nfaStates)
+                //     )
                 
                 let visited = //List.map MatchedKEdges.basicInfo 
                               nextNodes
