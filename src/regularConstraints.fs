@@ -167,23 +167,16 @@ module RegularConstraints =
             else
                 let nextNodes           = nextKEdges graph mNodes
                 let nodesMatched, rest  = List.partition checkMatched nextNodes
-                // let nextVis = 
-                //     // List.map MatchedKEdges.basicInfo nextNodes 
-                //     nextNodes
-                //     |> List.filter (flip Set.contains visited)
-                //     |> Set.ofList
+                let nextNotVis          = nextNodes 
+                                          |> List.filter (flip 
+                                                Set.contains visited >> not) 
 
-                let nextNotVis = nextNodes |> List.filter (
-                                    // MatchedKEdges.basicInfo 
-                                    // >> 
-                                    flip Set.contains visited >> not) 
-
-                let mapMk = 
-                    List.map (fun mk -> 
-                        Map.toList mk.currEdges 
-                        |> List.map (fun (ID p, e) -> p, e.lastEdge)
-                        |> List.distinct
-                    )
+                // let mapMk = 
+                //     List.map (fun mk -> 
+                //         Map.toList mk.currEdges 
+                //         |> List.map (fun (ID p, e) -> p, e.lastEdge)
+                //         |> List.distinct
+                //     )
 
                 // printfn "Nodes:\n %A"         ^ mapMk mNodes
                 // printfn "Matched nodes:\n %A" ^ mapMk nodesMatched
@@ -197,10 +190,7 @@ module RegularConstraints =
                 //                             me.nfaStates)
                 //     )
                 
-                let visited = //List.map MatchedKEdges.basicInfo 
-                              nextNodes
-                              |> Set.ofList |> Set.union visited
-
+                let visited = nextNodes |> Set.ofList |> Set.union visited
                 bfs visited (nodesMatched @ result) nextNotVis
 
         nextKEdges graph mKEdges |> bfs Set.empty []
