@@ -180,7 +180,7 @@ module RegularConstraints =
 
                 // printfn "Nodes:\n %A"         ^ mapMk mNodes
                 // printfn "Matched nodes:\n %A" ^ mapMk nodesMatched
-                // printfn "Rest of nodes:\n %A" ^ mapMk rest
+                // // printfn "Rest of nodes:\n %A" ^ mapMk rest
                 // printfn "next of nodes not vis:\n %A" ^ mapMk nextNotVis
                 // printfn "vis:\n %A" 
                 //     (Set.toList visited 

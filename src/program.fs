@@ -135,13 +135,17 @@ let main argv =
 
         Graph.create // nodes
                      [ 0, Map.ofList ["type", StringVal "beg"]
+                       4, Map.ofList ["type", StringVal "beg"]
                        1, me
                        2, me
+                       5, me
                        3, Map.ofList ["type", StringVal "end"] 
                      ]                  
                      // edges
                      [ //0, 8, edge
                        0, 1, edge 
+                       4, 5, edge 
+                       5, 0, edge 
                        1, 2, edge2 
                        2, 1, edge2
                        2, 3, edge
@@ -167,12 +171,17 @@ let main argv =
     //                \n       [edge(@1 @'1) = \"link\"]*.<q> )"
 
     let pathQuery = "MATCH NODES (s t)
-                    SUCH THAT (s-[p]->t)
+                    SUCH THAT (s-[p]->t x-[q]->y)
                     WHERE (
                         [type(@1) = \"beg\"].*<p>
                         .*[type(@1) = \"end\"]<p>
                         [edge(@1 @'1) = \"link\"]*.<p>
                         .*[a(@1 @'1) = \"ok\"][a(@1 @'1) = \"ok\"][a(@1 @'1) = \"ok\"].*<p>
+                        
+                        [type(@1) = \"beg\"].*<q>
+                        .*[type(@1) = \"end\"]<q>
+                        [edge(@1 @'1) = \"link\"]*.<q>
+                        .*[a(@1 @'1) = \"ok\"][a(@1 @'1) = \"ok\"][a(@1 @'1) = \"ok\"].*<q>
                     )
                     "
 

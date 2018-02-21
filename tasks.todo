@@ -24,6 +24,7 @@ Query execution:
     ✔ Handle k-path constraints (basic) @high @done(18-02-04 02:17)
     ✔ Regular expression matching (k-node constraints, basic version) @high @done(18-02-18 20:16)
     ✔ Matching same final-nodes used in different paths @high @today @done(18-02-21 00:23)
+    ❑ Matching arithmetic constraints @high @today
     ❑ Existentially qualified paths and nodes
     ❑ Optimisation: Neighbour queries for k-node constraints @high
     ❑ Bool type
@@ -32,7 +33,6 @@ Query execution:
     ❑ Match nodes that satisfy regular constraints (as a whole) @high 
     ❑ Maybe represent Regex NFA as Hekate graph (?) @low
     ❑ Improve equality check in Transition (?) @low
-    ❑ Matching arithmetic constraints
     ❑ Ontologies (let expressions)
     ❑ Return paths
 
@@ -43,7 +43,7 @@ Graph / Data storage:
     ❑ Optimized graph representation @low
 
 Client / General:
-    ❑ Separate client from service:
+    ❑ Separate client from service: @high 
         ❑ Handle communication between client and service
         ❑ Command line interface
     ❑ Logging with Logary
