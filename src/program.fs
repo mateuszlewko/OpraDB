@@ -108,7 +108,7 @@ let main argv =
         let edge = Map.ofList ["edge", StringVal "link"]
 
         Graph.create // nodes
-                     [ 0, Map.ofList ["dest", StringVal "end"]
+                     [ 0, me// Map.ofList ["dest", StringVal "end"]
                        1, Map.ofList ["type", StringVal "bus"]
                        2, me
                        3, me
@@ -128,6 +128,8 @@ let main argv =
                        8, 2, edge
                        6, 2, edge 
                        6, 0, edge 
+                       5, 0, edge 
+                       5, 1, edge 
                      ]
 
     // let pathQuery = "MATCH NODES (s t)                        \
@@ -139,7 +141,7 @@ let main argv =
     // printQueryResult pathQuery pathG
 
     let pathQuery = "MATCH NODES (s t)                        \
-                   \nSUCH THAT (s-[p]->t s-[q]->t )           \
+                   \nSUCH THAT (s-[p]->t x-[q]->y )           \
                    \nWHERE ([type(@1) = \"bus\"].*<p>         \
                    \n       .*[dest(@1) = \"end\"]<p>         \
                    \n       [edge(@1 @'1) = \"link\"]*.<p>    \

@@ -169,6 +169,7 @@ module RegularConstraints =
                 let nodesMatched, rest  = List.partition checkMatched nextNodes
                 let nextVis = 
                     List.map MatchedKEdges.basicInfo nextNodes 
+                    // nextNodes
                     |> List.filter (flip Set.contains visited)
                     |> Set.ofList
 
