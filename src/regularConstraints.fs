@@ -167,15 +167,16 @@ module RegularConstraints =
             else
                 let nextNodes           = nextKEdges graph mNodes
                 let nodesMatched, rest  = List.partition checkMatched nextNodes
-                let nextVis = 
-                    List.map MatchedKEdges.basicInfo nextNodes 
-                    // nextNodes
-                    |> List.filter (flip Set.contains visited)
-                    |> Set.ofList
+                // let nextVis = 
+                //     // List.map MatchedKEdges.basicInfo nextNodes 
+                //     nextNodes
+                //     |> List.filter (flip Set.contains visited)
+                //     |> Set.ofList
 
                 let nextNotVis = nextNodes |> List.filter (
-                                    MatchedKEdges.basicInfo 
-                                    >> flip Set.contains nextVis >> not) 
+                                    // MatchedKEdges.basicInfo 
+                                    // >> 
+                                    flip Set.contains visited >> not) 
 
                 let mapMk = 
                     List.map (fun mk -> 
@@ -187,11 +188,17 @@ module RegularConstraints =
                 // printfn "Nodes:\n %A"         ^ mapMk mNodes
                 // printfn "Matched nodes:\n %A" ^ mapMk nodesMatched
                 // printfn "Rest of nodes:\n %A" ^ mapMk rest
-                // printfn "next of nodes not vis:\n %A" ^ mapMk nextNotVis
-                // printfn "vis:\n %A" (Set.toList visited 
-                //                      |> List.map ^ List.map info)
+                printfn "next of nodes not vis:\n %A" ^ mapMk nextNotVis
+                printfn "vis:\n %A" 
+                    (Set.toList visited 
+                     |> List.map (
+                        fun me -> (Map.valueList me.currEdges |> List.map info)
+                                  , List.map (fun (nf,_) -> List.map (fun t -> t.tid) nf) 
+                                            me.nfaStates)
+                    )
                 
-                let visited = List.map MatchedKEdges.basicInfo nextNodes
+                let visited = //List.map MatchedKEdges.basicInfo 
+                              nextNodes
                               |> Set.ofList |> Set.union visited
 
                 bfs visited (nodesMatched @ result) nextNotVis

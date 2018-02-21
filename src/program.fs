@@ -103,33 +103,57 @@ let main argv =
     // let ser = FsPickler.CreateXmlSerializer (indent = true)
     // printfn "Serialized: %s\n" (ser.PickleToString nfa)
 
+    
     let pathG : Graph =
         let me = Map.empty
         let edge = Map.ofList ["edge", StringVal "link"]
+        let edge2 = Map.ofList ["edge", StringVal "link"
+                                "a", IntVal 1]
+
+        // Graph.create // nodes
+        //              [ 0, Map.ofList ["dest", StringVal "end"]
+        //                1, Map.ofList ["type", StringVal "bus"]
+        //                2, me
+        //                3, me
+        //                4, me
+        //                5, me
+        //                6, Map.ofList ["dest", StringVal "end"]
+        //                7, me
+        //                8, Map.ofList ["type", StringVal "bus"] 
+        //              ]                  
+        //              // edges
+        //              [ 0, 8, edge
+        //                1, 2, edge 
+        //                2, 3, edge 
+        //                3, 4, edge 
+        //                4, 5, edge
+        //                3, 6, edge
+        //                8, 2, edge
+        //                6, 2, edge 
+        //                6, 0, edge 
+        //              ]
 
         Graph.create // nodes
-                     [ 0, me// Map.ofList ["dest", StringVal "end"]
-                       1, Map.ofList ["type", StringVal "bus"]
+                     [ 0, me //Map.ofList ["dest", StringVal "end"]
+                       1, Map.ofList ["type", StringVal "beg"]
                        2, me
                        3, me
                        4, me
                        5, me
                        6, Map.ofList ["dest", StringVal "end"]
                        7, me
-                       8, Map.ofList ["type", StringVal "bus"] 
+                       8, Map.ofList ["type", StringVal "beg"] 
                      ]                  
                      // edges
-                     [ 0, 8, edge
+                     [ //0, 8, edge
                        1, 2, edge 
                        2, 3, edge 
                        3, 4, edge 
-                       4, 5, edge
-                       3, 6, edge
-                       8, 2, edge
+                       4, 5, edge2
+                       5, 4, edge2
+                       5, 6, edge
                        6, 2, edge 
                        6, 0, edge 
-                       5, 0, edge 
-                       5, 1, edge 
                      ]
 
     // let pathQuery = "MATCH NODES (s t)                        \
@@ -142,11 +166,12 @@ let main argv =
 
     let pathQuery = "MATCH NODES (s t)                        \
                    \nSUCH THAT (s-[p]->t x-[q]->y )           \
-                   \nWHERE ([type(@1) = \"bus\"].*<p>         \
+                   \nWHERE ([type(@1) = \"beg\"].*<p>         \
                    \n       .*[dest(@1) = \"end\"]<p>         \
                    \n       [edge(@1 @'1) = \"link\"]*.<p>    \
+                   \n       .*[a(@1 @'1) = 1][a(@1 @'1) = 1]*.<p>    \
                    \n                                         \
-                   \n       [type(@1) = \"bus\"].*<q>         \
+                   \n       [type(@1) = \"beg\"].*<q>         \
                    \n       .*[dest(@1) = \"end\"]<q>         \
                    \n       [edge(@1 @'1) = \"link\"]*.<q> )"
 
