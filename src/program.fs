@@ -4,28 +4,29 @@ open OpraDB.RegexNFA
 open OpraDB.Data
 open OpraDB
 
-open FParsec
+// open FParsec
 open MBrace.FsPickler
 open Hekate
 open PrettyTable
 open FSharpx
 
-let test p str =
-    printf "%s => " str
-    match run p str with
-    | Success (result, _, _)   -> printfn "Success: %A" result
-    | Failure (errorMsg, _, _) -> printfn "Failure: %s" errorMsg
+// let test p str =
+//     printf "%s => " str
+//     match run p str with
+//     | Success (result, _, _)   -> printfn "Success: %A" result
+//     | Failure (errorMsg, _, _) -> printfn "Failure: %s" errorMsg
 
-let parseAndRun = test query
+// let parseAndRun = test query
 
 let printQueryResult str graph =
-    match run query str with
-    | Success (query, _, _)   ->
-        let ofId (ID s) = s
-        let headers = query.nodes |> List.map ofId
-        let hsIdx   = headers |> List.indexed |> List.map swap |> Map.ofList
-        let results =
-            QueryExecution.execute graph query
+    // match run query str with
+    // | Success (query, _, _)   ->
+    let query = Parser.parseQuery str
+    let ofId (ID s) = s
+    let headers = query.nodes |> List.map ofId
+    let hsIdx   = headers |> List.indexed |> List.map swap |> Map.ofList
+    let results =
+        QueryExecution.execute graph query
             // |> List.map (
             //     List.sortBy (fun (ID id, node) -> Map.tryFind id hsIdx)
             //     >> List.filter (fst >> ofId >> (flip Map.containsKey hsIdx))
@@ -36,8 +37,8 @@ let printQueryResult str graph =
 
         // let rowsCnt = List.length results
         // printfn "%d %s\n" rowsCnt (if rowsCnt <> 1 then "rows" else "row")
-        ()
-    | Failure (errorMsg, _, _) -> printfn "Failure: %s" errorMsg
+    ()
+    // | Failure (errorMsg, _, _) -> printfn "Failure: %s" errorMsg
 
 [<EntryPoint>]
 let main argv =

@@ -22,7 +22,7 @@ module RegularConstraints =
     let private nextKEdges graph (mKEdges : MatchedKEdges list) =
         /// Move to states reachable within one transition in single NFA
         /// for a given kEdges. Skips empty states.
-        let rec moveState kEdges ids transition =
+        let rec moveState kEdges transition =
             /// Get all states after skipping all empty ones.
             let rec skipEmpty t =
                 let moveFurther = Option.map skipEmpty >> Option.defaultValue []
@@ -38,16 +38,16 @@ module RegularConstraints =
             match transition.state with
             | Matched           -> []
             | Constraint constr ->
-                if NodeConstraints.checkKEdges kEdges graph constr ids
+                if NodeConstraints.checkKEdges kEdges graph constr
                 then ok transition
                 else []
             | Any   -> ok transition
             | Empty -> skipEmpty transition
-                       |> List.collect (moveState kEdges ids)
+                       |> List.collect (moveState kEdges)
 
         /// Move every state in a single NFA.
-        let moveNFA edges (states, ids) =
-            List.collect (moveState edges ids) states |> List.distinct, ids
+        let moveNFA edges states =
+            List.collect (moveState edges) states |> List.distinct
 
         /// Try to move every state in all NFAs for a given k-edge.
         let moveKEdges mKEdges =
@@ -58,11 +58,11 @@ module RegularConstraints =
                     // states - all states in a single nfa that 
                     //          k-edge is currently in
                     match moveNFA mKEdges.currEdges states with
-                    | [], _ -> None
-                    | nfa   -> collectStates (nfa::nfaStates) rest
+                    | []  -> None
+                    | nfa -> collectStates (nfa::nfaStates) rest
 
-            collectStates [] mKEdges.nfaStates
-            |> Option.map (fun ns -> { mKEdges with nfaStates = ns })
+            collectStates [] mKEdges.nfas
+            |> Option.map (fun ns -> { mKEdges with nfas = ns })
 
         let sinkNode node      = node, NULL_NODE, Map.empty
         let getOutEdges (_, v) = Graph.Nodes.outward v graph
@@ -91,7 +91,7 @@ module RegularConstraints =
     /// Get nodes that match regular constraints in a given query.
     let matchEdges (graph : Graph) (query : Query) =
         /// list of all NFAs for every path
-        let nfaStates : Map<_, NFAState list> =
+        let nfaStates : Map<_, StatesInNFA list> =
             let allPathsIDs =
                 List.collect snd query.regularConstraints
                 |> List.distinct |> List.map (fun i -> i, []) |> Map.ofList
@@ -99,7 +99,7 @@ module RegularConstraints =
             // build and append all NFAs
             query.regularConstraints
             |> flip List.fold allPathsIDs (
-                fun m (e, ids) ->
+                fun m e ->
                     let nfa      = [State.ofRegExp e], ids
                     let add m id = Map.add id (nfa :: Map.find id m) m
                     List.fold add m ids 

@@ -1,15 +1,11 @@
 namespace OpraDB
 
-open OpraDB.AST
-open FParsec
-open FSharpx.Functional.Prelude
-open FSharp.Core
 open Microsoft.FSharp.Text.Lexing
 
 module Parser =
     let parseQuery query = 
-        let lexbuf = LexBuffer<char>.FromString query
-        Parser.start Lexer.tokenstream lexbuf
+        LexBuffer<char>.FromString query
+        |> Grammar.query Lexer.read
         
     /// Parse string
     // let private str = pstring

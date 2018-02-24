@@ -11,6 +11,7 @@ open FSharpx.Option
 
 module NodeConstraints =
 
+    // TODO: Maybe move this to parser
     let getOperator =
         function
         | Leq -> (<=)
@@ -20,17 +21,16 @@ module NodeConstraints =
         | Eq  -> (=)
         | Neq -> (<>)
 
-    let private labellingValue name labels =
-        match Map.tryFind name labels with
+    let private toLiteral labelName labels =
+        match Map.tryFind labelName labels with
         | None               -> IntLiteral 0
         | Some (IntVal    i) -> IntLiteral i
         | Some (StringVal s) -> StringLiteral s
 
-    let private nodeVarTo indexToPath kEdges =
-        let getNode pathID getter =     
+    let private nodeVarTo kEdges =
+        let getNode onPath getter =     
             maybe {
-                let! p = Map.tryFind pathID indexToPath
-                let! mEdge = Map.tryFind p kEdges
+                let! mEdge = Map.tryFind onPath kEdges
                 return getter mEdge.lastEdge
             }
 
@@ -38,37 +38,35 @@ module NodeConstraints =
         | CurrNodeVar u -> getNode u fst
         | NextNodeVar v -> getNode v snd
 
-    let checkKEdges kEdges graph (NodeConstraint (lhs, op, rhs)) ids =
-        let indexToPath = List.mapi (fun i x -> i + 1, x) ids |> Map.ofList
+    let checkKEdges kEdges graph (NodeConstraint (lhs, op, rhs)) =
+        // let indexToPath = List.mapi (fun i x -> i + 1, x) ids |> Map.ofList
         let op l r      = getOperator op l r
-        let ofVar       = nodeVarTo indexToPath kEdges
+        let ofVar       = nodeVarTo kEdges
 
-        let valueOfLabelling (ID label) =
+        let labellingVal (ID label) =
             let nodeLabelling node =
-                (snd >> labellingValue label) <!> Graph.Nodes.tryFind node graph
+                (snd >> toLiteral label) <!> Graph.Nodes.tryFind node graph
             
             let edgeLabelling u v =
                 maybe {
                     let! u    = ofVar u
                     let! v    = ofVar v
                     let! edge = Graph.Edges.tryFind u v graph
-                    return labellingValue label (thr3 edge)
+                    return toLiteral label (thr3 edge)
                 }
 
             function
             | [u; v]    -> edgeLabelling u v
             | [nodeVar] -> ofVar nodeVar >>= nodeLabelling
             | other     -> None
-            >> (Option.defaultValue (IntLiteral 0))
+            >> Option.defaultValue (IntLiteral 0)
 
         let rec pred lhs rhs =
             match lhs, rhs with
             | IntLiteral    lhs, IntLiteral    rhs -> op lhs rhs
             | StringLiteral lhs, StringLiteral rhs -> op lhs rhs
-            | Labelling (name, vars), rhs ->
-                pred (valueOfLabelling name vars) rhs
-            | lhs, Labelling (name, vars) ->
-                pred lhs (valueOfLabelling name vars)
+            | Labelling (name, vars), rhs -> pred (labellingVal name vars) rhs
+            | lhs, Labelling (name, vars) -> pred lhs (labellingVal name vars)
             | lhs, rhs -> false
 
         pred lhs rhs

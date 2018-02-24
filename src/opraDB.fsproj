@@ -31,6 +31,7 @@
   <ItemGroup>
     <PackageReference Include="FParsec" Version="*" />
     <PackageReference Include="FsLexYacc" Version="7.0.6" />
+    <PackageReference Include="FsLexYacc.Runtime" Version="7.0.6" />
     <PackageReference Include="FSharp.Core" Version="4.3.3" />
     <PackageReference Include="FSharpx.Collections" Version="*" />
     <PackageReference Include="FSharpx.Extras" Version="*" />

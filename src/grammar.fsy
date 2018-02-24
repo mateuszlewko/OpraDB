@@ -1,10 +1,10 @@
 %{
 
-open OpraDB.Ast
+open OpraDB.AST
 
 %}
 
-%start start
+%start query
 
 %token <int> INT
 %token <float> FLOAT
@@ -34,7 +34,8 @@ open OpraDB.Ast
 
 %token MATCH NODES PATHS SUCH THAT WHERE HAVING
 
-%token LEQ GEQ LE GE NEQ PLUS MINUS DIV MULT AND OR
+%token STAR
+%token LEQ GEQ LE GE NEQ EQ PLUS MINUS DIV MULT AND OR
 
 %left AND OR
 %left LEQ GEQ EQ LE GE NEQ 
@@ -43,20 +44,20 @@ open OpraDB.Ast
 
 %token PIPE
 
-%type <Query> query
+%type <OpraDB.AST.Query> query
 
 %%
 
-start: query { $1 }
+id: ID { Identifier.ID $1 }
 
 id_list:
-  | ID COMMA id_list { (ID $1)::$3 }
-  | ID               { [ID $1] }
+  | id COMMA id_list { ($1)::$3 }
+  | id               { [$1] }
 
 nodes: NODES id_list { List.rev $2 } | { [] }
 paths: PATHS id_list { List.rev $2 } | { [] }
 
-path_constr: ID COLON ID ARROW ID { { path = $1; source = $3; target = $5 } }
+path_constr: id COLON id ARROW id { { path = $1; source = $3; target = $5 } }
 path_constr_elems:
   | path_constr COMMA path_constr_elems { $1::$3 }
   | path_constr                         { [$1] }
@@ -72,17 +73,17 @@ operator:
   | NEQ { Neq }
 
 node_var:
-  | AT ID      { CurrNodeVar $2 }
-  | AT_APOS ID { NextNodeVar $2 }
+  | AT id      { CurrNodeVar $2 }
+  | AT_APOS id { NextNodeVar $2 }
 
 node_vars:
   | node_var COMMA node_vars { $1::$3 }
-  | ndoe_var                 { [$1] }
+  | node_var                 { [$1] }
 
 operand: 
   | INT                        { IntLiteral $1 }
   | STRING                     { StringLiteral $1 }
-  | ID LPAREN node_vars RPAREN { Labelling ($1, $3) }
+  | id LPAREN node_vars RPAREN { Labelling ($1, $3) }
 
 node_constr: operand operator operand { NodeConstraint ($1, $2, $3) }
 
@@ -90,12 +91,12 @@ reg_expr:
   | DOT                       { AnyExp }
   | reg_expr STAR             { StarExp $1 }
   | reg_expr PIPE reg_expr    { UnionExp ($1, $3) }
-  | LPAREN node_constr RPAREN { NodeExp $1 }
+  | LPAREN node_constr RPAREN { NodeExp $2 }
   | LPAREN reg_expr RPAREN    { $2 }
-  | reg_expr reg_expr         { Concat ($1, $2) }
+  | reg_expr reg_expr         { ConcatExp ($1, $2) }
 
 reg_constr_elems: 
-  | reg_expr COMA reg_constr_elems { $1::$3 }
+  | reg_expr COMMA reg_constr_elems { $1::$3 }
   | reg_expr                        { [$1] }
 
 reg_constrs: WHERE reg_constr_elems { $2 } | { [] }

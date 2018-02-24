@@ -3,3 +3,6 @@ obj
 .vscode
 .idea
 sample.cql
+src/grammar.fs
+src/grammar.fsi
+src/lexer.fs
