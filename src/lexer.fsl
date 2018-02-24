@@ -10,9 +10,7 @@ open Grammar
 exception SyntaxError of string
 
 let lexeme = LexBuffer.LexemeString
-
-let newline (lexbuf: LexBuffer<_>) = 
-  lexbuf.StartPos <- lexbuf.StartPos.NextLine
+let newline (lexbuf:LexBuffer<_>) = lexbuf.EndPos <- lexbuf.EndPos.NextLine
 
 }
 
@@ -48,13 +46,15 @@ rule read =
   | "THAT"   { THAT }
   | "WHERE"  { WHERE }
   | "HAVING" { HAVING }
+  | "SUM"    { SUM }
+  | "BY"     { BY }
 
   | '{'      { LBRACE }
   | '}'      { RBRACE }
   | '['      { LBRACK }
   | ']'      { RBRACK }
-  | '<'      { LANGBRACK }
-  | '>'      { RANGBRACK }
+  (* | '<'      { LANGBRACK } *)
+  (* | '>'      { RANGBRACK } *)
   | '('      { LPAREN }
   | ')'      { RPAREN }
 

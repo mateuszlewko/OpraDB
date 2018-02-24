@@ -32,7 +32,7 @@ open OpraDB.AST
 %token COMMA     /* ,  */
 %token EOF       /* end of file */
 
-%token MATCH NODES PATHS SUCH THAT WHERE HAVING
+%token MATCH NODES PATHS SUCH THAT WHERE HAVING SUM BY
 
 %token STAR
 %token LEQ GEQ LE GE NEQ EQ PLUS MINUS DIV MULT AND OR
@@ -101,8 +101,21 @@ reg_constr_elems:
 
 reg_constrs: WHERE reg_constr_elems { $2 } | { [] }
 
+arith_operand: 
+  | SUM id BY id { SumBy ($2, $4) }
+  | INT          { IntALiteral $1 }
+
+arith_constr: arith_operand operator arith_operand 
+             { ArithmeticConstraint ($1, $2, $3) }
+
+arith_constr_elems: 
+  | arith_constr COMMA arith_constr_elems { $1::$3 }
+  | arith_constr                          { [$1] }
+
+arith_constrs: HAVING arith_constr_elems { $2 } | { [] }
+
 query: 
-  | MATCH nodes paths path_constrs reg_constrs
+  | MATCH nodes paths path_constrs reg_constrs arith_constrs
     { { nodes = $2; paths = $3; pathConstraints = $4
-      ; regularConstraints = $5 } }
+      ; regularConstraints = $5; arithmeticConstraints = $6 } }
   | query EOF { $1 }

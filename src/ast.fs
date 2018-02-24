@@ -23,6 +23,8 @@ module AST =
     /// Represents one of: <=, <, >=, >, =, <>
     type Operator = Leq | Le | Geq | Ge | Eq | Neq
 
+    type Literal = IntLit of int | StringLit of string
+
     type Operand =
         /// LabellingFunction either checks whether there exists
         /// label between specified nodes (or node if only one given),
@@ -78,17 +80,27 @@ module AST =
                 target = target
             }
 
+    type ArithOperand = 
+        /// SumBy (Path Identifier, Label Identifier)
+        | SumBy of Identifier * Identifier 
+        | IntALiteral of int
+
+    type ArithmeticConstraint = 
+        ArithmeticConstraint of ArithOperand * Operator * ArithOperand
+
     type Query = {
             /// Matched nodes
-            nodes              : Identifier list
+            nodes                 : Identifier list
             /// Matched paths
-            paths              : Identifier list
-            pathConstraints    : PathConstraint list
-            regularConstraints : RegularExpression list
+            paths                 : Identifier list
+            pathConstraints       : PathConstraint list
+            regularConstraints    : RegularExpression list
+            arithmeticConstraints : ArithmeticConstraint list
         }
 
     module Query =
-        let empty = { nodes              = []
-                      paths              = []
-                      pathConstraints    = []
-                      regularConstraints = [] }
+        let empty = { nodes                 = []
+                      paths                 = []
+                      pathConstraints       = []
+                      regularConstraints    = []
+                      arithmeticConstraints = [] }

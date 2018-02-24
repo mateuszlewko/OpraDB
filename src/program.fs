@@ -100,7 +100,10 @@ let main argv =
     let pathQuery = "
                     LET connected x y = (@x.type = 0) * @x.time IN
                     LET route p = ((@p, @'p).edge = true)*. IN
-                    
+                    LET crowded (x) =
+                        MATCH NODES x SUCH THAT p : x -> y
+                        WHERE route(p), y.attr > 100 HAVING SUM p BY <= 10 
+                    IN 
                     MATCH NODES s, t, y PATHS p, q
                     SUCH THAT p: s->t, q: x->y, r: a..b
                     WHERE 
@@ -141,21 +144,22 @@ let main argv =
                     "
 
     let pathQuery = "MATCH NODES s, t, x, y
-                  \n SUCH THAT p: s->t, q : s -> y
-                  \n WHERE 
-                  \n     (type(@p) = \"beg\").*
-                  \n   , .*(type(@p) = \"end\")
-                  \n   , (edge(@p, @'p) = \"link\")*.
-                  \n   , .*(a(@p, @'p) = \"ok\")
-                  \n      (a(@p, @'p) = \"ok\")
-                  \n      (a(@p, @'p) = \"ok\").*
+                     SUCH THAT p: s->t, q : s -> y
+                     WHERE 
+                         (type(@p) = \"beg\").*
+                       , .*(type(@p) = \"end\")
+                       , (edge(@p, @'p) = \"link\")*.
+                       , .*(a(@p, @'p) = \"ok\")
+                          (a(@p, @'p) = \"ok\")
+                          (a(@p, @'p) = \"ok\").*
                   
-                  \n   , (type(@q) = \"beg\").*
-                  \n   , .*(type(@q) = \"end\")
-                  \n   , (edge(@q, @'q) = \"link\")*.
-                  \n   , .*(a(@q, @'q) = \"ok\")
-                  \n      (a(@q, @'q) = \"ok\")
-                  \n      (a(@q, @'q) = \"ok\").*
+                       , (type(@q) = \"beg\").*
+                       , .*(type(@q) = \"end\")
+                       , (edge(@q, @'q) = \"link\")*.
+                       , .*(a(@q, @'q) = \"ok\")
+                          (a(@q, @'q) = \"ok\")
+                          (a(@q, @'q) = \"ok\").*
+                       HAVING 10 < SUM p BY attr
                     "
 
     printQueryResult pathQuery pathG
