@@ -1,22 +1,10 @@
-﻿open OpraDB.Parser
-open OpraDB.AST
-open OpraDB.RegexNFA
+﻿open OpraDB.AST
 open OpraDB.Data
 open OpraDB
 
-// open FParsec
-open MBrace.FsPickler
 open Hekate
 open PrettyTable
 open FSharpx
-
-// let test p str =
-//     printf "%s => " str
-//     match run p str with
-//     | Success (result, _, _)   -> printfn "Success: %A" result
-//     | Failure (errorMsg, _, _) -> printfn "Failure: %s" errorMsg
-
-// let parseAndRun = test query
 
 let printQueryResult str graph =
     // match run query str with
@@ -42,69 +30,7 @@ let printQueryResult str graph =
 
 [<EntryPoint>]
 let main argv =
-    // test regularExpression ".(.+..*)+.."
-    // test regularExpression ".*"
-    // test regularExpression "(.*..)+."
-    // test regularExpression "([attr(@1) > 10]*.)"
-    // test regularExpression ".*..."
-    // test regularExpression "(..)*.."
-    // test regularExpression ".*.+."
-    // test regularExpression ".*.+.+.."
-    // test regularExpression "...(.(..)*.+.)...."
 
-    // let q1 = "MATCH NODES (s t x y)
-    //           SUCH THAT (s-[p1]->t x-[p2]->y)"
-
-    // parseAndRun q1
-
-    // let q2 = "MATCH NODES (s t)
-    //           SUCH THAT (s-[p]->t)
-    //           WHERE (..*<p>)"
-
-    // parseAndRun q2
-
-    // let q3 = "MATCH NODES (s t)
-    //           SUCH THAT (s-[p]->t)
-    //           WHERE ([attr(@1) >10] *. +..( .*)<p>)"
-
-    // parseAndRun q3
-
-    // let q4 = "MATCH NODES (s t)
-    //           SUCH THAT (s-[p]->t s-[p2]->t)
-    //           WHERE (.*[type (@1 @'1) = \"some type\"] *.<p>  .+..(.*)..<p p2>)"
-
-    // parseAndRun q4
-
-    // let q5 =  "MATCH NODES (s t)
-    //            WHERE (.*[type (@1 @'1) = \"some type\"]*.<p>
-    //                   .+(..(.*))..<p p2> )"
-    // parseAndRun q5
-
-    // let regexAst =
-    //     ConcatExp
-    //         (AnyExp, // .
-    //          ConcatExp
-    //             (StarExp AnyExp, // .*
-    //              EpsilonExp))
-
-    // State.ofRegExp regexAst |> printfn "%A"
-
-    // let regexAst =
-    //     ConcatExp
-    //         (AnyExp, // .
-    //          ConcatExp
-    //             (StarExp AnyExp, // .*
-    //              ConcatExp
-    //                 (AnyExp,     // .
-    //                  AnyExp)))   // .
-
-    // let nfa = State.ofRegExp regexAst
-    // nfa |> printfn "%A"
-
-    // let ser = FsPickler.CreateXmlSerializer (indent = true)
-    // printfn "Serialized: %s\n" (ser.PickleToString nfa)
-
-    
     let pathG : Graph =
         let me = Map.empty
         let edge = Map.ofList ["edge", StringVal "link"]
@@ -214,45 +140,24 @@ let main argv =
                     )
                     "
 
-    let pathQuery = "MATCH NODES s, t
-                  \n SUCH THAT p: s->t
+    let pathQuery = "MATCH NODES s, t, x, y
+                  \n SUCH THAT p: s->t, q: s -> y
                   \n WHERE 
                   \n     (type(@p) = \"beg\").*
                   \n   , .*(type(@p) = \"end\")
                   \n   , (edge(@p, @'p) = \"link\")*.
-                  \n   , .*(a(@p, @'p) = \"ok\")(a(@p, @'p) = \"ok\")(a(@p, @'p) = \"ok\").*
-                        
-                       
+                  \n   , .*(a(@p, @'p) = \"ok\")
+                  \n      (a(@p, @'p) = \"ok\")
+                  \n      (a(@p, @'p) = \"ok\").*
+                  
+                  \n   , (type(@q) = \"beg\").*
+                  \n   , .*(type(@q) = \"end\")
+                  \n   , (edge(@q, @'q) = \"link\")*.
+                  \n   , .*(a(@q, @'q) = \"ok\")
+                  \n      (a(@q, @'q) = \"ok\")
+                  \n      (a(@q, @'q) = \"ok\").*
                     "
 
-    // let pathQuery = "MATCH NODES (s t)                        \
-    //                \nSUCH THAT (p: s->t, s1: a..b )           \
-    //                \nWHERE ([type(@1) = \"bus\"].*<p>         \
-    //                \n       .*[dest(@1) = \"end\"]<p>         \
-    //                \n       [edge(@1 @'1) = \"link\"]*.<p>    \
-    //                \n                                         \
-    //                \n       [type(@1) = \"bus\"].*<q>         \
-    //                \n       .*[dest(@1) = \"end\"]<q>         \
-    //                \n       [edge(@1 @'1) = \"link\"]*.<q> )"
-
-    // let pathQuery = "MATCH NODES (s t)                        \
-    //                \nSUCH THAT (s->t as p, a..b as s1)           \
-    //                \nWHERE ([type(@p) = \"bus\"].*          \
-    //                \n       .*[dest(@p) = \"end\"]         \
-    //                \n       [edge(@p @'p) = \"link\"]*.<p>    \
-    //                \n                                         \
-    //                \n       [type(@1) = \"bus\"].*<q>         \
-    //                \n       .*[dest(@1) = \"end\"]<q>         \
-    //                \n       [edge(@1 @'1) = \"link\"]*.<q> )"
-
     printQueryResult pathQuery pathG
-
-    // let pathQuery = "MATCH NODES (u v)                        \
-    //                \nSUCH THAT (u-[p]->v)                     \
-    //                \nWHERE ([type(@1) = \"bus\"].*<p>         \
-    //                \n       .*([dest(@1) = \"end\"] + .)<p>   \
-    //                \n       [edge(@1 @'1) = \"link\"]*.<p> )"
-
-    // printQueryResult pathQuery pathG
 
     0

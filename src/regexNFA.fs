@@ -53,7 +53,6 @@ module RegexNFA =
 
             let rec build continuation =
                 function
-                // | EpsilonExp         -> continuation
                 | AnyExp             -> create (getID ()) Any continuation
                 | NodeExp constr     -> create (getID ()) (Constraint constr) 
                                                 continuation

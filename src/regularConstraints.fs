@@ -90,22 +90,6 @@ module RegularConstraints =
 
     /// Get nodes that match regular constraints in a given query.
     let matchEdges (graph : Graph) (query : Query) =
-        /// list of all NFAs for every path
-        // let nfaStates : Map<_, StatesInNFA list> =
-        //     let allPathsIDs =
-        //         List.collect snd query.regularConstraints
-        //         |> List.distinct 
-        //         |> List.map (fun i -> i, []) |> Map.ofList
-
-        //     // build and append all NFAs
-        //     query.regularConstraints
-        //     |> flip List.fold allPathsIDs (
-        //         fun m e ->
-        //             let nfa      = [State.ofRegExp e]
-        //             let add m id = Map.add id (nfa :: Map.find id m) m
-        //             List.fold add m 
-        //         ) 
-
         let allNFAs = query.regularConstraints 
                       |> List.map (fun e -> [State.ofRegExp e]) 
         let mKEdges =

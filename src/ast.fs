@@ -52,7 +52,6 @@ module AST =
 
 
     type RegularExpression =
-        // | EpsilonExp
         | AnyExp
         | NodeExp of NodeConstraint
         | ConcatExp of RegularExpression * RegularExpression
@@ -71,10 +70,6 @@ module AST =
                 | _ -> []
 
             get []
-
-    /// RegularExpression with paths applied to it,
-    /// examples: .*[attr(@1) > 100](p)
-    // type RegularConstraint = RegularExpression list
 
     module PathConstraint =
         let create source path target = {
