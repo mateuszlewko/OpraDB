@@ -1,0 +1,107 @@
+%{
+
+open OpraDB.Ast
+
+%}
+
+%start start
+
+%token <int> INT
+%token <float> FLOAT
+%token <string> ID
+%token <string> STRING /* "string literal" */
+%token TRUE
+%token FALSE
+
+%token LBRACE    /* { */
+%token RBRACE    /* } */
+%token LBRACK    /* [ */
+%token RBRACK    /* ] */
+%token LANGBRACK /* < */
+%token RANGBRACK /* > */
+%token LPAREN    /* ( */
+%token RPAREN    /* ) */
+
+%token AT        /* @  */
+%token AT_APOS   /* @' */
+%token ARROW     /* -> */
+%token APOS      /* '  */
+%token COLON     /* :  */
+%token SEMICOLON /* ;  */
+%token DOT       /* .  */
+%token COMMA     /* ,  */
+%token EOF       /* end of file */
+
+%token MATCH NODES PATHS SUCH THAT WHERE HAVING
+
+%token LEQ GEQ LE GE NEQ PLUS MINUS DIV MULT AND OR
+
+%left AND OR
+%left LEQ GEQ EQ LE GE NEQ 
+%left PLUS MINUS
+%left DIV MULT
+
+%token PIPE
+
+%type <Query> query
+
+%%
+
+start: query { $1 }
+
+id_list:
+  | ID COMMA id_list { (ID $1)::$3 }
+  | ID               { [ID $1] }
+
+nodes: NODES id_list { List.rev $2 } | { [] }
+paths: PATHS id_list { List.rev $2 } | { [] }
+
+path_constr: ID COLON ID ARROW ID { { path = $1; source = $3; target = $5 } }
+path_constr_elems:
+  | path_constr COMMA path_constr_elems { $1::$3 }
+  | path_constr                         { [$1] }
+
+path_constrs: SUCH THAT path_constr_elems { List.rev $3 } | { [] }
+
+operator:
+  | LEQ { Leq }
+  | LE  { Le  }
+  | GEQ { Geq } 
+  | GE  { Ge  }
+  | EQ  { Eq  }
+  | NEQ { Neq }
+
+node_var:
+  | AT ID      { CurrNodeVar $2 }
+  | AT_APOS ID { NextNodeVar $2 }
+
+node_vars:
+  | node_var COMMA node_vars { $1::$3 }
+  | ndoe_var                 { [$1] }
+
+operand: 
+  | INT                        { IntLiteral $1 }
+  | STRING                     { StringLiteral $1 }
+  | ID LPAREN node_vars RPAREN { Labelling ($1, $3) }
+
+node_constr: operand operator operand { NodeConstraint ($1, $2, $3) }
+
+reg_expr:
+  | DOT                       { AnyExp }
+  | reg_expr STAR             { StarExp $1 }
+  | reg_expr PIPE reg_expr    { UnionExp ($1, $3) }
+  | LPAREN node_constr RPAREN { NodeExp $1 }
+  | LPAREN reg_expr RPAREN    { $2 }
+  | reg_expr reg_expr         { Concat ($1, $2) }
+
+reg_constr_elems: 
+  | reg_expr COMA reg_constr_elems { $1::$3 }
+  | reg_expr                        { [$1] }
+
+reg_constrs: WHERE reg_constr_elems { $2 } | { [] }
+
+query: 
+  | MATCH nodes paths path_constrs reg_constrs
+    { { nodes = $2; paths = $3; pathConstraints = $4
+      ; regularConstraints = $5 } }
+  | query EOF { $1 }

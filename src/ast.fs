@@ -14,7 +14,8 @@ module AST =
 
     /// NodeVariable x represents either @x or @'x,
     /// for example CurrNodeVar 1 is @1 and NextNodeVar 2 is @'2
-    type NodeVariable = CurrNodeVar of int | NextNodeVar of int
+    // type NodeVariable = CurrNodeVar of int | NextNodeVar of int
+    type NodeVariable = CurrNodeVar of Identifier | NextNodeVar of Identifier
 
     /// Represents one of: <=, <, >=, >, =, <>
     type Operator = Leq | Le | Geq | Ge | Eq | Neq
@@ -33,7 +34,7 @@ module AST =
     type NodeConstraint = NodeConstraint of Operand * Operator * Operand
 
     type RegularExpression =
-        | EpsilonExp
+        // | EpsilonExp
         | AnyExp
         | NodeExp of NodeConstraint
         | ConcatExp of RegularExpression * RegularExpression
@@ -42,7 +43,7 @@ module AST =
 
     /// RegularExpression with paths applied to it,
     /// examples: .*[attr(@1) > 100](p)
-    type RegularConstraint = RegularExpression * Identifier list
+    // type RegularConstraint = RegularExpression list
 
     module PathConstraint =
         let create source path target = {
@@ -57,7 +58,7 @@ module AST =
             /// Matched paths
             paths              : Identifier list
             pathConstraints    : PathConstraint list
-            regularConstraints : RegularConstraint list
+            regularConstraints : RegularExpression list
         }
 
     module Query =

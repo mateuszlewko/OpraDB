@@ -8,7 +8,7 @@ module QueryData =
 
     /// All current states in a single NFA, along with
     /// id of paths applied to it
-    type NFAState = Transition list * Identifier list
+    type StatesInNFA = Transition list
 
     type MatchedEdge = {
             path      : Identifier
@@ -20,7 +20,7 @@ module QueryData =
 
     type MatchedKEdges = {
             currEdges : KEdges
-            nfaStates : NFAState list
+            nfas      : StatesInNFA list
         }
 
     let [<Literal>] NULL_NODE = -1

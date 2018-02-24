@@ -5,7 +5,7 @@ module Lexer
 
 open Microsoft.FSharp.Text.Lexing
 open System
-open YParser
+open Grammar
 
 exception SyntaxError of string
 
@@ -13,15 +13,23 @@ let lexeme = LexBuffer.LexemeString
 
 let newline (lexbuf: LexBuffer<_>) = 
   lexbuf.StartPos <- lexbuf.StartPos.NextLine
+
 }
 
-let int = ['-' '+']? ['0'-'9']+
+let int   = ['-' '+']? ['0'-'9']+
 let digit = ['0'-'9']
-let frac = '.' digit*
-let exp = ['e' 'E'] ['-' '+']? digit+
+let frac  = '.' digit*
+let exp   = ['e' 'E'] ['-' '+']? digit+
 let float = '-'? digit* frac? exp?
 
-let white = [' ' '\t']+
+let letter       = ['A'-'Z'] | ['a'-'z']
+let id_init      = letter  | '_'
+let id_cont      = id_init | ''' | digit 
+let id_nest_cont = id_init | ['.' '''] | digit 
+let id           = id_init id_cont*
+let id_nest      = id_init id_nest_cont*
+
+let white   = [' ' '\t']+
 let newline = '\r' | '\n' | "\r\n"
 
 rule read =
@@ -32,13 +40,27 @@ rule read =
   | float    { FLOAT (float (lexeme lexbuf)) }
   | "true"   { TRUE }
   | "false"  { FALSE }
-  | "null"   { NULL }
   | '"'      { read_string "" false lexbuf } 
-  | '{'      { LEFT_BRACE }
-  | '}'      { RIGHT_BRACE }
-  | '['      { LEFT_BRACK }
-  | ']'      { RIGHT_BRACK }
+  | id_nest  { ID (lexeme lexbuf) }
+
+  | '{'      { LBRACE }
+  | '}'      { RBRACE }
+  | '['      { LBRACK }
+  | ']'      { RBRACK }
+  | '<'      { LANGBRACK }
+  | '>'      { RANGBRACK }
+  | '('      { LPAREN }
+  | ')'      { RPAREN }
+
+  | "->"     { ARROW }
+  | "@'"     { AT_APOS }
+  | '|'      { PIPE }
+  | '*'      { STAR }
+  | '@'      { AT }
+  | '''      { APOS }
   | ':'      { COLON }
+  | ';'      { SEMICOLON }
+  | '.'      { DOT }
   | ','      { COMMA }
   | eof      { EOF }
   | _ { raise (Exception (sprintf "SyntaxError: Unexpected char: '%s' \
@@ -50,8 +72,8 @@ rule read =
 and read_string str ignorequote =
   parse
   | '"'           { if ignorequote  
-                    then (read_string (str+"\\\"") false lexbuf) 
+                    then (read_string (str + "\\\"") false lexbuf) 
                     else STRING (str) }
   | '\\'          { read_string str true lexbuf }
-  | [^ '"' '\\']+ { read_string (str+(lexeme lexbuf)) false lexbuf }
+  | [^ '"' '\\']+ { read_string (str + (lexeme lexbuf)) false lexbuf }
   | eof           { raise (Exception ("String is not terminated")) }

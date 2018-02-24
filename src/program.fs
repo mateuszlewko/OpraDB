@@ -170,6 +170,34 @@ let main argv =
     //                \n       .*[dest(@1) = \"end\"]<q>         \
     //                \n       [edge(@1 @'1) = \"link\"]*.<q> )"
 
+    let pathQuery = "
+                    LET connected x y = (@x.type = 0) * @x.time IN
+                    LET route p = ((@p, @'p).edge = true)*. IN
+                    
+                    MATCH NODES s, t, y PATHS p, q
+                    SUCH THAT p: s->t, q: x->y, r: a..b
+                    WHERE 
+                        s.type = \"beg\"
+                        AND t.type = \"end\",
+                        AND type(@p) = \"place\"*
+                        AND @p.type = \"place\"
+                        AND ((@p, @' q).edge = \"link\")*.
+                        AND .*((@p, @q).a = \"ok\"){3}.*
+                        AND (connected(@p, @q))*
+
+                          s.type = \"beg\"
+                        , t.type = \"end\"
+                        , ((@p, @'q).edge = \"link\")*.
+                        , .*((@p, @q).a = \"ok\"){3}.*
+                        , (connected(@p, @q))*
+                    HAVING 
+                        SUM p BY atrr <= 10
+                        AND SUM p BY attr = MAX route(s, t, p) BY attr
+                        AND MAX p BY SUM OF attr 
+                    ;
+
+                    "
+
     let pathQuery = "MATCH NODES (s t)
                     SUCH THAT (s-[p]->t x-[q]->y)
                     WHERE (

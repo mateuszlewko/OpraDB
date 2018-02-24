@@ -7,21 +7,19 @@
 
   <Import Project="tools/FsLexYacc.targets" />
 
-
   <ItemGroup>
-    <Compile Include="JsonValue.fs" />
-    <FsYacc Include="YParser.fsy">
-      <OtherFlags>--module YParser</OtherFlags>
+    <Compile Include="ast.fs" />
+    <FsYacc Include="grammar.fsy">
+      <OtherFlags>--module Grammar</OtherFlags>
     </FsYacc>
-    <FsLex Include="Lexer.fsl">
+    <FsLex Include="lexer.fsl">
       <OtherFlags>--unicode</OtherFlags>
     </FsLex>
     <Compile Include="commonUtils.fs" />
-    <Compile Include="ast.fs" />
     <Compile Include="data.fs" />
-    <Compile Include="YParser.fsi" />
-    <Compile Include="YParser.fs" />
-    <Compile Include="Lexer.fs" />
+    <Compile Include="grammar.fsi" />
+    <Compile Include="grammar.fs" />
+    <Compile Include="lexer.fs" />
     <Compile Include="parser.fs" />
     <Compile Include="regexNFA.fs" />
     <Compile Include="queryData.fs" />
