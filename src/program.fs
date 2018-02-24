@@ -141,7 +141,7 @@ let main argv =
                     "
 
     let pathQuery = "MATCH NODES s, t, x, y
-                  \n SUCH THAT p: s->t, q: s -> y
+                  \n SUCH THAT p: s->t, q : s -> y
                   \n WHERE 
                   \n     (type(@p) = \"beg\").*
                   \n   , .*(type(@p) = \"end\")

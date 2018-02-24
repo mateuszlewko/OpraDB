@@ -8,7 +8,7 @@ Parser:
     ✔ Add conversion from `RegExpTail` to `RegularExpression` @done(17-12-10 03:45)
     ✔ Handle whitespaces in regular expression parsing @done(17-12-10 14:09)
     ✔ Test query parsing @done(17-12-10 15:59)
-    ❑ Improve syntax (possibly use FsLex and FsYacc) @today
+    ✔ Improve syntax (possibly use FsLex and FsYacc) @today @done(18-02-24 04:44)
     ❑ Parse arithmetic constraints @today
     ❑ Add node constraint which returns bool (only one operand in expression) or add bool value @low
     ❑ Parse complex node constraints (??)
