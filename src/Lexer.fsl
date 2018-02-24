@@ -37,11 +37,17 @@ rule read =
   | white    { read lexbuf }
   | newline  { newline lexbuf; read lexbuf }
   | int      { INT (int (lexeme lexbuf)) }
-  | float    { FLOAT (float (lexeme lexbuf)) }
+  (* | float    { FLOAT (float (lexeme lexbuf)) } *)
   | "true"   { TRUE }
   | "false"  { FALSE }
   | '"'      { read_string "" false lexbuf } 
-  | id_nest  { ID (lexeme lexbuf) }
+
+  | "MATCH"  { MATCH }
+  | "NODES"  { NODES }
+  | "SUCH"   { SUCH }
+  | "THAT"   { THAT }
+  | "WHERE"  { WHERE }
+  | "HAVING" { HAVING }
 
   | '{'      { LBRACE }
   | '}'      { RBRACE }
@@ -52,16 +58,30 @@ rule read =
   | '('      { LPAREN }
   | ')'      { RPAREN }
 
+  | "<="     {LEQ }
+  | '<'      {LE }
+  | '>'      {GE }
+  | ">="     {GEQ }
+  | '='      {EQ }
+  | "<>"     {NEQ }
+  | '+'      {PLUS }
+  | '-'      {MINUS }
+  | '*'      {MULT }
+  | '/'      {DIV }
+
   | "->"     { ARROW }
   | "@'"     { AT_APOS }
   | '|'      { PIPE }
-  | '*'      { STAR }
+  (* | '*'      { STAR } *)
   | '@'      { AT }
   | '''      { APOS }
   | ':'      { COLON }
   | ';'      { SEMICOLON }
   | '.'      { DOT }
   | ','      { COMMA }
+  
+  | id_nest  { ID (lexeme lexbuf) }
+  
   | eof      { EOF }
   | _ { raise (Exception (sprintf "SyntaxError: Unexpected char: '%s' \
                                    Line: %d Column: %d" 

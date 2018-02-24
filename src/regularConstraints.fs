@@ -91,22 +91,24 @@ module RegularConstraints =
     /// Get nodes that match regular constraints in a given query.
     let matchEdges (graph : Graph) (query : Query) =
         /// list of all NFAs for every path
-        let nfaStates : Map<_, StatesInNFA list> =
-            let allPathsIDs =
-                List.collect snd query.regularConstraints
-                |> List.distinct |> List.map (fun i -> i, []) |> Map.ofList
+        // let nfaStates : Map<_, StatesInNFA list> =
+        //     let allPathsIDs =
+        //         List.collect snd query.regularConstraints
+        //         |> List.distinct 
+        //         |> List.map (fun i -> i, []) |> Map.ofList
 
-            // build and append all NFAs
-            query.regularConstraints
-            |> flip List.fold allPathsIDs (
-                fun m e ->
-                    let nfa      = [State.ofRegExp e], ids
-                    let add m id = Map.add id (nfa :: Map.find id m) m
-                    List.fold add m ids 
-                ) 
+        //     // build and append all NFAs
+        //     query.regularConstraints
+        //     |> flip List.fold allPathsIDs (
+        //         fun m e ->
+        //             let nfa      = [State.ofRegExp e]
+        //             let add m id = Map.add id (nfa :: Map.find id m) m
+        //             List.fold add m 
+        //         ) 
 
-        let allNFAs  = Map.values nfaStates |> List.concat
-        let mKEdges  =
+        let allNFAs = query.regularConstraints 
+                      |> List.map (fun e -> [State.ofRegExp e]) 
+        let mKEdges =
             let nodeFromIndex = 
                 let rec getIndex ixMap (p : PathConstraint) = 
                     match Map.tryFind p.source ixMap with 
@@ -128,7 +130,7 @@ module RegularConstraints =
                         p.path, create p.path esArr.[ix]
                     )                         
 
-                { nfaStates = allNFAs
+                { nfas      = allNFAs
                   currEdges = kEdges |> Map.ofList }
             )
 
@@ -155,8 +157,8 @@ module RegularConstraints =
             checkAll Map.empty (Map.valueList mKEdges.currEdges)
 
         let checkNFAsInMatchedStates mKEdges =
-            mKEdges.nfaStates
-            |> List.forall (fst >> List.exists (fun t -> t.state = Matched))
+            mKEdges.nfas
+            |> List.forall (List.exists (fun t -> t.state = Matched))
 
         let checkMatched mKEdges =
             checkNFAsInMatchedStates mKEdges && checkFinalNodes mKEdges

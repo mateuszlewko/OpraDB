@@ -16,7 +16,10 @@ module AST =
     /// for example CurrNodeVar 1 is @1 and NextNodeVar 2 is @'2
     // type NodeVariable = CurrNodeVar of int | NextNodeVar of int
     type NodeVariable = CurrNodeVar of Identifier | NextNodeVar of Identifier
-
+   
+    module NodeVariable = 
+        let identifier = function CurrNodeVar i -> i | NextNodeVar i -> i
+   
     /// Represents one of: <=, <, >=, >, =, <>
     type Operator = Leq | Le | Geq | Ge | Eq | Neq
 
@@ -31,7 +34,22 @@ module AST =
         | StringLiteral of string
         // | NodeVariable TODO: Handle this case
 
+    module Operand = 
+        open NodeVariable
+
+        let allPathIDs = 
+            function 
+            | Labelling (_, vars) -> List.map identifier vars |> List.distinct
+            | _                   -> []
+
     type NodeConstraint = NodeConstraint of Operand * Operator * Operand
+    
+    module NodeConstraint = 
+        open Operand
+
+        let allPathIDs (NodeConstraint (l, _, r)) = allPathIDs l @ allPathIDs r 
+                                                    |> List.distinct
+
 
     type RegularExpression =
         // | EpsilonExp
@@ -40,6 +58,19 @@ module AST =
         | ConcatExp of RegularExpression * RegularExpression
         | UnionExp of RegularExpression * RegularExpression
         | StarExp of RegularExpression
+
+    module RegularExpression = 
+        open NodeConstraint
+
+        let allPathIDs = 
+            let rec get curr = 
+                function 
+                | NodeExp constr -> curr @ allPathIDs constr |> List.distinct
+                | UnionExp (r1, r2) | ConcatExp (r1, r2) ->
+                    get (get curr r1) r2
+                | _ -> []
+
+            get []
 
     /// RegularExpression with paths applied to it,
     /// examples: .*[attr(@1) > 100](p)

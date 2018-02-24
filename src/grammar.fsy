@@ -89,7 +89,7 @@ node_constr: operand operator operand { NodeConstraint ($1, $2, $3) }
 
 reg_expr:
   | DOT                       { AnyExp }
-  | reg_expr STAR             { StarExp $1 }
+  | reg_expr MULT             { StarExp $1 }
   | reg_expr PIPE reg_expr    { UnionExp ($1, $3) }
   | LPAREN node_constr RPAREN { NodeExp $2 }
   | LPAREN reg_expr RPAREN    { $2 }

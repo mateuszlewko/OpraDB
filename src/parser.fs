@@ -4,9 +4,12 @@ open Microsoft.FSharp.Text.Lexing
 
 module Parser =
     let parseQuery query = 
-        LexBuffer<char>.FromString query
-        |> Grammar.query Lexer.read
-        
+        let lexbuf = LexBuffer<char>.FromString query
+        try Grammar.query Lexer.read lexbuf
+        with _ ->
+            printfn "Parsing error from %A to %A." lexbuf.StartPos lexbuf.EndPos
+            reraise ()
+
     /// Parse string
     // let private str = pstring
     // /// Parse whitespace

@@ -214,6 +214,17 @@ let main argv =
                     )
                     "
 
+    let pathQuery = "MATCH NODES s, t
+                  \n SUCH THAT p: s->t
+                  \n WHERE 
+                  \n     (type(@p) = \"beg\").*
+                  \n   , .*(type(@p) = \"end\")
+                  \n   , (edge(@p, @'p) = \"link\")*.
+                  \n   , .*(a(@p, @'p) = \"ok\")(a(@p, @'p) = \"ok\")(a(@p, @'p) = \"ok\").*
+                        
+                       
+                    "
+
     // let pathQuery = "MATCH NODES (s t)                        \
     //                \nSUCH THAT (p: s->t, s1: a..b )           \
     //                \nWHERE ([type(@1) = \"bus\"].*<p>         \
