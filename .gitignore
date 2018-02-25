@@ -3,6 +3,6 @@ obj
 .vscode
 .idea
 sample.cql
-src/grammar.fs
-src/grammar.fsi
-src/lexer.fs
+src/opraDB/parsing/grammar.fs
+src/opraDB/parsing/grammar.fsi
+src/opraDB/parsing/lexer.fs

@@ -5,22 +5,22 @@
     <NoWarn>NU1602;NU1701</NoWarn>
   </PropertyGroup>
 
-  <Import Project="tools/FsLexYacc.targets" />
+  <Import Project="../../tools/FsLexYacc.targets" />
 
   <ItemGroup>
-    <Compile Include="ast.fs" />
-    <FsYacc Include="grammar.fsy">
-      <OtherFlags>--module Grammar</OtherFlags>
+    <Compile Include="parsing/ast.fs" />
+    <FsYacc Include="parsing/grammar.fsy">
+      <OtherFlags>--module Grammar -o "parsing/grammar.fs"</OtherFlags>
     </FsYacc>
-    <FsLex Include="lexer.fsl">
-      <OtherFlags>--unicode</OtherFlags>
+    <FsLex Include="parsing/lexer.fsl">
+      <OtherFlags>--unicode -o "parsing/lexer.fs"</OtherFlags>
     </FsLex>
     <Compile Include="commonUtils.fs" />
     <Compile Include="data.fs" />
-    <Compile Include="grammar.fsi" />
-    <Compile Include="grammar.fs" />
-    <Compile Include="lexer.fs" />
-    <Compile Include="parser.fs" />
+    <Compile Include="parsing/grammar.fsi" />
+    <Compile Include="parsing/grammar.fs" />
+    <Compile Include="parsing/lexer.fs" />
+    <Compile Include="parsing/parser.fs" />
     <Compile Include="regexNFA.fs" />
     <Compile Include="queryData.fs" />
     <Compile Include="nodeConstraints.fs" />

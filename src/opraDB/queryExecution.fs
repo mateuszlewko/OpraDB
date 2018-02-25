@@ -5,8 +5,6 @@ open OpraDB.QueryData
 open OpraDB.AST
 open FSharpx
 open FSharpx.Collections
-open FSharpx.Functional
-// open Hekate
 
 module QueryExecution =
 
@@ -15,7 +13,7 @@ module QueryExecution =
             List.map (fun c -> c.path, c) query.pathConstraints |> Map.ofList
         let getStartEndNodes (mEdge : MatchedEdge) =
             Map.tryFind mEdge.path pathConstraints
-            |> Option.map (fun c -> [c.source, mEdge.source;
+            |> Option.map (fun c -> [c.source, mEdge.source
                                      c.target, fst mEdge.lastEdge])
 
         let returnNodes = Set.ofList query.nodes
