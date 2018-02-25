@@ -13,8 +13,7 @@ module AST =
         }
 
     /// NodeVariable x represents either @x or @'x,
-    /// for example CurrNodeVar 1 is @1 and NextNodeVar 2 is @'2
-    // type NodeVariable = CurrNodeVar of int | NextNodeVar of int
+    /// for example CurrNodeVar p is @p and NextNodeVar p is @'p
     type NodeVariable = CurrNodeVar of Identifier | NextNodeVar of Identifier
    
     module NodeVariable = 
@@ -77,8 +76,7 @@ module AST =
             let rec get curr = 
                 function 
                 | NodeExp constr -> curr @ allPathIDs constr |> List.distinct
-                | UnionExp (r1, r2) | ConcatExp (r1, r2) ->
-                    get (get curr r1) r2
+                | UnionExp (r1, r2) | ConcatExp (r1, r2) -> get (get curr r1) r2
                 | _ -> []
 
             get []

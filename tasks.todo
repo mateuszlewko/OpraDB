@@ -41,7 +41,7 @@ Query execution:
 
 Graph / Data storage:
     ✔ Basic graph representation @done(18-01-13 16:03)
-    ❑ Import graph from csv @medium
+    ❑ Graph import @medium
     ❑ Sample graph data
     ❑ Optimized graph representation @low
 
