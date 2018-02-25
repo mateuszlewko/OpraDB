@@ -30,13 +30,13 @@ Query execution:
     ❑ Matching more complex arithmetic constraints (no cycles, max, min, count) @high @today
     ❑ Improved matching of arithmetic constraints with cycles @high
     ❑ Existentially qualified paths and nodes
+    ❑ Ontologies (let expressions)
     ❑ Optimisation: Neighbour queries for k-node constraints @high
     ❑ Bool type
     ❑ Sequence of nodes in path constraints (p: u..v)
     ❑ Match nodes that satisfy regular constraints (as a whole) @high 
     ❑ Maybe represent Regex NFA as Hekate graph (?) @low
     ❑ Improve equality check in Transition (?) @low
-    ❑ Ontologies (let expressions)
     ❑ Return paths
 
 Graph / Data storage:
@@ -56,4 +56,5 @@ Client / General:
 Docs:
     ❑ Examples of usage
     ❑ Description of files
+    ❑ Wiki
     ✔ Add README.md file @done(17-12-10 16:24)
