@@ -9,3 +9,6 @@ module Data =
     type Labels = Map<string, LabelValue>
 
     type Graph = MGraph<int, Labels, Labels>
+
+    let buildGraph nodes edges =
+        Graph.empty
