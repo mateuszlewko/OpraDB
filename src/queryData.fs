@@ -18,9 +18,11 @@ module QueryData =
 
     type KEdges = Map<Identifier, MatchedEdge>
 
+    // TODO: This should be renamed to EdgesVector
     type MatchedKEdges = {
-            currEdges : KEdges
-            nfas      : StatesInNFA list
+            currEdges   : KEdges
+            nfas        : StatesInNFA list
+            arithStates : int list
         }
 
     let [<Literal>] NULL_NODE = -1

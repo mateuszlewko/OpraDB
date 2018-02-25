@@ -24,6 +24,7 @@
     <Compile Include="regexNFA.fs" />
     <Compile Include="queryData.fs" />
     <Compile Include="nodeConstraints.fs" />
+    <Compile Include="arithmeticConstraints.fs" />
     <Compile Include="regularConstraints.fs" />
     <Compile Include="queryExecution.fs" />
     <Compile Include="program.fs" />

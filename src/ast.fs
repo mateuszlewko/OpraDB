@@ -84,6 +84,8 @@ module AST =
         /// SumBy (Path Identifier, Label Identifier)
         | SumBy of Identifier * Identifier 
         | IntALiteral of int
+        | Add of ArithOperand * ArithOperand
+        | Mult of ArithOperand * ArithOperand
 
     type ArithmeticConstraint = 
         ArithmeticConstraint of ArithOperand * Operator * ArithOperand

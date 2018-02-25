@@ -88,6 +88,8 @@ module RegularConstraints =
         // MatchedEdge is an edge that has at least one state in every nfa.
         outKEdges |> List.choose moveKEdges
 
+        // TODO: change arithStates by current value
+
     /// Get nodes that match regular constraints in a given query.
     let matchEdges (graph : Graph) (query : Query) =
         let allNFAs = query.regularConstraints 
@@ -114,8 +116,9 @@ module RegularConstraints =
                         p.path, create p.path esArr.[ix]
                     )                         
 
-                { nfas      = allNFAs
-                  currEdges = kEdges |> Map.ofList }
+                { nfas        = allNFAs
+                  currEdges   = kEdges |> Map.ofList
+                  arithStates = [] }
             )
 
         let checkFinalNodes mKEdges =
@@ -146,6 +149,7 @@ module RegularConstraints =
 
         let checkMatched mKEdges =
             checkNFAsInMatchedStates mKEdges && checkFinalNodes mKEdges
+            // TODO: Check if arithmetic constraints are satisfied
             
         let rec bfs visited result mNodes =
             if List.isEmpty mNodes

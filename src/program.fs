@@ -159,7 +159,7 @@ let main argv =
                        , .*(a(@q, @'q) = \"ok\")
                           (a(@q, @'q) = \"ok\")
                           (a(@q, @'q) = \"ok\").*
-                       HAVING 10 < SUM p BY attr
+                       HAVING 10 < 3 * (SUM p BY attr) + 4 * 12
                     "
 
     printQueryResult pathQuery pathG

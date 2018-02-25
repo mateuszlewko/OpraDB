@@ -102,8 +102,11 @@ reg_constr_elems:
 reg_constrs: WHERE reg_constr_elems { $2 } | { [] }
 
 arith_operand: 
-  | SUM id BY id { SumBy ($2, $4) }
-  | INT          { IntALiteral $1 }
+  | LPAREN SUM id BY id RPAREN       { SumBy ($3, $5) }
+  | INT                              { IntALiteral $1 }
+  | arith_operand PLUS arith_operand { Add ($1, $3) }
+  | arith_operand MULT arith_operand { Mult ($1, $3) }
+  | LPAREN arith_operand RPAREN      { $2 }
 
 arith_constr: arith_operand operator arith_operand 
              { ArithmeticConstraint ($1, $2, $3) }
