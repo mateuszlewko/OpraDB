@@ -61,7 +61,8 @@ let main argv =
         //              ]
 
         Graph.create // nodes
-                     [ 0, Map.ofList ["type", StringVal "beg"]
+                     [ 0, Map.ofList ["type", StringVal "beg"
+                                      "attr", IntVal 3]
                        4, Map.ofList ["type", StringVal "beg"]
                        1, me
                        2, me
@@ -159,7 +160,7 @@ let main argv =
                        , .*(a(@q, @'q) = \"ok\")
                           (a(@q, @'q) = \"ok\")
                           (a(@q, @'q) = \"ok\").*
-                       HAVING 10 < 3 * (SUM p BY attr) + 4 * 12
+                       HAVING 10 < 3 * (SUM p BY attr) + 4 * 2
                     "
 
     printQueryResult pathQuery pathG

@@ -25,7 +25,8 @@ Query execution:
     ✔ Regular expression matching (k-node constraints, basic version) @high @done(18-02-18 20:16)
     ✔ Matching same final-nodes used in different paths @high @today @done(18-02-21 00:23)
     ✔ Handle cycles (only with matched nodes) @critical @done(18-02-21 16:26)
-    ❑ Matching simple arithmetic constraints (no cycles, sum by) @high @today
+    ✔ Matching simple arithmetic constraints (no cycles, only sum by) @high @today @done(18-02-25 21:56)
+    ❑ Move functions from regularConstraints to queryExecution module
     ❑ Matching more complex arithmetic constraints (no cycles, max, min, count) @high @today
     ❑ Improved matching of arithmetic constraints with cycles @high
     ❑ Existentially qualified paths and nodes

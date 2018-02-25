@@ -23,6 +23,16 @@ module AST =
     /// Represents one of: <=, <, >=, >, =, <>
     type Operator = Leq | Le | Geq | Ge | Eq | Neq
 
+    // TODO: Maybe move this to parser
+    let getOperator =
+        function
+        | Leq -> (<=)
+        | Le  -> (<)
+        | Geq -> (>=)
+        | Ge  -> (>)
+        | Eq  -> (=)
+        | Neq -> (<>)
+
     type Literal = IntLit of int | StringLit of string
 
     type Operand =
@@ -80,7 +90,7 @@ module AST =
                 target = target
             }
 
-    type ArithOperand = 
+    type ArithOperand =
         /// SumBy (Path Identifier, Label Identifier)
         | SumBy of Identifier * Identifier 
         | IntALiteral of int

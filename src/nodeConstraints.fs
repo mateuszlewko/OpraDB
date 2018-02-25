@@ -11,16 +11,6 @@ open FSharpx.Option
 
 module NodeConstraints =
 
-    // TODO: Maybe move this to parser
-    let getOperator =
-        function
-        | Leq -> (<=)
-        | Le  -> (<)
-        | Geq -> (>=)
-        | Ge  -> (>)
-        | Eq  -> (=)
-        | Neq -> (<>)
-
     let private toLiteral labelName labels =
         match Map.tryFind labelName labels with
         | None               -> IntLiteral 0

@@ -8,6 +8,7 @@ open OpraDB.QueryData
 open OpraDB.QueryData.MatchedEdge
 open OpraDB.Data
 open OpraDB.CommonUtils
+open OpraDB.ArithmeticConstraints
 
 open FSharpx.Collections
 open FSharpx
@@ -22,7 +23,7 @@ module RegularConstraints =
     let private nextKEdges graph (mKEdges : MatchedKEdges list) =
         /// Move to states reachable within one transition in single NFA
         /// for a given kEdges. Skips empty states.
-        let rec moveState kEdges transition =
+        let rec makeTransition kEdges transition =
             /// Get all states after skipping all empty ones.
             let rec skipEmpty t =
                 let moveFurther = Option.map skipEmpty >> Option.defaultValue []
@@ -43,14 +44,14 @@ module RegularConstraints =
                 else []
             | Any   -> ok transition
             | Empty -> skipEmpty transition
-                       |> List.collect (moveState kEdges)
+                       |> List.collect (makeTransition kEdges)
 
         /// Move every state in a single NFA.
         let moveNFA edges states =
-            List.collect (moveState edges) states |> List.distinct
+            List.collect (makeTransition edges) states |> List.distinct
 
         /// Try to move every state in all NFAs for a given k-edge.
-        let moveKEdges mKEdges =
+        let moveNFAStates mKEdges =
             let rec collectStates nfaStates =
                 function
                 | []           -> Some nfaStates
@@ -86,9 +87,8 @@ module RegularConstraints =
 
         // Map neighbouring edges to MatchedEdges.
         // MatchedEdge is an edge that has at least one state in every nfa.
-        outKEdges |> List.choose moveKEdges
-
-        // TODO: change arithStates by current value
+        outKEdges |> List.choose moveNFAStates 
+        |> List.map (updateArithStates graph)
 
     /// Get nodes that match regular constraints in a given query.
     let matchEdges (graph : Graph) (query : Query) =
@@ -118,7 +118,8 @@ module RegularConstraints =
 
                 { nfas        = allNFAs
                   currEdges   = kEdges |> Map.ofList
-                  arithStates = [] }
+                  arithStates = createArithStates query }
+                |> updateArithStates graph
             )
 
         let checkFinalNodes mKEdges =
@@ -148,8 +149,10 @@ module RegularConstraints =
             |> List.forall (List.exists (fun t -> t.state = Matched))
 
         let checkMatched mKEdges =
-            checkNFAsInMatchedStates mKEdges && checkFinalNodes mKEdges
-            // TODO: Check if arithmetic constraints are satisfied
+            checkNFAsInMatchedStates mKEdges 
+            && checkFinalNodes mKEdges
+            && ArithmeticConstraints.satisfied mKEdges 
+                                               query.arithmeticConstraints
             
         let rec bfs visited result mNodes =
             if List.isEmpty mNodes
