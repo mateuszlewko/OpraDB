@@ -79,32 +79,24 @@ let run args =
             exit 0
 
     let graph = results.GetResult Input_Data |> File.ReadAllText |> importGraph 
-    // printfn "Graph is: %A" graph
-
-    printf "> "
-    let mutable str = ""
 
     let rec loop currStr =
-        let i = Console.Read () 
-        let c = char i
+        let l = Console.ReadLine ()
 
-        if i = -1 // end of stream
-        then ()
-        elif c = ';'
-        then 
-            let str = String (List.rev currStr |> Array.ofList)
-            // printfn "Str: %s" str
-            try eval graph str
-            with e ->
-                printfn "There was an exception: %A" e
-                // exit 0
+        if isNull l 
+        then printfn "Goodbye."
+        elif (l.TrimEnd ()).EndsWith ";"
+        then try eval graph (currStr + (l.[0 .. String.length l - 1]))
+             with e -> printfn "There was an exception: %A" e
+                       exit 0
+ 
+             printf "\n> "
+             loop ""
+        else loop (currStr + "\n" + l)
 
-            printf "\n> "
-            loop []
-        else loop (c::currStr)
-
-    loop []
-    printfn "Goodbye."
+    // printfn "Graph is: %A" graph
+    printf "> "
+    loop ""
 
 [<EntryPoint>]
 let main args =
