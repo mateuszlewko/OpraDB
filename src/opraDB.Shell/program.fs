@@ -86,7 +86,8 @@ let run args =
         if isNull l 
         then printfn "Goodbye."
         elif (l.TrimEnd ()).EndsWith ";"
-        then try eval graph (currStr + (l.[0 .. String.length l - 1]))
+        then try printfn ""
+                 eval graph (currStr + (l.[0 .. String.length l - 1]))
              with e -> printfn "There was an exception: %A" e
                        exit 0
  
