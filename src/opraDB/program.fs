@@ -3,7 +3,6 @@ open OpraDB.Data
 open OpraDB
 
 open Hekate
-open PrettyTable
 open FSharpx
 
 let printQueryResult str graph =
@@ -14,7 +13,8 @@ let printQueryResult str graph =
     let headers = query.nodes |> List.map ofId
     let hsIdx   = headers |> List.indexed |> List.map swap |> Map.ofList
     let results =
-        QueryExecution.execute graph query
+        QueryExecution.matchedNodes graph query
+        |> List.iter (printfn "----\n%A")
             // |> List.map (
             //     List.sortBy (fun (ID id, node) -> Map.tryFind id hsIdx)
             //     >> List.filter (fst >> ofId >> (flip Map.containsKey hsIdx))

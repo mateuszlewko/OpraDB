@@ -5,6 +5,9 @@ open FSharp.Data
 open Argu
 open System.IO
 open System
+open PrettyTable
+open FSharpx.Collections
+open OpraDB.AST
 
 exception ParsingErrorException of string
 
@@ -67,8 +70,18 @@ let parseGraph str =
 
 let importGraph str = parseGraph str |> uncurry buildGraph 
 
+let mapListToPTable ms =
+    let hs   = List.collect (Map.keys >> List.ofSeq) ms |> List.distinct 
+    let get  = Option.map (sprintf "%A") >> Option.defaultValue "<null>"  
+    let data = List.map (fun m -> List.map (flip Map.tryFind m >> get) hs) ms 
+
+    prettyTable data |> withHeaders hs
+    
 let eval graph str = 
-    execute graph (OpraDB.Parser.parseQuery str)
+    matchedNodes graph (OpraDB.Parser.parseQuery str)
+    |> List.map (Map.toList >> List.map (fun (ID a, b) -> a, b) >> Map.ofList) 
+    |> mapListToPTable
+    |> printTable
 
 let run args = 
     let parser  = ArgumentParser.Create<Arguments> (programName = "opradb")
@@ -89,7 +102,7 @@ let run args =
         then try printfn ""
                  eval graph (currStr + (l.[0 .. String.length l - 1]))
              with e -> printfn "There was an exception: %A" e
-                       exit 0
+                    //    exit 0
  
              printf "\n> "
              loop ""
@@ -101,7 +114,8 @@ let run args =
 
 [<EntryPoint>]
 let main args =
-    printfn "  /$$$$$$                                  /$$$$$$$ /$$$$$$$ 
+    printfn "
+  /$$$$$$                                  /$$$$$$$ /$$$$$$$ 
  /$$__  $$                                | $$__  $| $$__  $$
 | $$  \ $$ /$$$$$$  /$$$$$$ /$$$$$$       | $$  \ $| $$  \ $$
 | $$  | $$/$$__  $$/$$__  $|____  $$      | $$  | $| $$$$$$$ 
@@ -111,7 +125,7 @@ let main args =
  \______/| $$____/|__/     \_______/      |_______/|_______/ 
          | $$                                                
          | $$                                                
-         |__/                                                "
+         |__/                                                \n"
 
     run args
 

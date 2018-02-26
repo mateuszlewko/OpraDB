@@ -1,7 +1,6 @@
 namespace OpraDB
 
 open FSharpx.Option
-open FSharpx.Functional.Prelude
 
 open OpraDB.AST
 open OpraDB.QueryData
