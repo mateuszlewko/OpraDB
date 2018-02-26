@@ -1,0 +1,13 @@
+{
+    "nodes": [
+        { "_id": 1, "type": "beg" }
+      , { "_id": 2 }
+      , { "_id": 3 }
+      , { "_id": 4, "type": "end" }
+    ],
+    "edges": [
+        { "_from": 1, "_to": 2, "edge": 1, "val": 5 }
+      , { "_from": 2, "_to": 3, "edge": 1, "val": 6 }
+      , { "_from": 3, "_to": 4, "edge": 1, "val": 7 }
+    ]
+}

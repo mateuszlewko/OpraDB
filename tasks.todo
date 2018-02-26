@@ -41,14 +41,14 @@ Query execution:
 
 Graph / Data storage:
     ✔ Basic graph representation @done(18-01-13 16:03)
-    ❑ Graph import @medium
+    ✔ Graph import @medium @done(18-02-26 03:35)
     ❑ Sample graph data (real world data)
     ❑ Optimized graph representation and storage @low
 
 Client / General:
     ❑ Separate client from service: @high 
         ❑ Handle communication between client and service
-        ❑ Basic Command line interface @high
+        ✔ Basic Command line interface @high @done(18-02-26 03:35)
     ❑ Logging with Logary
     ❑ Results visualisation (possibly other, web-based client)
     ❑ Docker installation

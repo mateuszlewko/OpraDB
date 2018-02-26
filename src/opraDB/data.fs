@@ -10,5 +10,5 @@ module Data =
 
     type Graph = MGraph<int, Labels, Labels>
 
-    let buildGraph nodes edges =
-        Graph.empty
+    let buildGraph nodes edges : Graph =
+        Graph.create nodes edges
