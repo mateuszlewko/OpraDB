@@ -29,7 +29,7 @@ Query execution:
     ❑ Move functions from regularConstraints to queryExecution module
     ❑ Matching more complex arithmetic constraints (no cycles, max, min, count) @high @today
     ❑ Improved matching of arithmetic constraints with cycles @high
-    ❑ Existentially qualified paths and nodes
+    ❑ Existentially qualified paths and nodes @today 
     ❑ Ontologies (let expressions)
     ❑ Optimisation: Neighbour queries for k-node constraints @high
     ❑ Bool type
@@ -49,7 +49,7 @@ Client / General:
     ❑ Separate client from service: @high 
         ❑ Handle communication between client and service
         ✔ Basic Command line interface @high @done(18-02-26 03:35)
-    ❑ Logging with Logary
+    ❑ Logging with Logary @today 
     ❑ Results visualisation (possibly other, web-based client)
     ❑ Docker installation
 

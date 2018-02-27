@@ -68,6 +68,7 @@ module RegularConstraints =
         let sinkNode node      = node, NULL_NODE, Map.empty
         let getOutEdges (_, v) = Graph.Nodes.outward v graph
                                  |> Option.map (List.cons ^ sinkNode v)
+                                //  |> Option.getOrElse [sinkNode v]
                                  |> Option.getOrElse []
         let outKEdges =
             mKEdges
@@ -164,24 +165,24 @@ module RegularConstraints =
                                           |> List.filter (flip 
                                                 Set.contains visited >> not) 
 
-                // let mapMk = 
-                //     List.map (fun mk -> 
-                //         Map.toList mk.currEdges 
-                //         |> List.map (fun (ID p, e) -> p, e.lastEdge)
-                //         |> List.distinct
-                //     )
+                let mapMk = 
+                    List.map (fun mk -> 
+                        Map.toList mk.currEdges 
+                        |> List.map (fun (ID p, e) -> p, e.lastEdge)
+                        |> List.distinct
+                    )
 
                 // printfn "Nodes:\n %A"         ^ mapMk mNodes
                 // printfn "Matched nodes:\n %A" ^ mapMk nodesMatched
                 // // printfn "Rest of nodes:\n %A" ^ mapMk rest
                 // printfn "next of nodes not vis:\n %A" ^ mapMk nextNotVis
-                // printfn "vis:\n %A" 
-                //     (Set.toList visited 
-                //      |> List.map (
-                //         fun me -> (Map.valueList me.currEdges |> List.map info)
-                //                   , List.map (fun (nf,_) -> List.map (fun t -> t.tid) nf) 
-                //                             me.nfaStates)
-                //     )
+ 
+                // Set.toList visited 
+                // |> List.map (
+                //     fun me -> (Map.valueList me.currEdges |> List.map info)
+                //              , List.map (List.map (fun t -> t.tid)) me.nfas)
+                
+                // |> printfn "vis:\n %A"
                 
                 let visited = nextNodes |> Set.ofList |> Set.union visited
                 bfs visited (nodesMatched @ result) nextNotVis

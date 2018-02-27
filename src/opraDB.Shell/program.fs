@@ -78,10 +78,13 @@ let mapListToPTable ms =
     prettyTable data |> withHeaders hs
     
 let eval graph str = 
-    matchedNodes graph (OpraDB.Parser.parseQuery str)
-    |> List.map (Map.toList >> List.map (fun (ID a, b) -> a, b) >> Map.ofList) 
-    |> mapListToPTable
-    |> printTable
+    let nodes = matchedNodes graph (OpraDB.Parser.parseQuery str)
+    
+    if List.isEmpty nodes then printfn "<empty>"
+    else nodes 
+      |> List.map (Map.toList >> List.map (fun (ID a, b) -> a, b) >> Map.ofList) 
+      |> mapListToPTable
+      |> printTable
 
 let run args = 
     let parser  = ArgumentParser.Create<Arguments> (programName = "opradb")
