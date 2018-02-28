@@ -68,8 +68,8 @@ module RegularConstraints =
         let sinkNode node      = node, NULL_NODE, Map.empty
         let getOutEdges (_, v) = Graph.Nodes.outward v graph
                                  |> Option.map (List.cons ^ sinkNode v)
-                                //  |> Option.getOrElse [sinkNode v]
-                                 |> Option.getOrElse []
+                                 |> Option.getOrElse [sinkNode v]
+                                //  |> Option.getOrElse []
         let outKEdges =
             mKEdges
             |> List.collect (fun mkEdges -> 

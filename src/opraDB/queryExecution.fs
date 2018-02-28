@@ -32,9 +32,3 @@ module QueryExecution =
         |> List.map (mKEdgesToNodes 
                      >> List.filter (fst >> flip Set.contains nodesSet)
                      >> Map.ofList)
-
-        // |> printfn "%A"
-        // |>! List.map ^ fun e -> printfn "Matched edges %A" (e.path, e.source, fst e.lastEdge)
-        // |> List.choose getStartEndNodes
-        // |> List.map (List.filter (fst >> (flip Set.contains returnNodes)))
-        // |> List.filter (List.isEmpty >> not)

@@ -1,0 +1,17 @@
+MATCH NODES s, t, x, y
+SUCH THAT p: s->t, q : s -> y
+WHERE 
+    (type(@p) = "beg").*
+  , .*(type(@p) = "end")
+  , (edge(@p, @'p) = "link")*.
+  , .*(a(@p, @'p) = "ok") (a(@p, @'p) = "ok") (a(@p, @'p) = "ok").*
+
+  , (type(@q) = "beg").*
+  , .*(type(@q) = "end")
+  , (edge(@q, @'q) = "link")*.
+  , .*(a(@q, @'q) = "ok") (a(@q, @'q) = "ok") (a(@q, @'q) = "ok").*
+HAVING 10 < 3 * (SUM p BY attr) + 4 * 2 ;
+
+MATCH NODES s, t, x, y
+SUCH THAT p: s -> t, q: x -> y 
+WHERE (type(@p) = "beg").*, .*(type(@p) = "end") ;

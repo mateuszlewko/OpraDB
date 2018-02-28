@@ -58,3 +58,11 @@ Docs:
     ❑ Description of files
     ❑ Wiki
     ✔ Add README.md file @done(17-12-10 16:24)
+
+To think:
+    ❑ Paths of different length (loop on sink node)
+    ❑ Ontologies return type (node set vs int)
+    ❑ Arithmetic constraints for graphs with cycles
+
+    ❑ Registers
+    ❑ Negation

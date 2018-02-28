@@ -3,10 +3,12 @@
         { "_id": 1, "type": "beg", "val": 3 }
       , { "_id": 2, "val": 3 }
       , { "_id": 3, "val": 3 }
+      , { "_id": 0 }
       , { "_id": 4, "type": "end", "val": 3 }
     ],
     "edges": [
         { "_from": 1, "_to": 2, "edge": 1 }
+      , { "_from": 0, "_to": 2, "edge": 1 }
       , { "_from": 2, "_to": 3, "edge": 1 }
       , { "_from": 3, "_to": 4, "edge": 1 }
     ]

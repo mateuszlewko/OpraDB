@@ -1,0 +1,18 @@
+{
+    "nodes": [
+        { "_id": 0, "type": "beg", "attr": 3 }
+      , { "_id": 1 }
+      , { "_id": 2, "time": 9 }
+      , { "_id": 5 }
+      , { "_id": 3, "type": "end" }
+      , { "_id": 4, "type": "beg" }
+    ],
+    "edges": [
+        { "_from": 0, "_to": 1, "edge": "link" }
+      , { "_from": 4, "_to": 5, "edge": "link" }
+      , { "_from": 5, "_to": 0, "edge": "link" }
+      , { "_from": 1, "_to": 2, "edge": "link", "a": "ok" }
+      , { "_from": 2, "_to": 1, "edge": "link", "a": "ok" }
+      , { "_from": 2, "_to": 3, "edge": "link" }
+    ]
+}
