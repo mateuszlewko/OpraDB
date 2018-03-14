@@ -10,7 +10,7 @@ WHERE
   , .*(type(@q) = "end")
   , (edge(@q, @'q) = "link")*.
   , .*(a(@q, @'q) = "ok") (a(@q, @'q) = "ok") (a(@q, @'q) = "ok").*
-HAVING 10 < 3 * (SUM p BY attr) + 4 * 2 ;
+HAVING 10 < 3 * (SUM p BY attr) + 2 ;
 
 MATCH NODES s, t, x, y
 SUCH THAT p: s -> t, q: x -> y 

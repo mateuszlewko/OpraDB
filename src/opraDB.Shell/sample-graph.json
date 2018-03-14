@@ -1,6 +1,6 @@
 {
     "nodes": [
-        { "_id": 1, "type": "beg", "val": 3 }
+        { "_id": 1, "type": "beg", "attr": 3 }
       , { "_id": 2, "val": 3 }
       , { "_id": 3, "val": 3 }
       , { "_id": 0 }
