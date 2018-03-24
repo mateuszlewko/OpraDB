@@ -5,7 +5,6 @@ open OpraDB.QueryData
 open OpraDB.AST
 open FSharpx
 open FSharpx.Collections
-open FSharpx.Option
 
 module QueryExecution =
 

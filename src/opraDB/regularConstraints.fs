@@ -20,7 +20,7 @@ module RegularConstraints =
 
     /// Get all outward edges of a given node, which have at least one
     /// state in every NFA they belong to.
-    let private nextKEdges graph (mKEdges : MatchedKEdges list) =
+    let private nextKEdges graph (mKEdges : MatchedKEdges list) preds =
         /// Move to states reachable within one transition in single NFA
         /// for a given kEdges. Skips empty states.
         let rec makeTransition kEdges transition =
@@ -69,9 +69,10 @@ module RegularConstraints =
         let getOutEdges (_, v) = Graph.Nodes.outward v graph
                                  |> Option.map (List.cons ^ sinkNode v)
                                  |> Option.getOrElse [sinkNode v]
-                                //  |> Option.getOrElse []
+                                //  |> Option.getOrElse [] // This version changes
+                                                           // behaviour
         let outKEdges =
-            mKEdges
+            mKEdges // TODO: mKEdges and mkEdges?? Bad!
             |> List.collect (fun mkEdges -> 
                 let pathIDs, edges = Map.toList mkEdges.currEdges |> List.unzip
                 let nextEdges =
@@ -82,14 +83,28 @@ module RegularConstraints =
                         pathIDs edges
                 
                 List.cartesian nextEdges
-                |> List.map (fun es -> { mkEdges with 
+                |> List.map (fun es -> mkEdges
+                                      , { mkEdges with 
                                             currEdges = Map.ofList es })
             )
 
         // Map neighbouring edges to MatchedEdges.
         // MatchedEdge is an edge that has at least one state in every nfa.
-        outKEdges |> List.choose moveNFAStates 
-        |> List.map (updateArithStates graph)
+        let preds, es = 
+            let rec moveStatesAndPreds preds es = 
+                function
+                | []         -> preds, es 
+                | (pred, curr)::rest -> 
+                    match moveNFAStates curr with 
+                    | Some next -> let preds = MultiMap.add next pred preds
+                                   moveStatesAndPreds preds (next::es) rest
+                    | None      -> moveStatesAndPreds preds es rest 
+           
+            moveStatesAndPreds preds [] outKEdges
+        // outKEdges 
+        // |> List.choose (fun (pred, curr) -> moveNFAStates curr 
+                                           // |> Option.map (tuple2 pred))
+        preds, List.map (updateArithStates graph) es
 
     /// Get nodes that match regular constraints in a given query.
     let matchEdges (graph : Graph) (query : Query) =
@@ -155,22 +170,29 @@ module RegularConstraints =
             && ArithmeticConstraints.satisfied mKEdges 
                                                query.arithmeticConstraints
             
-        let rec bfs visited result mNodes =
+        let mapMk = 
+            List.map (fun mk -> 
+                Map.toList mk.currEdges 
+                |> List.map (fun (ID p, e) -> p, e.lastEdge)
+                |> List.distinct
+            )
+
+        let rec bfs visited result preds mNodes =
             if List.isEmpty mNodes
-            then result
+            then
+                printfn "preds:" 
+                Map.toList preds |> List.iter (fun (k, v) -> 
+                                        printfn "%A" (MatchedKEdges.basicInfo k)
+                                        printfn "%A" (mapMk (Set.toList v))
+                                    )
+                                    
+                result
             else
-                let nextNodes           = nextKEdges graph mNodes
+                let preds, nextNodes    = nextKEdges graph mNodes preds
                 let nodesMatched, rest  = List.partition checkMatched nextNodes
                 let nextNotVis          = nextNodes 
                                           |> List.filter (flip 
                                                 Set.contains visited >> not) 
-
-                let mapMk = 
-                    List.map (fun mk -> 
-                        Map.toList mk.currEdges 
-                        |> List.map (fun (ID p, e) -> p, e.lastEdge)
-                        |> List.distinct
-                    )
 
                 // printfn "Nodes:\n %A"         ^ mapMk mNodes
                 // printfn "Matched nodes:\n %A" ^ mapMk nodesMatched
@@ -185,8 +207,9 @@ module RegularConstraints =
                 // |> printfn "vis:\n %A"
                 
                 let visited = nextNodes |> Set.ofList |> Set.union visited
-                bfs visited (nodesMatched @ result) nextNotVis
+                bfs visited (nodesMatched @ result) preds nextNotVis
 
-        nextKEdges graph mKEdges |> bfs Set.empty []
+        nextKEdges graph mKEdges Map.empty 
+        |> uncurry (bfs Set.empty []) 
         |> List.distinctBy (fun me -> Map.valueList me.currEdges 
                                       |> List.map basicInfo)

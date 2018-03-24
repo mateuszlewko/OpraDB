@@ -15,3 +15,12 @@ module CommonUtils =
                 List.fold (fun cacc celem ->
                     (List.fold (fun acc elem -> (elem::celem)::acc) [] h) @ cacc
                 ) [] (cartesian t)
+
+    module MultiMap = 
+        open FSharpx.Collections
+
+        let add key value m = 
+            match Map.tryFind key m with 
+            | None   -> Set.singleton value 
+            | Some s -> Set.add key s
+            |> fun s -> Map.add key s m

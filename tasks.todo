@@ -29,7 +29,7 @@ Query execution:
     ❑ Move functions from regularConstraints to queryExecution module
     ❑ Matching more complex arithmetic constraints (no cycles, max, min, count) @high @today
     ❑ Improved matching of arithmetic constraints with cycles @high
-        ❑ Store prevs 
+        ✔ Store preds @done(18-03-25 00:58)
         ❑ Restore path (sub-graph) 
         ❑ Find all cycles (Johnson's algorithm)
         ❑ Compute attribute delta on every cycle
