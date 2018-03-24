@@ -29,6 +29,12 @@ Query execution:
     ❑ Move functions from regularConstraints to queryExecution module
     ❑ Matching more complex arithmetic constraints (no cycles, max, min, count) @high @today
     ❑ Improved matching of arithmetic constraints with cycles @high
+        ❑ Store prevs 
+        ❑ Restore path (sub-graph) 
+        ❑ Find all cycles (Johnson's algorithm)
+        ❑ Compute attribute delta on every cycle
+        ❑ Solve linear inequality 
+        ❑ Create solution (if exists)
     ❑ Existentially qualified paths and nodes @today 
     ❑ Ontologies (let expressions)
     ❑ Optimisation: Neighbour queries for k-node constraints @high

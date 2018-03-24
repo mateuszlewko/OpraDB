@@ -21,12 +21,15 @@
     <Compile Include="parsing/grammar.fs" />
     <Compile Include="parsing/lexer.fs" />
     <Compile Include="parsing/parser.fs" />
+    <Compile Include="commonUtils.fs" />
+    <Compile Include="data.fs" />
     <Compile Include="regexNFA.fs" />
     <Compile Include="queryData.fs" />
     <Compile Include="nodeConstraints.fs" />
     <Compile Include="arithmeticConstraints.fs" />
     <Compile Include="regularConstraints.fs" />
     <Compile Include="queryExecution.fs" />
+    <Compile Include="regularConstraints.fs" />
     <Compile Include="program.fs" />
   </ItemGroup>
   <ItemGroup>

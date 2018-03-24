@@ -22,6 +22,7 @@ module QueryData =
     // TODO: This should be renamed to EdgesVector
     type MatchedKEdges = {
             currEdges   : KEdges
+            /// All states in every nfa
             nfas        : StatesInNFA list
             arithStates : ArithStates
         }
