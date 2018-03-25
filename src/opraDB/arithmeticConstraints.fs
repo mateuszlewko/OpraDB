@@ -50,3 +50,7 @@ module ArithmeticConstraints =
                             
     let satisfied mKEdges arithConstrs = 
         List.forall (constrSatisfied mKEdges) arithConstrs
+
+    let restoreGraph preds mKEdges = 
+        
+        true    

@@ -34,6 +34,7 @@ Query execution:
         ❑ Find all cycles (Johnson's algorithm)
         ❑ Compute attribute delta on every cycle
         ❑ Solve linear inequality 
+        ❑ Solution exists predicate (for matching nodes)
         ❑ Create solution (if exists)
     ❑ Existentially qualified paths and nodes @today 
     ❑ Ontologies (let expressions)

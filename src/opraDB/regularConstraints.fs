@@ -135,7 +135,7 @@ module RegularConstraints =
                 { nfas        = allNFAs
                   currEdges   = kEdges |> Map.ofList
                   arithStates = createArithStates query }
-                |> updateArithStates graph
+                // |> updateArithStates graph
             )
 
         let checkFinalNodes mKEdges =
@@ -164,9 +164,10 @@ module RegularConstraints =
             mKEdges.nfas
             |> List.forall (List.exists (fun t -> t.state = Matched))
 
-        let checkMatched mKEdges =
+        let checkMatched preds mKEdges =
             checkNFAsInMatchedStates mKEdges 
             && checkFinalNodes mKEdges
+            && ArithmeticConstraints.restoreGraph preds mKEdges
             && ArithmeticConstraints.satisfied mKEdges 
                                                query.arithmeticConstraints
             
@@ -189,7 +190,8 @@ module RegularConstraints =
                 result
             else
                 let preds, nextNodes    = nextKEdges graph mNodes preds
-                let nodesMatched, rest  = List.partition checkMatched nextNodes
+                let nodesMatched, rest  = List.partition (checkMatched preds) 
+                                                         nextNodes
                 let nextNotVis          = nextNodes 
                                           |> List.filter (flip 
                                                 Set.contains visited >> not) 
