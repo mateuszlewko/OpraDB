@@ -32,8 +32,8 @@ Query execution:
         ✔ Store preds @done(18-03-25 00:58)
         ✔ Restore path (sub-graph) @done(18-03-25 04:13)
         ❑ Find all cycles (Johnson's algorithm)
-        ❑ Compute attribute delta on every cycle
-        ❑ Solve linear inequality 
+        ❑ Compute attributes delta on every cycle
+        ❑ Solve linear inequalities
         ❑ Solution exists predicate (for matching nodes)
         ❑ Create solution (if exists)
     ❑ Existentially qualified paths and nodes 
