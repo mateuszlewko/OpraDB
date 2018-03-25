@@ -1,7 +1,7 @@
 namespace OpraDB.Test
 
 open Expecto
-open OpraDB.ArithmeticConstraints
+open OpraDB.Graph.Utils
 
 module ArithmeticConstraints = 
         

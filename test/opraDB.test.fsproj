@@ -9,7 +9,7 @@
   <ItemGroup>
     <Compile Include="parser.fs" />
     <Compile Include="regexNFA.fs" />
-    <Compile Include="arithmeticConstraints.fs" />
+    <Compile Include="graph/utils.fs" />
     <Compile Include="main.fs" />
   </ItemGroup>
 

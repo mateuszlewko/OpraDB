@@ -17,6 +17,7 @@
     </FsLex>
     <Compile Include="commonUtils.fs" />
     <Compile Include="data.fs" />
+    <Compile Include="graph/utils.fs" />
     <Compile Include="parsing/grammar.fsi" />
     <Compile Include="parsing/grammar.fs" />
     <Compile Include="parsing/lexer.fs" />
