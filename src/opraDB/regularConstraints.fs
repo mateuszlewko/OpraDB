@@ -167,7 +167,7 @@ module RegularConstraints =
         let checkMatched preds mKEdges =
             checkNFAsInMatchedStates mKEdges 
             && checkFinalNodes mKEdges
-            && ArithmeticConstraints.restoreGraph preds mKEdges
+            // && ArithmeticConstraints.restoreGraph preds mKEdges
             && ArithmeticConstraints.satisfied mKEdges 
                                                query.arithmeticConstraints
             

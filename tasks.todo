@@ -30,7 +30,7 @@ Query execution:
     ❑ Matching more complex arithmetic constraints (no cycles, max, min, count) @high @today
     ❑ Improved matching of arithmetic constraints with cycles @high @today 
         ✔ Store preds @done(18-03-25 00:58)
-        ❑ Restore path (sub-graph) 
+        ✔ Restore path (sub-graph) @done(18-03-25 04:13)
         ❑ Find all cycles (Johnson's algorithm)
         ❑ Compute attribute delta on every cycle
         ❑ Solve linear inequality 

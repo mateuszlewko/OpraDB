@@ -55,17 +55,18 @@ module ArithmeticConstraints =
         let rec restore node visited graph = 
             if Set.contains node visited
             then graph, visited
-            else 
-                let visited = Set.add node visited 
-
-                match Map.tryFind node preds with 
-                | None     -> graph, visited
-                | Some pre -> 
-                    Set.fold (fun (graph, vis) p -> 
-                            Graph.Edges.add (p, node, ()) graph
-                            |> restore p vis
-                        ) (graph, visited) pre
+            else let visited = Set.add node visited 
+                 match Map.tryFind node preds with 
+                 | None     -> graph, visited
+                 | Some pre -> 
+                     Set.fold (fun (graph, vis) p -> 
+                             let tryAdd n g =
+                                 if Graph.Nodes.contains n g 
+                                 then g else Graph.Nodes.add (n, ()) g
+ 
+                             tryAdd p graph |> tryAdd node 
+                             |> Graph.Edges.add (p, node, ()) 
+                             |> restore p vis
+                         ) (graph, visited) pre
         
-        let graph = restore mKEdges Set.empty Graph.empty
-        printfn "RESTORED GRAPH: \n%A" graph
-        true    
+        restore mKEdges Set.empty Graph.empty
