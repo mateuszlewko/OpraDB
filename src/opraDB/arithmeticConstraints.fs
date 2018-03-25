@@ -52,5 +52,20 @@ module ArithmeticConstraints =
         List.forall (constrSatisfied mKEdges) arithConstrs
 
     let restoreGraph preds mKEdges = 
+        let rec restore node visited graph = 
+            if Set.contains node visited
+            then graph, visited
+            else 
+                let visited = Set.add node visited 
+
+                match Map.tryFind node preds with 
+                | None     -> graph, visited
+                | Some pre -> 
+                    Set.fold (fun (graph, vis) p -> 
+                            Graph.Edges.add (p, node, ()) graph
+                            |> restore p vis
+                        ) (graph, visited) pre
         
+        let graph = restore mKEdges Set.empty Graph.empty
+        printfn "RESTORED GRAPH: \n%A" graph
         true    
