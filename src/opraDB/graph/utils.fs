@@ -67,13 +67,15 @@ module Utils =
 
         let rec nextScc graph vis sccs =
             function 
-            | [] | _ when Graph.isEmpty graph        -> sccs
+            | []                                     -> sccs
+            | _ when Graph.isEmpty graph             -> sccs
             | node::nodes when Set.contains node vis -> 
                 nextScc graph vis sccs nodes
-            | node::nodes -> let scc   = dfs node graph ignore 
-                             let graph = Graph.Nodes.removeMany scc graph
-                             let vis   = Set.union (Set.ofList scc) vis
-                             nextScc graph vis (scc::sccs) nodes 
+            | node::nodes                            -> 
+                let scc   = dfs node graph ignore 
+                let graph = Graph.Nodes.removeMany scc graph
+                let vis   = Set.union (Set.ofList scc) vis
+                nextScc graph vis (scc::sccs) nodes 
         
         nextScc (Graph.rev graph) Set.empty [] orderedNodes
 
