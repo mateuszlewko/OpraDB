@@ -14,9 +14,10 @@ module ArithmeticConstraints =
                                       ; 5, Set.ofList [4]]
 
                 let graph, visited =  restoreGraph preds 1
-
-                printfn "post order %A" (postOrderTimes graph)
-                printfn "sccs %A" (stronglyConnectedComponents graph)
+                // printfn "post order %A" (postOrderTimes graph)
+                // printfn "sccs %A" (stronglyConnectedComponents graph)
+                Expect.equal (allSimpleCycles graph) [[3; 4; 2]; [5; 4; 2]] 
+                             "finds all cycles"
 
                 Expect.equal ([(2, 1, ()); (2, 4, ()); (3, 2, ()); (4, 3, ()); 
                                (4, 5, ()); (5, 2, ()); (5, 4, ())]) 

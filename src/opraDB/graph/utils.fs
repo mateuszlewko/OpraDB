@@ -80,4 +80,60 @@ module Utils =
         nextScc (Graph.rev graph) Set.empty [] orderedNodes
 
     let allSimpleCycles graph = 
-        ()
+        let blocked = HashSet ()
+        let unblock = Dictionary () : Dictionary<_, List<_>>
+        let cycles  = List ()
+        let sccs    = stronglyConnectedComponents graph
+
+        let dictGetOr thunk (dict : #Dictionary<_, _>) key =
+            if dict.ContainsKey key 
+            then dict.[key]
+            else thunk ()
+
+        let rec unblockNode u = 
+            if blocked.Remove u
+            then Seq.iter unblockNode (dictGetOr List unblock u)
+                 unblock.Remove u |> ignore
+
+        let addUnblockers u =
+            List.iter (fun x -> (dictGetOr List unblock x).Add u)
+        
+        let rec cyclesOfScc graph startNode = 
+            let rec visit stack u = 
+                if not (blocked.Contains u) 
+                then 
+                    blocked.Add u |> ignore
+                    let stack = u::stack
+                    let ns    = Graph.Nodes.successors u graph 
+                                |> getOrElse [] |> List.map fst
+
+                    let foundCycle  = List.exists ((=) startNode) ns
+                    let block, free = List.partition blocked.Contains ns 
+
+                    if List.isEmpty free 
+                    then addUnblockers u block
+                     
+                    let isCycle = free |> List.map (fun v ->
+                                           if blocked.Contains v 
+                                           then cycles.Add (v::stack)
+                                           visit stack v)
+
+                    if foundCycle then cycles.Add stack
+
+                    if foundCycle || List.exists id isCycle 
+                    then unblockNode u; true 
+                    else false
+                else false
+            
+            visit [] startNode
+
+        let rec getAllCycles graph = 
+            function
+            | []                   -> () 
+            | []::sccs             -> getAllCycles graph sccs |> ignore
+            | (startNode::_)::sccs ->
+                cyclesOfScc graph startNode |> ignore
+                getAllCycles (Graph.Nodes.remove startNode graph) sccs
+                 
+        getAllCycles graph sccs
+        cycles.ToFSharpList ()
