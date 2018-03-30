@@ -31,7 +31,7 @@ Query execution:
     ❑ Improved matching of arithmetic constraints with cycles @high @today 
         ✔ Store preds @done(18-03-25 00:58)
         ✔ Restore path (sub-graph) @done(18-03-25 04:13)
-        ❑ Find all cycles (Johnson's algorithm)
+        ✔ Find all cycles (Johnson's algorithm) @done(18-03-30 16:56)
         ❑ Compute attributes delta on every cycle
         ❑ Solve linear inequalities
         ❑ Solution exists predicate (for matching nodes)
