@@ -11,19 +11,20 @@ open FSharpx.Collections
 open FSharpx
 open Hekate
 
-open System.Collections.Generic
-
 module ArithmeticConstraints =
 
-    let updateArithStates graph (mKEdges : MatchedKEdges) =
+    let addNodeAttributes graph curr mKEdges  =
         let addValue (path, ID labelName) curr =
             Map.tryFind path mKEdges.currEdges
             >>= fun e  -> Graph.Nodes.tryFind (fst e.lastEdge) graph
             >>= fun (_, labels) -> Map.tryFind labelName labels
             |> function Some (IntVal i) -> i + curr
-                      | _               -> curr     
+                      | _               -> curr   
+        Map.map addValue curr   
         
-        { mKEdges with arithStates = Map.map addValue mKEdges.arithStates }
+    let updateArithStates graph mKEdges =
+        { mKEdges with arithStates = addNodeAttributes graph mKEdges.arithStates 
+                                                       mKEdges }
 
     let private allPathsAndLabellings (ArithmeticConstraint (l, _, r)) =
         let rec fromOp acc = 
@@ -53,12 +54,9 @@ module ArithmeticConstraints =
     let satisfied mKEdges arithConstrs = 
         List.forall (constrSatisfied mKEdges) arithConstrs
 
-    let attributesDelta attrs cycle = 
-        let deltas = Dictionary () 
-
-        let rec iter = 
-            function 
-            | u::v::nodes -> attrs |> List.iter (fun a -> ()) 
-            | [] | [_]    -> ()
-
-        iter cycle
+    //                4 <------ 6
+    // 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
+    // 
+    let attributesDelta graph attrs cycle = 
+        let curr = List.map (fun a -> a, 0) attrs |> Map.ofList
+        List.fold (addNodeAttributes graph) curr cycle
