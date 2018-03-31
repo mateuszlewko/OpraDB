@@ -33,6 +33,8 @@ Query execution:
         ✔ Restore path (sub-graph) @done(18-03-25 04:13)
         ✔ Find all cycles (Johnson's algorithm) @done(18-03-30 16:56)
         ❑ Compute attributes delta on every cycle
+            ❑ on nodes
+            ❑ on edges
         ❑ Solve linear inequalities
         ❑ Solution exists predicate (for matching nodes)
         ❑ Create solution (if exists)
