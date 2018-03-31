@@ -39,6 +39,8 @@
     <PackageReference Include="FSharpx.Extras" Version="*" />
     <PackageReference Include="FsPickler" Version="*" />
     <PackageReference Include="FsPrettyTable" Version="0.1.0" />
+    <PackageReference Include="FsZ3" Version="1.0.0" />
     <PackageReference Include="hekate" Version="*" />
+    <PackageReference Include="Microsoft.Z3" Version="4.4.1" />
   </ItemGroup>
 </Project>

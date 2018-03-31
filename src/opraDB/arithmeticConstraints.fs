@@ -60,3 +60,13 @@ module ArithmeticConstraints =
     let attributesDelta graph attrs cycle = 
         let curr = List.map (fun a -> a, 0) attrs |> Map.ofList
         List.fold (addNodeAttributes graph) curr cycle
+
+    let constraintToInequality (ArithmeticConstraint (l, op, r)) = 
+        ()
+
+    let inequalitiesSatisfied mKEdges predecessors attrs graph = 
+        let subGraph, visited = Graph.Utils.restoreGraph predecessors mKEdges
+        let cycles            = Graph.Utils.allSimpleCycles subGraph
+        let cyclesAtrrsDelta  = List.map (attributesDelta graph attrs) cycles
+        
+        true

@@ -33,10 +33,10 @@ Query execution:
         ✔ Restore path (sub-graph) @done(18-03-25 04:13)
         ✔ Find all cycles (Johnson's algorithm) @done(18-03-30 16:56)
         ❑ Compute attributes delta on every cycle
-            ❑ on nodes
+            ✔ on nodes @done(18-03-31 16:09)
             ❑ on edges
-        ❑ Solve linear inequalities
-        ❑ Solution exists predicate (for matching nodes)
+        ❑ Solve linear inequalities @today 
+        ❑ Solution exists predicate (for matching nodes) @today 
         ❑ Create solution (if exists)
     ❑ Existentially qualified paths and nodes 
     ❑ Ontologies (let expressions)
