@@ -9,13 +9,13 @@
     <Compile Include="program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="4.3.3" />
+    <PackageReference Include="FSharp.Core" Version="*" />
     <PackageReference Include="FSharpx.Collections" Version="*" />
     <PackageReference Include="Argu" Version="*" />
     <PackageReference Include="FSharpx.Extras" Version="*" />
     <PackageReference Include="FsPickler" Version="*" />
     <PackageReference Include="FSharp.Data" Version="*" />
-    <PackageReference Include="FsPrettyTable" Version="0.1.0" />
+    <PackageReference Include="FsPrettyTable" Version="*" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\opraDB\opraDB.fsproj" />
