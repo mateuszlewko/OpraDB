@@ -16,6 +16,10 @@ module ArithmeticConstraints =
                 let graph, visited =  restoreGraph preds 1
                 // printfn "post order %A" (postOrderTimes graph)
                 // printfn "sccs %A" (stronglyConnectedComponents graph)
+
+                OpraDB.ArithmeticConstraints.existsSolution 1 1
+
+
                 Expect.equal (allSimpleCycles graph) [[3; 4; 2]; [5; 4; 2]] 
                              "finds all cycles"
 

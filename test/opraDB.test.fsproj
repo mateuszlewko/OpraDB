@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
     <NoWarn>NU1602;NU1701</NoWarn>
   </PropertyGroup>
 
@@ -21,7 +21,10 @@
     <PackageReference Include="Expecto" Version="5.*" />
     <PackageReference Include="FParsec" Version="1.0.3" />
     <PackageReference Include="FsPickler" Version="4.5" />
+    
     <DotNetCliToolReference Include="Microsoft.DotNet.Watcher.Tools" Version="1.0.0" />
+    
+    <!-- <Reference Include="System.Runtime" Version="4.3.0" /> -->
   </ItemGroup>
 
 </Project>

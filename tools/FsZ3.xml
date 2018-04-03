@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doc>
+<assembly><name>FsZ3</name></assembly>
+<members>
+<member name="M:Microsoft.Z3.Api.Solver.create(Microsoft.Z3.Context)">
+<summary>
+ Make a new solver with an optional tactic
+</summary>
+</member>
+<member name="T:Microsoft.Z3.Api.Gs">
+<summary>
+ Globals / global state
+</summary>
+</member>
+<member name="M:Microsoft.Z3.Api.Context.tactics(Microsoft.Z3.Context)">
+<summary>
+ Get a list of tactics for the context
+</summary>
+</member>
+<member name="M:Microsoft.Z3.Api.Context.create">
+<summary>
+ Make a new context
+</summary>
+</member>
+<member name="M:Microsoft.Z3.Bool.Bool(System.String)">
+<summary>
+ Return a bool const with supplied name
+</summary>
+</member>
+<member name="M:Microsoft.Z3.Int.Int(System.String)">
+<summary>
+ Return an int const with supplied name
+</summary>
+</member>
+<member name="M:Microsoft.Z3.Real.Real(System.String)">
+<summary>
+ Return a real const with supplied name
+</summary>
+</member>
+</members>
+</doc>

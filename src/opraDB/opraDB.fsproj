@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
     <NoWarn>NU1602;NU1701</NoWarn>
   </PropertyGroup>
 
@@ -29,8 +29,31 @@
     <Compile Include="regularConstraints.fs" />
     <Compile Include="queryExecution.fs" />
     <Compile Include="program.fs" />
+    <None Include="../../tools/libz3.so">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="../../tools/libz3.dll">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="System.Runtime" />
+    <Reference Include="FsZ3">
+      <HintPath>../../tools/FsZ3.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Z3">
+      <HintPath>../../tools/Microsoft.Z3.dll</HintPath>
+    </Reference>
+    <!-- <PackageReference Include="System.Runtime" Version="*"/> -->
+
+    <!-- <Reference Include="libz3">
+      <HintPath>../../tools/libz3.dll</HintPath>
+    </Reference> -->
+    <Reference Include="System.Runtime">
+      <HintPath>../../tools/System.Runtime.dll</HintPath>
+    </Reference>
     <PackageReference Include="FParsec" Version="*" />
     <PackageReference Include="FsLexYacc" Version="7.0.6" />
     <PackageReference Include="FsLexYacc.Runtime" Version="7.0.6" />
@@ -39,8 +62,8 @@
     <PackageReference Include="FSharpx.Extras" Version="*" />
     <PackageReference Include="FsPickler" Version="*" />
     <PackageReference Include="FsPrettyTable" Version="0.1.0" />
-    <PackageReference Include="FsZ3" Version="1.0.0" />
+    <!-- <PackageReference Include="FsZ3" Version="1.0.0" /> -->
     <PackageReference Include="hekate" Version="*" />
-    <PackageReference Include="Microsoft.Z3" Version="4.4.1" />
+    <!-- <PackageReference Include="zen_z3_linux" Version="4.5.1.7-v1f29cebd4df" /> -->
   </ItemGroup>
 </Project>

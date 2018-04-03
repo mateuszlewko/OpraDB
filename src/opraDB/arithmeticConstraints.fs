@@ -11,6 +11,11 @@ open FSharpx.Collections
 open FSharpx
 open Hekate
 
+open Microsoft.Z3
+open Microsoft.Z3.Bool
+open Microsoft.Z3.Int
+open Microsoft.Z3.Array
+
 module ArithmeticConstraints =
 
     let addNodeAttributes graph curr mKEdges  =
@@ -61,12 +66,34 @@ module ArithmeticConstraints =
         let curr = List.map (fun a -> a, 0) attrs |> Map.ofList
         List.fold (addNodeAttributes graph) curr cycle
 
-    let constraintToInequality (ArithmeticConstraint (l, op, r)) = 
-        ()
+    let constraintToInequality (solver : Solver) 
+                               (ArithmeticConstraint (l, op, r)) = 
+        solver.Add ()
+
+    let existsSolution constraints values = 
+        // Create 3 integer variables
+        let dog = Int("dog")
+        let cat = Int("cat")
+        let mouse = Int("mouse")
+
+        let result = 
+            Z3.Solve(dog >=. 1I,   // at least one dog
+                     cat >=. 1I,   // at least one cat
+                     mouse >=. 1I, // at least one mouse
+                     // we want to buy 100 animals
+                     dog + cat + mouse =. 100I,  
+                     // We have 100 dollars (10000 cents):
+                     // dogs cost 15 dollars (1500 cents), 
+                     //   cats cost 1 dollar (100 cents), and 
+                     //   mice cost 25 cents
+                     1500I * dog + 100I * cat + 25I * mouse =. 10000I)
+        
+        printfn "result %A" result
 
     let inequalitiesSatisfied mKEdges predecessors attrs graph = 
         let subGraph, visited = Graph.Utils.restoreGraph predecessors mKEdges
         let cycles            = Graph.Utils.allSimpleCycles subGraph
         let cyclesAtrrsDelta  = List.map (attributesDelta graph attrs) cycles
-        
+
         true
+   

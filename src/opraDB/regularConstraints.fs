@@ -181,11 +181,11 @@ module RegularConstraints =
         let rec bfs visited result preds mNodes =
             if List.isEmpty mNodes
             then
-                printfn "preds:" 
-                Map.toList preds |> List.iter (fun (k, v) -> 
-                                        printfn "%A" (MatchedKEdges.basicInfo k)
-                                        printfn "%A" (mapMk (Set.toList v))
-                                    )
+                // printfn "preds:" 
+                // Map.toList preds |> List.iter (fun (k, v) -> 
+                //                         printfn "%A" (MatchedKEdges.basicInfo k)
+                //                         printfn "%A" (mapMk (Set.toList v))
+                //                     )
                                     
                 result
             else
