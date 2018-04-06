@@ -13,8 +13,8 @@ open FSharpx.Prelude
 open Hekate
 
 open Microsoft.Z3
-open Microsoft.Z3.Bool
-open Microsoft.Z3.Int
+// open Microsoft.Z3.Bool
+// open Microsoft.Z3.Int
 
 // open Microsoft.Z3.Array
 
@@ -80,21 +80,21 @@ module ArithmeticConstraints =
 
     let mutable cnt = 0
 
-    let private existsSolutionInner constraints cyclesDeltas =
+    let private existsSolutionInner constraints cyclesDeltas ctx =
         
         // System.GC.KeepAlive (ctx2)
         // Native.Z3_del_context Gs.globalCtx
         // Gs.globalCtx <- ctx2
         // System.GC.KeepAlive (Gs)
-        use solver =  Solver.create (Gs.context ())
+        use solver : Solver =  Solver.create ctx
         // System.GC.KeepAlive (solver)
         // solver.Push()
         cnt <- cnt + 1
 
         let cycleCnt = List.length cyclesDeltas
-        let ctx = Gs.context ()
+        // let ctx =context
         /// Value of alpha-i represents  how many times to traverse i-th cycle
-        let alphas   = Arr.init cycleCnt (fun i -> IntExpr (ctx.MkIntConst (sprintf "%d-alpha-%d" cnt i)))
+        let alphas   = Arr.init cycleCnt (fun i -> (ctx.MkIntConst (sprintf "%d-alpha-%d" cnt i)))
         /// All mappings from (path, attribute) to delta for a given cycle
         let deltas   = Array.ofList cyclesDeltas
 
@@ -120,13 +120,13 @@ module ArithmeticConstraints =
                     System.Console.WriteLine (sprintf "d: %d" delta)
                     System.Console.Out.Flush ()
 
-                    alphas.[i] * (bigint delta)
+                    ctx.MkMul (alphas.[i], ctx.MkInt delta)
 
                 let rec fold = 
                     function 
-                    | []    -> IntVal (bigint 0)
+                    | []    -> ctx.MkAdd (ctx.MkInt 0, ctx.MkInt 0)
                     | [x]   -> x
-                    | x::y::xs -> fold ((x + y)::xs)
+                    | x::y::xs -> fold (ctx.MkAdd(x, y)::xs)
 
                 Array.map getAlpha indexes
                 |> Array.toList
@@ -140,23 +140,23 @@ module ArithmeticConstraints =
 
         let rec evalOperand =
             function 
-            | IntALiteral i -> IntVal (bigint i)
-            | Add (l, r)    -> evalOperand l + evalOperand r 
-            | Mult (l, r)   -> evalOperand l * evalOperand r
+            | IntALiteral i -> ctx.MkAdd (ctx.MkInt 0, ctx.MkInt i)
+            | Add (l, r)    -> ctx.MkAdd (evalOperand l, evalOperand r)
+            | Mult (l, r)   -> ctx.MkMul (evalOperand l, evalOperand r)
             | SumBy (p, l)  -> match Map.tryFind (p, l) attrAlphas with 
                                | Some x -> x
-                               | None   -> IntVal (0I)
+                               | None   -> ctx.MkAdd (ctx.MkInt 0, ctx.MkInt 0)
                             //    |> Option.defaultValue (IntVal 0I) 
                             //    >>*  (printfn "op: %O")
 
         let evalOperator lhs rhs = 
             function 
-            | Eq  -> lhs =.  rhs
-            | Neq -> lhs <>. rhs
-            | Leq -> lhs <=. rhs
-            | Geq -> lhs >=. rhs
-            | Ge  -> lhs >.  rhs
-            | Le  -> lhs <.  rhs
+            | Eq  -> ctx.MkEq (lhs, rhs)
+            | Neq -> ctx.MkDistinct (lhs, rhs)
+            | Leq -> ctx.MkLe (lhs, rhs)
+            | Geq -> ctx.MkGe (lhs, rhs)
+            | Ge  -> ctx.MkGt (lhs, rhs)
+            | Le  -> ctx.MkLt (lhs, rhs)
 
         let evalConstraint (ArithmeticConstraint (lhs, op, rhs)) =
             evalOperator (evalOperand lhs) (evalOperand rhs) op
@@ -171,9 +171,9 @@ module ArithmeticConstraints =
         // let a = 
 
         let result : SolveResult = 
-            let exprs = Array.map (fun a -> a >. IntVal 0I) alphas
+            let exprs = Array.map (fun a -> ctx.MkGe (a, ctx.MkInt 0)) alphas
                         |> Array.append constraintsExpr
-                        |> Array.map (function BoolExpr e -> e)
+                        // |> Array.map (function BoolExpr e -> e)
 
             solver.Add exprs
             Solver.check solver
@@ -196,10 +196,10 @@ module ArithmeticConstraints =
 
 
     let existsSolution constraints cyclesDeltas =
-        let ctx = Context.create ()
-        Gs.globalCtx <- Some ctx
-        let res = existsSolutionInner constraints cyclesDeltas
-        Gs.globalCtx <- None
+        use ctx = Context.create ()
+        // Gs.globalCtx <- Some ctx
+        let res = existsSolutionInner constraints cyclesDeltas ctx
+        // Gs.globalCtx <- None
         // System.GC.Collect ()
         // ctx.Dispose ()
         res
