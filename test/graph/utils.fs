@@ -29,11 +29,72 @@ module ArithmeticConstraints =
     [<Tests>]
     let ``exists solution tests`` =
         testList "exists solution returns correct output" [
-            test "basic test" {
-                let constrs = [ SumBy (ID "p1", ID "a1"), Leq, IntALiteral 10
-                                SumBy (ID "p1", ID "a1"), Geq, IntALiteral 5 
+            // test "one attribute - solution exists" {
+            //     let constrs = [ SumBy (ID "p1", ID "a1"), Leq, IntALiteral 10
+            //                     SumBy (ID "p1", ID "a1"), Geq, IntALiteral 5 
+            //                   ] |> List.map ArithmeticConstraint 
+            //     let cyclesDeltas = [Map [(ID "p1", ID "a1"), 7]]                
+
+            //     let res = existsSolution constrs cyclesDeltas
+            //     Expect.isTrue res "found solution correctly"
+            // }
+
+            // test "one attribute - solution exists2" {
+            //     let constrs = [ SumBy (ID "p1", ID "a1"), Leq, IntALiteral 10
+            //                     SumBy (ID "p1", ID "a1"), Geq, IntALiteral 5 
+            //                   ] |> List.map ArithmeticConstraint 
+            //     let cyclesDeltas = [Map [(ID "p1", ID "a1"), 3]]                
+
+            //     let res = existsSolution constrs cyclesDeltas
+            //     Expect.isTrue res "found solution correctly"
+            // }
+
+            test "two attributes - solution exists" {
+                let constrs = [ SumBy (ID "_p1", ID "_a1"), Leq, IntALiteral 10
+                                SumBy (ID "_p1", ID "_a2"), Geq, IntALiteral 5 
                               ] |> List.map ArithmeticConstraint 
-                let cyclesDeltas = [Map [(ID "p1", ID "a1"), 3]]                
+                let cyclesDeltas = [ Map [ (ID "_p1", ID "_a1"), 6
+                                           (ID "_p1", ID "_a2"), 3 ]
+                                     Map [ (ID "_p1", ID "_a1"), -3
+                                           (ID "_p1", ID "_a2"), -1 ]
+                                   ]                
+
+                let res = existsSolution constrs cyclesDeltas
+                Expect.isTrue res "found solution correctly"
+            }
+        ]
+    [<Tests>]
+    let ``exists solution tests2`` =
+        testList "exists solution returns correct output2" [
+            // test "one attribute - solution exists" {
+            //     let constrs = [ SumBy (ID "p1", ID "a1"), Leq, IntALiteral 10
+            //                     SumBy (ID "p1", ID "a1"), Geq, IntALiteral 5 
+            //                   ] |> List.map ArithmeticConstraint 
+            //     let cyclesDeltas = [Map [(ID "p1", ID "a1"), 7]]                
+
+            //     let res = existsSolution constrs cyclesDeltas
+            //     Expect.isTrue res "found solution correctly"
+            // }
+
+            // test "one attribute - solution exists2" {
+            //     let constrs = [ SumBy (ID "p1", ID "a1"), Leq, IntALiteral 10
+            //                     SumBy (ID "p1", ID "a1"), Geq, IntALiteral 5 
+            //                   ] |> List.map ArithmeticConstraint 
+            //     let cyclesDeltas = [Map [(ID "p1", ID "a1"), 3]]                
+
+            //     let res = existsSolution constrs cyclesDeltas
+            //     Expect.isTrue res "found solution correctly"
+            // }
+
+            test "two attributes - solution exists" {
+                let constrs = [ SumBy (ID "_p1", ID "_a1"), Leq, IntALiteral 10
+                                SumBy (ID "_p1", ID "_a2"), Geq, IntALiteral 5 
+                              ] |> List.map ArithmeticConstraint 
+                let cyclesDeltas = [ Map [ (ID "_p1", ID "_a1"), 6
+                                           (ID "_p1", ID "_a2"), 3 ]
+                                     Map [ (ID "_p1", ID "_a1"), -3
+                                           (ID "_p1", ID "_a2"), -1 ]
+                                   ]                
 
                 let res = existsSolution constrs cyclesDeltas
                 Expect.isTrue res "found solution correctly"
