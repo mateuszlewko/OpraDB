@@ -35,8 +35,8 @@ Query execution:
         ❑ Compute attributes delta on every cycle
             ✔ on nodes @done(18-03-31 16:09)
             ❑ on edges
-        ❑ Solve linear inequalities @today 
-        ❑ Solution exists predicate (for matching nodes) @today 
+        ✔ Solve linear inequalities @today @done(18-04-06 18:42)
+        ✔ Solution exists predicate (for matching nodes) @today @done(18-04-06 18:42)
         ❑ Create solution (if exists)
     ❑ Existentially qualified paths and nodes 
     ❑ Ontologies (let expressions)
