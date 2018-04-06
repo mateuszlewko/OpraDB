@@ -18,9 +18,9 @@ module CommonUtils =
 
     module MultiMap = 
         open FSharpx.Collections
-
-        let add key value m = 
-            match Map.tryFind key m with 
+        
+        let add (key : 'a) (value : 'b) map = 
+            match Map.tryFind key map with 
             | None   -> Set.singleton value 
-            | Some s -> Set.add key s
-            |> fun s -> Map.add key s m
+            | Some set -> Set.add value set
+            |> fun set -> Map.add key set map

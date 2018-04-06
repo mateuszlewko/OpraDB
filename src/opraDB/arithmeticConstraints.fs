@@ -14,7 +14,11 @@ open Hekate
 open Microsoft.Z3
 open Microsoft.Z3.Bool
 open Microsoft.Z3.Int
-open Microsoft.Z3.Array
+// open Microsoft.Z3.Array
+
+open System.Numerics
+
+module Arr = Collections.Array
 
 module ArithmeticConstraints =
 
@@ -66,34 +70,71 @@ module ArithmeticConstraints =
         let curr = List.map (fun a -> a, 0) attrs |> Map.ofList
         List.fold (addNodeAttributes graph) curr cycle
 
-    let constraintToInequality (solver : Solver) 
+    let constraintToInequality (solver : Solver)
                                (ArithmeticConstraint (l, op, r)) = 
         solver.Add ()
 
-    let existsSolution constraints values = 
-        // Create 3 integer variables
-        let dog = Int("dog")
-        let cat = Int("cat")
-        let mouse = Int("mouse")
+    type AttrDelta = { path : Identifier; attr: Identifier; delta: int }
 
-        let result = 
-            Z3.Solve(dog >=. 1I,   // at least one dog
-                     cat >=. 1I,   // at least one cat
-                     mouse >=. 1I, // at least one mouse
-                     // we want to buy 100 animals
-                     dog + cat + mouse =. 100I,  
-                     // We have 100 dollars (10000 cents):
-                     // dogs cost 15 dollars (1500 cents), 
-                     //   cats cost 1 dollar (100 cents), and 
-                     //   mice cost 25 cents
-                     1500I * dog + 100I * cat + 25I * mouse =. 10000I)
+    let existsSolution constraints (cyclesDeltas : Map<Identifier * Identifier, int> list) =
+        let cycleCnt = List.length cyclesDeltas
+        /// Value of alpha-i represents  how many times to traverse i-th cycle
+        let alphas   = Arr.init cycleCnt (sprintf "alpha-%d" >> Int)
+        /// All mappings from (path, attribute) to delta for a given cycle
+        let deltas   = Array.ofList cyclesDeltas
+        
+        /// Mapping from (path, attribute) to Int expression representing 
+        /// sum of alpha_i * delta_i for a given (path, attribute)
+        let attrAlphas = 
+            let attrIndexes indexes (i : int, cycle) = 
+                Map.fold (fun indexes key _ -> MultiMap.add key i indexes) 
+                         indexes cycle
+
+            let constructExpr id indexes = 
+                let indexes = Array.ofSeq indexes
+                let getAlpha i = 
+                    let delta = Map.find id deltas.[i]
+                    alphas.[i] * (BigInteger delta)
+
+                Array.map getAlpha indexes
+                |> Array.fold (+) (IntVal 0I)
+
+            Array.indexed deltas 
+            |> Array.fold attrIndexes Map.empty
+            |> Map.map constructExpr 
+
+        let rec evalOperand =
+            function 
+            | IntALiteral i -> BigInteger i |> IntVal
+            | Add (l, r)    -> evalOperand l + evalOperand r 
+            | Mult (l, r)   -> evalOperand l * evalOperand r
+            | SumBy (p, l)  -> Map.tryFind (p, l) attrAlphas
+                               |> Option.defaultValue (IntVal 0I) 
+
+        let evalOperator : Operator -> Int -> Int -> _ = 
+            function 
+            | Eq  -> (=. )
+            | Neq -> (<>.)
+            | Leq -> (<=.)
+            | Geq -> (>=.)
+            | Ge  -> (>. )
+            | Le  -> (<. )
+
+        let evalConstraint (ArithmeticConstraint (lhs, op, rhs)) =
+            (evalOperator op) (evalOperand lhs) (evalOperand rhs)
+
+        let constraintsExpr = Array.ofList constraints 
+                              |> Array.map evalConstraint 
+
+        let result = Z3.Solve (And constraintsExpr)
         
         printfn "result %A" result
+        result.ToFSharpOption () |> Option.isSome
 
-    let inequalitiesSatisfied mKEdges predecessors attrs graph = 
+    let inequalitiesSatisfied mKEdges predecessors attrs graph constraints = 
         let subGraph, visited = Graph.Utils.restoreGraph predecessors mKEdges
-        let cycles            = Graph.Utils.allSimpleCycles subGraph
-        let cyclesAtrrsDelta  = List.map (attributesDelta graph attrs) cycles
-
-        true
+        let cyclesAtrrsDelta  = Graph.Utils.allSimpleCycles subGraph
+                                |> List.map (attributesDelta graph attrs)
+   
+        existsSolution constraints cyclesAtrrsDelta
    
