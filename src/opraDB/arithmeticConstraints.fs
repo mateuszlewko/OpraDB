@@ -72,7 +72,8 @@ module ArithmeticConstraints =
         let curr = List.map (fun a -> a, 0) attrs |> Map.ofList
         List.fold (addNodeAttributes graph) curr cycle
 
-    let private existsSolutionInner constraints cyclesDeltas ctx =
+    let existsSolution constraints cyclesDeltas =
+        use ctx      = Context.create ()
         use solver   = Solver.create ctx
         let cycleCnt = List.length cyclesDeltas
 
@@ -140,10 +141,6 @@ module ArithmeticConstraints =
             printfn "%A" s
             true 
         | _          -> false
-
-    let existsSolution constraints cyclesDeltas =
-        use ctx = Context.create ()
-        existsSolutionInner constraints cyclesDeltas ctx
 
     let inequalitiesSatisfied mKEdges predecessors attrs graph constraints = 
         let subGraph, visited = Graph.Utils.restoreGraph predecessors mKEdges
