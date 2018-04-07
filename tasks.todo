@@ -26,9 +26,8 @@ Query execution:
     ✔ Matching same final-nodes used in different paths @high @today @done(18-02-21 00:23)
     ✔ Handle cycles (only with matched nodes) @critical @done(18-02-21 16:26)
     ✔ Matching simple arithmetic constraints (no cycles, only sum by) @high @today @done(18-02-25 21:56)
-    ❑ Move functions from regularConstraints to queryExecution module
     ❑ Matching more complex arithmetic constraints (no cycles, max, min, count) @high @today
-    ❑ Improved matching of arithmetic constraints with cycles @high @today 
+    ❑ Improved matching of arithmetic constraints with cycles @high
         ✔ Store preds @done(18-03-25 00:58)
         ✔ Restore path (sub-graph) @done(18-03-25 04:13)
         ✔ Find all cycles (Johnson's algorithm) @done(18-03-30 16:56)
@@ -40,10 +39,10 @@ Query execution:
         ✔ Remove arithStates from equality checks @critical @done(18-04-07 02:47)
         ✔ Solution exists predicate (for matching nodes) @today @done(18-04-06 18:42)
         ❑ Create answer from solution
-    ❑ Improve query code, move it out of regularConstraints.fs @high 
-    ❑ Return last node before sink node @high 
     ❑ Existentially qualified paths and nodes 
+    ❑ Return last node before sink node @high @today 
     ❑ Ontologies (let expressions) @high 
+    ❑ Move functions from regularConstraints to queryExecution module @high 
     ❑ Optimisation: Neighbour queries for k-node constraints @high
     ❑ Bool type
     ❑ Sequence of nodes in path constraints (p: u..v) @high 
@@ -63,7 +62,7 @@ Client / General:
         ❑ Handle communication between client and service
         ✔ Basic Command line interface @high @done(18-02-26 03:35)
     ❑ Logging with Logary 
-    ❑ Results visualisation (possibly other, web-based client) @high 
+    ❑ Results visualisation WebUI  @high 
     ❑ Docker installation @high 
 
 Docs:

@@ -35,9 +35,9 @@ module QueryData =
 
         override this.Equals other = 
             match other with 
-            | :? MatchedKEdges -> 
-                this.currEdges = (other :?> MatchedKEdges).currEdges 
-             && this.nfas      = (other :?> MatchedKEdges).nfas 
+            | :? MatchedKEdges as other -> 
+                this.currEdges = other.currEdges 
+             && this.nfas      = other.nfas 
             | _                -> false
 
         interface System.IComparable with 
