@@ -20,12 +20,29 @@ module QueryData =
     type ArithStates = Map<Identifier * Identifier, int>
 
     // TODO: This should be renamed to EdgesVector
+    [<CustomEquality; CustomComparison>]
     type MatchedKEdges = {
             currEdges   : KEdges
             /// All states in every nfa
             nfas        : StatesInNFA list
             arithStates : ArithStates
         }
+    with 
+        override this.GetHashCode () = 
+            let x = struct ( this.arithStates.GetHashCode ()
+                           , this.nfas.GetHashCode ())
+            x.GetHashCode ()
+
+        override this.Equals other = 
+            match other with 
+            | :? MatchedKEdges -> 
+                this.currEdges = (other :?> MatchedKEdges).currEdges 
+             && this.nfas      = (other :?> MatchedKEdges).nfas 
+            | _                -> false
+
+        interface System.IComparable with 
+            member this.CompareTo other = 
+                compare (this.GetHashCode()) (other.GetHashCode())
 
     let [<Literal>] NULL_NODE = -1
 

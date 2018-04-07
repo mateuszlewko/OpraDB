@@ -36,8 +36,11 @@ Query execution:
             ✔ on nodes @done(18-03-31 16:09)
             ❑ on edges
         ✔ Solve linear inequalities @today @done(18-04-06 18:42)
+        ❑ Add exiting arithStates @critical 
+        ❑ Remove arithStates from equality checks @critical 
         ✔ Solution exists predicate (for matching nodes) @today @done(18-04-06 18:42)
         ❑ Create answer from solution
+    ❑ Improve query code, move it out of regularConstraints.fs @high 
     ❑ Return last node before sink node @high 
     ❑ Existentially qualified paths and nodes 
     ❑ Ontologies (let expressions) @high 
@@ -59,7 +62,7 @@ Client / General:
     ❑ Separate client from service: @high 
         ❑ Handle communication between client and service
         ✔ Basic Command line interface @high @done(18-02-26 03:35)
-    ❑ Logging with Logary @today 
+    ❑ Logging with Logary 
     ❑ Results visualisation (possibly other, web-based client) @high 
     ❑ Docker installation @high 
 

@@ -42,22 +42,8 @@ module ArithmeticConstraints =
         |> List.distinct |> flip Seq.zip (Seq.initInfinite (konst 0)) 
         |> Map.ofSeq
 
-    let private constrSatisfied mKEdges (ArithmeticConstraint (l, op, r)) = 
-        let rec evalOperand =
-            function 
-            | IntALiteral i -> i 
-            | Add (l, r)    -> evalOperand l + evalOperand r 
-            | Mult (l, r)   -> evalOperand l * evalOperand r
-            | SumBy (p, l)  -> Map.tryFind (p, l) mKEdges.arithStates
-                               |> Option.defaultValue 0        
-
-        (getOperator op) (evalOperand l) (evalOperand r)
-                            
-    let satisfied mKEdges arithConstrs = 
-        List.forall (constrSatisfied mKEdges) arithConstrs
-
     let attributesDelta graph attrs cycle = 
-        let curr = List.map (fun a -> a, 0) attrs |> Map.ofList
+        let curr = Seq.map (fun a -> a, 0) attrs |> Map.ofSeq
         List.fold (addNodeAttributes graph) curr cycle
 
     let findSolution constraints cyclesDeltas =
@@ -132,7 +118,9 @@ module ArithmeticConstraints =
         findSolution constraints cyclesDeltas
         |> foundSolution
 
-    let inequalitiesSatisfied mKEdges predecessors attrs graph constraints = 
+    let inequalitiesSatisfied mKEdges predecessors graph constraints = 
+        let attrs = Map.keys mKEdges.arithStates |> List.ofSeq
+
         let subGraph, visited = Graph.Utils.restoreGraph predecessors mKEdges
         let cyclesAtrrsDelta  = Graph.Utils.allSimpleCycles subGraph
                                 |> List.map (attributesDelta graph attrs)
