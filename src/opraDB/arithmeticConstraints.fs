@@ -46,7 +46,10 @@ module ArithmeticConstraints =
         let curr = Seq.map (fun a -> a, 0) attrs |> Map.ofSeq
         List.fold (addNodeAttributes graph) curr cycle
 
-    let findSolution constraints cyclesDeltas =
+    let findSolution constraints arithStates cyclesDeltas =
+        printfn "arith: %A" arithStates
+        printfn "deltas: %A" cyclesDeltas
+
         use ctx      = Context.create ()
         use solver   = Solver.create ctx
         let cycleCnt = List.length cyclesDeltas
@@ -72,9 +75,11 @@ module ArithmeticConstraints =
                     ctx.MkMul (alphas.[i], ctx.MkInt delta)
 
                 let add l r = ctx.MkAdd (l, r)
+                let arithVal = Map.tryFind id arithStates 
+                               |> Option.getOrElse 0
 
                 Array.map getAlpha indexes
-                |> Array.fold add (mkConst 0)
+                |> Array.fold add (mkConst arithVal)
 
             Array.indexed deltas 
             |> Array.fold attrIndexes Map.empty
@@ -114,8 +119,8 @@ module ArithmeticConstraints =
         | Solution _ -> true
         | _          -> false
 
-    let existsSolution constraints cyclesDeltas = 
-        findSolution constraints cyclesDeltas
+    let existsSolution constraints arithStates cyclesDeltas = 
+        findSolution constraints arithStates cyclesDeltas
         |> foundSolution
 
     let inequalitiesSatisfied mKEdges predecessors graph constraints = 
@@ -125,5 +130,6 @@ module ArithmeticConstraints =
         let cyclesAtrrsDelta  = Graph.Utils.allSimpleCycles subGraph
                                 |> List.map (attributesDelta graph attrs)
    
-        findSolution constraints cyclesAtrrsDelta |> foundSolution
+        findSolution constraints mKEdges.arithStates cyclesAtrrsDelta 
+        |> foundSolution
    

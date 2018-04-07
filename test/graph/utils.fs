@@ -35,7 +35,7 @@ module ArithmeticConstraints =
                               ] |> List.map ArithmeticConstraint 
                 let cyclesDeltas = [Map [(ID "p1", ID "a1"), 4]]                
 
-                let res = existsSolution constrs cyclesDeltas 
+                let res = existsSolution constrs Map.empty cyclesDeltas 
                 Expect.isTrue res "found solution correctly"
             }
 
@@ -49,7 +49,7 @@ module ArithmeticConstraints =
                                            (ID "p1", ID "a2"), -1 ]
                                    ]                
 
-                let res = existsSolution constrs cyclesDeltas 
+                let res = existsSolution constrs Map.empty cyclesDeltas 
                 Expect.isTrue res "found solution correctly"
             }
         ]

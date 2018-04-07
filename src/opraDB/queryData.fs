@@ -29,8 +29,8 @@ module QueryData =
         }
     with 
         override this.GetHashCode () = 
-            let x = struct ( this.arithStates.GetHashCode ()
-                           , this.nfas.GetHashCode ())
+            let x = struct ( this.currEdges.GetHashCode ()
+                           , this.nfas.GetHashCode () )
             x.GetHashCode ()
 
         override this.Equals other = 

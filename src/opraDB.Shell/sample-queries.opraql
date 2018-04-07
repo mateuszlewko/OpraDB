@@ -15,3 +15,33 @@ HAVING 10 < 3 * (SUM p BY attr) + 2 ;
 MATCH NODES s, t, x, y
 SUCH THAT p: s -> t, q: x -> y 
 WHERE (type(@p) = "beg").*, .*(type(@p) = "end") ;
+
+
+MATCH NODES s, t
+SUCH THAT p: s->t
+WHERE
+    (type(@p) = "beg").*
+  , .*(type(@p) = "end")
+  , (edge(@p, @'p) = "link")*.
+  , .*(a(@p, @'p) = "ok") (a(@p, @'p) = "ok") (a(@p, @'p) = "ok").*
+HAVING (SUM p BY time) < 27;
+
+
+MATCH NODES s, t
+SUCH THAT p: s->t
+WHERE
+    (type(@p) = "beg").*
+  , .*(type(@p) = "end")
+  , (edge(@p, @'p) = "link")*.
+  , .*(a(@p, @'p) = "ok") (a(@p, @'p) = "ok") (a(@p, @'p) = "ok").*
+HAVING (SUM p BY time) < 30;
+
+
+MATCH NODES s, t
+SUCH THAT p: s->t
+WHERE
+    (type(@p) = "beg").*
+  , .*(type(@p) = "end")
+  , (edge(@p, @'p) = "link")*.
+  , .*(a(@p, @'p) = "ok") (a(@p, @'p) = "ok") (a(@p, @'p) = "ok").*
+HAVING (SUM p BY time) < 100;

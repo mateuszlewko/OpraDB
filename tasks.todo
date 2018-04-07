@@ -36,8 +36,8 @@ Query execution:
             ✔ on nodes @done(18-03-31 16:09)
             ❑ on edges
         ✔ Solve linear inequalities @today @done(18-04-06 18:42)
-        ❑ Add exiting arithStates @critical 
-        ❑ Remove arithStates from equality checks @critical 
+        ✔ Add existing arithStates @critical @done(18-04-07 03:13)
+        ✔ Remove arithStates from equality checks @critical @done(18-04-07 02:47)
         ✔ Solution exists predicate (for matching nodes) @today @done(18-04-06 18:42)
         ❑ Create answer from solution
     ❑ Improve query code, move it out of regularConstraints.fs @high 
