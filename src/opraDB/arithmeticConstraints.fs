@@ -9,18 +9,9 @@ open OpraDB.CommonUtils
 
 open FSharpx.Collections
 open FSharpx
-open FSharpx.Prelude
 open Hekate
 
 open Microsoft.Z3
-// open Microsoft.Z3.Bool
-// open Microsoft.Z3.Int
-
-// open Microsoft.Z3.Array
-
-open System.Numerics
-
-module Arr = Collections.Array
 
 module ArithmeticConstraints =
 
@@ -65,20 +56,17 @@ module ArithmeticConstraints =
     let satisfied mKEdges arithConstrs = 
         List.forall (constrSatisfied mKEdges) arithConstrs
 
-    //                4 <------ 6
-    // 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7
-    // 
     let attributesDelta graph attrs cycle = 
         let curr = List.map (fun a -> a, 0) attrs |> Map.ofList
         List.fold (addNodeAttributes graph) curr cycle
 
-    let existsSolution constraints cyclesDeltas =
+    let findSolution constraints cyclesDeltas =
         use ctx      = Context.create ()
         use solver   = Solver.create ctx
         let cycleCnt = List.length cyclesDeltas
 
         /// Value of alpha-i represents  how many times to traverse i-th cycle
-        let alphas   = Arr.init cycleCnt (fun i -> (ctx.MkIntConst (sprintf "alpha-%d" i)))
+        let alphas   = Array.init cycleCnt (fun i -> (ctx.MkIntConst (sprintf "alpha-%d" i)))
         /// All mappings from (path, attribute) to delta for a given cycle
         let deltas   = Array.ofList cyclesDeltas
 
@@ -129,23 +117,25 @@ module ArithmeticConstraints =
         let constraintsExpr = Array.ofList constraints 
                               |> Array.map evalConstraint 
 
-        let result : SolveResult = 
-            let exprs = Array.map (fun a -> ctx.MkGe (a, ctx.MkInt 0)) alphas
-                        |> Array.append constraintsExpr
+        let exprs = Array.map (fun a -> ctx.MkGe (a, ctx.MkInt 0)) alphas
+                    |> Array.append constraintsExpr
 
-            solver.Add exprs
-            Solver.check solver
+        solver.Add exprs
+        Solver.check solver
 
-        match result with 
-        | Solution s -> 
-            printfn "%A" s
-            true 
+    let foundSolution = 
+        function
+        | Solution _ -> true
         | _          -> false
+
+    let existsSolution constraints cyclesDeltas = 
+        findSolution constraints cyclesDeltas
+        |> foundSolution
 
     let inequalitiesSatisfied mKEdges predecessors attrs graph constraints = 
         let subGraph, visited = Graph.Utils.restoreGraph predecessors mKEdges
         let cyclesAtrrsDelta  = Graph.Utils.allSimpleCycles subGraph
                                 |> List.map (attributesDelta graph attrs)
    
-        existsSolution constraints cyclesAtrrsDelta
+        findSolution constraints cyclesAtrrsDelta |> foundSolution
    

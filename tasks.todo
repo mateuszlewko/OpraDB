@@ -37,7 +37,7 @@ Query execution:
             ❑ on edges
         ✔ Solve linear inequalities @today @done(18-04-06 18:42)
         ✔ Solution exists predicate (for matching nodes) @today @done(18-04-06 18:42)
-        ❑ Create solution (if exists)
+        ❑ Create answer from solution
     ❑ Return last node before sink node @high 
     ❑ Existentially qualified paths and nodes 
     ❑ Ontologies (let expressions) @high 
