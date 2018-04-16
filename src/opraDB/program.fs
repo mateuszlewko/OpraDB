@@ -10,7 +10,7 @@ let printQueryResult str graph =
     // | Success (query, _, _)   ->
     let query = Parser.parseQuery str
     let ofId (ID s) = s
-    let headers = query.nodes |> List.map ofId
+    let headers = query.basic.nodes |> List.map ofId
     let hsIdx   = headers |> List.indexed |> List.map swap |> Map.ofList
     let results =
         QueryExecution.matchedNodes graph query

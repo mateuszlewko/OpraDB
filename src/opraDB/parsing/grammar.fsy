@@ -119,6 +119,9 @@ arith_constrs: HAVING arith_constr_elems { $2 } | { [] }
 
 query: 
   | MATCH nodes paths path_constrs reg_constrs arith_constrs
-    { { nodes = $2; paths = $3; pathConstraints = $4
-      ; regularConstraints = $5; arithmeticConstraints = $6 } }
+    { { basic   = { nodes = $2; paths = $3; pathConstraints = $4
+                  ; regularConstraints = $5; arithmeticConstraints = $6 }
+      ; letExps = []
+      }
+    }
   | query EOF { $1 }

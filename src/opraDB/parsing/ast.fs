@@ -98,7 +98,7 @@ module AST =
     type ArithmeticConstraint = 
         ArithmeticConstraint of ArithOperand * Operator * ArithOperand
 
-    type Query = {
+    type BasicQuery = {
             /// Matched nodes
             nodes                 : Identifier list
             /// Matched paths
@@ -108,9 +108,26 @@ module AST =
             arithmeticConstraints : ArithmeticConstraint list
         }
 
+    type LetBody =
+        | Query of BasicQuery 
+        | Regular of RegularExpression
+        | NodeConstr of NodeConstraint
+
+    type LetExp = {  
+            args : Identifier list 
+            body : LetBody  
+        }
+    
+    type Query = {
+            letExps : LetExp list
+            basic   : BasicQuery
+        }
+
     module Query =
-        let empty = { nodes                 = []
-                      paths                 = []
-                      pathConstraints       = []
-                      regularConstraints    = []
-                      arithmeticConstraints = [] }
+        let empty = { letExps = []
+                      basic   = { nodes                 = []
+                                  paths                 = []
+                                  pathConstraints       = []
+                                  regularConstraints    = []
+                                  arithmeticConstraints = [] }
+                    }

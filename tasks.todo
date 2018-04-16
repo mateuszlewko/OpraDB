@@ -10,6 +10,7 @@ Parser:
     ✔ Test query parsing @done(17-12-10 15:59)
     ✔ Improve syntax (possibly use FsLex and FsYacc) @today @done(18-02-24 04:44)
     ✔ Parse simple arithmetic constraints (sum by) @today @done(18-02-24 20:11)
+    ❑ Parse Let expressions
     ❑ Parse other arithmetic constraints (max, min, count?)
     ❑ Add node constraint which returns bool (only one operand in expression) or add bool value @low
     ❑ Parse complex node constraints (??)
@@ -26,6 +27,12 @@ Query execution:
     ✔ Matching same final-nodes used in different paths @high @today @done(18-02-21 00:23)
     ✔ Handle cycles (only with matched nodes) @critical @done(18-02-21 16:26)
     ✔ Matching simple arithmetic constraints (no cycles, only sum by) @high @today @done(18-02-25 21:56)
+    ❑ Ontologies (let expressions) @high @today 
+        ❑ new label:
+            ❑ on nodes
+            ❑ on edges
+        ❑ regular constraints
+        
     ❑ Matching more complex arithmetic constraints (no cycles, max, min, count) @high @today
     ❑ Improved matching of arithmetic constraints with cycles @high
         ✔ Store preds @done(18-03-25 00:58)
@@ -41,7 +48,6 @@ Query execution:
         ❑ Create answer from solution
     ❑ Existentially qualified paths and nodes 
     ❑ Return last node before sink node @high @today 
-    ❑ Ontologies (let expressions) @high 
     ❑ Move functions from regularConstraints to queryExecution module @high 
     ❑ Optimisation: Neighbour queries for k-node constraints @high
     ❑ Bool type
@@ -55,7 +61,7 @@ Graph / Data storage:
     ✔ Basic graph representation @done(18-01-13 16:03)
     ✔ Graph import @medium @done(18-02-26 03:35)
     ❑ Sample graph data (real world data)
-    ❑ Optimized graph representation and storage @low
+    ❑ Optimized graph representation and storage @medium
 
 Client / General:
     ❑ Separate client from service: @high 

@@ -107,7 +107,7 @@ module RegularConstraints =
         preds, List.map (updateArithStates graph) es
 
     /// Get nodes that match regular constraints in a given query.
-    let matchEdges (graph : Graph) (query : Query) =
+    let matchEdges (graph : Graph) (query : BasicQuery) =
         let allNFAs = query.regularConstraints 
                       |> List.map (fun e -> [State.ofRegExp e]) 
         let mKEdges =
