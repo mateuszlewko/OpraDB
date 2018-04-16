@@ -32,6 +32,8 @@ open OpraDB.AST
 %token COMMA     /* ,  */
 %token EOF       /* end of file */
 
+%token LET IN 
+
 %token MATCH NODES PATHS SUCH THAT WHERE HAVING SUM BY
 
 %token STAR
@@ -51,16 +53,18 @@ open OpraDB.AST
 id: ID { Identifier.ID $1 }
 
 id_list:
-  | id COMMA id_list { ($1)::$3 }
-  | id               { [$1] }
+  | id COMMA id_list { $1::$3 }
+  | id               { [$1]   }
 
 nodes: NODES id_list { List.rev $2 } | { [] }
+
 paths: PATHS id_list { List.rev $2 } | { [] }
 
 path_constr: id COLON id ARROW id { { path = $1; source = $3; target = $5 } }
+
 path_constr_elems:
   | path_constr COMMA path_constr_elems { $1::$3 }
-  | path_constr                         { [$1] }
+  | path_constr                         { [$1]   }
 
 path_constrs: SUCH THAT path_constr_elems { List.rev $3 } | { [] }
 
@@ -78,50 +82,68 @@ node_var:
 
 node_vars:
   | node_var COMMA node_vars { $1::$3 }
-  | node_var                 { [$1] }
+  | node_var                 { [$1]   }
 
 operand: 
-  | INT                        { IntLiteral $1 }
-  | STRING                     { StringLiteral $1 }
+  | INT                        { IntLiteral $1      }
+  | STRING                     { StringLiteral $1   }
   | id LPAREN node_vars RPAREN { Labelling ($1, $3) }
 
 node_constr: operand operator operand { NodeConstraint ($1, $2, $3) }
 
 reg_expr:
-  | DOT                       { AnyExp }
-  | reg_expr MULT             { StarExp $1 }
-  | reg_expr PIPE reg_expr    { UnionExp ($1, $3) }
-  | LPAREN node_constr RPAREN { NodeExp $2 }
-  | LPAREN reg_expr RPAREN    { $2 }
+  | DOT                       { AnyExp             }
+  | reg_expr MULT             { StarExp $1         }
+  | reg_expr PIPE reg_expr    { UnionExp ($1, $3)  }
+  | LPAREN node_constr RPAREN { NodeExp $2         }
+  | LPAREN reg_expr RPAREN    { $2                 }
   | reg_expr reg_expr         { ConcatExp ($1, $2) }
 
 reg_constr_elems: 
   | reg_expr COMMA reg_constr_elems { $1::$3 }
-  | reg_expr                        { [$1] }
+  | reg_expr                        { [$1]   }
 
 reg_constrs: WHERE reg_constr_elems { $2 } | { [] }
 
 arith_operand: 
   | LPAREN SUM id BY id RPAREN       { SumBy ($3, $5) }
   | INT                              { IntALiteral $1 }
-  | arith_operand PLUS arith_operand { Add ($1, $3) }
-  | arith_operand MULT arith_operand { Mult ($1, $3) }
-  | LPAREN arith_operand RPAREN      { $2 }
+  | arith_operand PLUS arith_operand { Add ($1, $3)   }
+  | arith_operand MULT arith_operand { Mult ($1, $3)  }
+  | LPAREN arith_operand RPAREN      { $2             }
 
 arith_constr: arith_operand operator arith_operand 
              { ArithmeticConstraint ($1, $2, $3) }
 
 arith_constr_elems: 
   | arith_constr COMMA arith_constr_elems { $1::$3 }
-  | arith_constr                          { [$1] }
+  | arith_constr                          { [$1]   }
 
 arith_constrs: HAVING arith_constr_elems { $2 } | { [] }
 
-query: 
+basic_query: 
   | MATCH nodes paths path_constrs reg_constrs arith_constrs
-    { { basic   = { nodes = $2; paths = $3; pathConstraints = $4
-                  ; regularConstraints = $5; arithmeticConstraints = $6 }
-      ; letExps = []
-      }
-    }
-  | query EOF { $1 }
+    { { nodes = $2; paths = $3; pathConstraints = $4
+      ; regularConstraints = $5; arithmeticConstraints = $6 } }
+
+arg: ID { Identifier.ID $1 }
+
+arg_list:
+  | arg arg_list { $1::$2 }
+  | arg          { [$1]   }
+
+let_body:
+  | basic_query { Query $1      }
+  | reg_expr    { Regular $1    }
+  | node_constr { NodeConstr $1 }
+
+let_exp:
+  | LET arg_list EQ let_body IN { { args = $2; body = $4 } }
+
+let_exps:
+  | let_exp let_exps { $1::$2 }
+  |                  { []     }
+
+query:
+  | let_exps basic_query { { letExps = $1; basic = $2 } }
+  | query EOF            { $1                           }

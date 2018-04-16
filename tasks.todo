@@ -10,7 +10,7 @@ Parser:
     ✔ Test query parsing @done(17-12-10 15:59)
     ✔ Improve syntax (possibly use FsLex and FsYacc) @today @done(18-02-24 04:44)
     ✔ Parse simple arithmetic constraints (sum by) @today @done(18-02-24 20:11)
-    ❑ Parse Let expressions
+    ✔ Parse Let expressions @done(18-04-17 01:35)
     ❑ Parse other arithmetic constraints (max, min, count?)
     ❑ Add node constraint which returns bool (only one operand in expression) or add bool value @low
     ❑ Parse complex node constraints (??)
