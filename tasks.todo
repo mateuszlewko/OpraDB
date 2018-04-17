@@ -28,11 +28,13 @@ Query execution:
     ✔ Handle cycles (only with matched nodes) @critical @done(18-02-21 16:26)
     ✔ Matching simple arithmetic constraints (no cycles, only sum by) @high @today @done(18-02-25 21:56)
     ❑ Ontologies (let expressions) @high @today 
-        ❑ new label:
-            ❑ on nodes
-            ❑ on edges
-        ❑ regular constraints
+        ❑ new label: // till thursday
+            ❑ on nodes // till thursday
+            ❑ on edges // till thursday
+        ❑ regular constraints // till friday
+        ❑ query // till friday
         
+    // till saturday
     ❑ Matching more complex arithmetic constraints (no cycles, max, min, count) @high @today
     ❑ Improved matching of arithmetic constraints with cycles @high
         ✔ Store preds @done(18-03-25 00:58)
@@ -51,8 +53,10 @@ Query execution:
     ❑ Move functions from regularConstraints to queryExecution module @high 
     ❑ Optimisation: Neighbour queries for k-node constraints @high
     ❑ Bool type
-    ❑ Sequence of nodes in path constraints (p: u..v) @high 
+    // till sunday
     ❑ Return paths @medium 
+    // sunday ??
+    ❑ Sequence of nodes in path constraints (p: u..v) @high 
     ❑ Match nodes that satisfy regular constraints (as a whole) @high 
     ❑ Maybe represent Regex NFA as Hekate graph (?) @low
     ❑ Improve equality check in Transition (?) @low
@@ -60,6 +64,7 @@ Query execution:
 Graph / Data storage:
     ✔ Basic graph representation @done(18-01-13 16:03)
     ✔ Graph import @medium @done(18-02-26 03:35)
+    // sunday or next week
     ❑ Sample graph data (real world data)
     ❑ Optimized graph representation and storage @medium
 
