@@ -1,21 +1,47 @@
 namespace OpraDB.Test
 
-// open OpraDB.Parser
+open OpraDB.Parser
+open OpraDB.AST
 // open OpraDB.LangTypes
 open Expecto
-open FParsec
+// open FParsec
 
 module Parser = 
 
-    let successfulParse parser s = 
-        match run parser s with 
-        | Success (result, _, _) -> result
-        | Failure (error, _, _)  -> 
-            failtestf "Failed to parse: %s\nError message: %s" s error
+    // let successfulParse parser s = 
+    //     match run parser s with 
+    //     | Success (result, _, _) -> result
+    //     | Failure (error, _, _)  -> 
+    //         failtestf "Failed to parse: %s\nError message: %s" s error
+
+    let private letQuery q = q + "\nMATCH NODES x"
+    let private createLetExps le = 
+        {   letExps = le
+            basic   = { nodes = [ID "x"]; paths = []; pathConstraints = []
+                        regularConstraints = []; arithmeticConstraints = [] }
+        }
+    let private nodeC = NodeConstraint >> NodeConstr
+
 
     [<Tests>]
     let ``query tests`` =
         testList "query parsing" [
+            test "parsing let-exp" {
+                let query = "LET in_time p = time(@p) <= 10 IN" |> letQuery
+                let ast   = tryParse query
+                let exp   = 
+                    let p = ID "p"
+                    [ { name = ID "in_time"
+                        args = [p]
+                        body = nodeC (Labelling (ID "time", 
+                                                 [CurrNodeVar p])
+                                    , Leq
+                                    , IntLiteral 10) }
+                    ]
+                               
+                Expect.equal ast (createLetExps exp |> Ok) ""
+            }
+            
             test "parsing nodes match and path constrains" {
                 skiptest "skip"
                 // let ast = successfulParse query 

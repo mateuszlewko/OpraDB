@@ -126,11 +126,9 @@ basic_query:
     { { nodes = $2; paths = $3; pathConstraints = $4
       ; regularConstraints = $5; arithmeticConstraints = $6 } }
 
-arg: ID { Identifier.ID $1 }
-
 arg_list:
-  | arg arg_list { $1::$2 }
-  | arg          { [$1]   }
+  | id arg_list { $1::$2 }
+  | id          { [$1]   }
 
 let_body:
   | basic_query { Query $1      }
@@ -138,12 +136,13 @@ let_body:
   | node_constr { NodeConstr $1 }
 
 let_exp:
-  | LET arg_list EQ let_body IN { { args = $2; body = $4 } }
+  | LET id arg_list EQ let_body IN { { name = $2; args = $3; body = $5 } }
 
 let_exps:
   | let_exp let_exps { $1::$2 }
   |                  { []     }
 
 query:
-  | let_exps basic_query { { letExps = $1; basic = $2 } }
-  | query EOF            { $1                           }
+  | let_exps basic_query { { letExps = $1
+                           ; basic = $2 } }
+  | query EOF            { $1             }

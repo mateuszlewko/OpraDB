@@ -47,8 +47,8 @@ module ArithmeticConstraints =
         List.fold (addNodeAttributes graph) curr cycle
 
     let findSolution constraints arithStates cyclesDeltas =
-        printfn "arith: %A" arithStates
-        printfn "deltas: %A" cyclesDeltas
+        // printfn "arith: %A" arithStates
+        // printfn "deltas: %A" cyclesDeltas
 
         use ctx      = Context.create ()
         use solver   = Solver.create ctx

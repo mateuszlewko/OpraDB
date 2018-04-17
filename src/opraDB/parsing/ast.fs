@@ -114,6 +114,7 @@ module AST =
         | NodeConstr of NodeConstraint
 
     type LetExp = {  
+            name : Identifier
             args : Identifier list 
             body : LetBody  
         }

@@ -40,14 +40,16 @@ rule read =
   | "false"  { FALSE }
   | '"'      { read_string "" false lexbuf } 
 
-  | "MATCH"  { MATCH }
-  | "NODES"  { NODES }
-  | "SUCH"   { SUCH }
-  | "THAT"   { THAT }
-  | "WHERE"  { WHERE }
-  | "HAVING" { HAVING }
-  | "SUM"    { SUM }
-  | "BY"     { BY }
+  | "NODES"  { NODES  }   
+  | "MATCH"  { MATCH  }   
+  | "SUCH"   { SUCH   }  
+  | "THAT"   { THAT   }  
+  | "WHERE"  { WHERE  }   
+  | "HAVING" { HAVING }   
+  | "SUM"    { SUM    } 
+  | "BY"     { BY     }
+  | "LET"    { LET    } 
+  | "IN"     { IN     }
 
   | '{'      { LBRACE }
   | '}'      { RBRACE }

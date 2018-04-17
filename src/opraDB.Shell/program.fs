@@ -118,6 +118,7 @@ let run args =
 [<EntryPoint>]
 let main args =
     printfn "
+Welcome to
   /$$$$$$                                  /$$$$$$$ /$$$$$$$ 
  /$$__  $$                                | $$__  $| $$__  $$
 | $$  \ $$ /$$$$$$  /$$$$$$ /$$$$$$       | $$  \ $| $$  \ $$
