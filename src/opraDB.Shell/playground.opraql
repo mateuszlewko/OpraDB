@@ -1,0 +1,10 @@
+MATCH NODES s, t, x, y
+SUCH THAT p: s->t, q: s->y
+WHERE 
+    (p.type = "Tram")*
+  , t.name = "Rynek"
+  , s.name = "Pl. Grunwaldzki" 
+  , .*((@p, @q)).*
+HAVING 10 < 3 * SUM ((p, q).attr) + 4 * 2
+     , SUM (q.time < 4)
+     , SUM ((p, p').time + 2 - p.attr)  < 10
