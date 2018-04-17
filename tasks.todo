@@ -33,7 +33,9 @@ Query execution:
             ❑ on edges // till thursday
         ❑ regular constraints // till friday
         ❑ query // till friday
-        
+        ❑ node constraints
+        ❑ value expression // till sunday
+    ❑ Value Expressions in Arithmetic constraints
     // till saturday
     ❑ Matching more complex arithmetic constraints (no cycles, max, min, count) @high @today
     ❑ Min / Max on all paths @high 
