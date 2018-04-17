@@ -36,6 +36,8 @@ Query execution:
         
     // till saturday
     ❑ Matching more complex arithmetic constraints (no cycles, max, min, count) @high @today
+    ❑ Min / Max on all paths @high 
+        ❑ Dijkstra
     ❑ Improved matching of arithmetic constraints with cycles @high
         ✔ Store preds @done(18-03-25 00:58)
         ✔ Restore path (sub-graph) @done(18-03-25 04:13)
