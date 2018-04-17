@@ -17,13 +17,13 @@ module AST =
     type NodeVariable = CurrNodeVar of Identifier | NextNodeVar of Identifier
    
     module NodeVariable = 
-        let identifier = function CurrNodeVar i -> i | NextNodeVar i -> i
+        let identifier = function CurrNodeVar i | NextNodeVar i -> i
    
-    /// Represents one of: <=, <, >=, >, =, <>
-    type Operator = Leq | Le | Geq | Ge | Eq | Neq
+    /// Represents one of: <=, <, >=, >, =, <>, and, or
+    type BoolOperator  = Leq | Le | Geq | Ge | Eq | Neq | And | Or 
+    type ArithOperator = Add | Sub | Mult | Div | Is
 
-    // TODO: Maybe move this to parser
-    let getOperator =
+    let getBoolOperator =
         function
         | Leq -> (<=)
         | Le  -> (<)
@@ -31,21 +31,43 @@ module AST =
         | Ge  -> (>)
         | Eq  -> (=)
         | Neq -> (<>)
+        | And -> (&&)
+        | Or  -> (||)
 
-    type Literal = IntLit of int | StringLit of string
+    // type Literal = IntLit of int | StringLit of string
 
-    type Operand =
-        /// LabellingFunction either checks whether there exists
-        /// label between specified nodes (or node if only one given),
-        /// or returns value of label, example: type(@1) = "bus"
+    type ValueExpr<'ext> = 
+        | Int of int 
+        | Bool of bool 
+        | Float of float
+        | Null
+        | ArithOp of ValueExpr<'ext> * ArithOperator * ValueExpr<'ext>
+        | BoolOp of ValueExpr<'ext> * BoolOperator * ValueExpr<'ext>
+        | Ext of 'ext
+
+    // type Operand =
+    //     /// LabellingFunction either checks whether there exists
+    //     /// label between specified nodes (or node if only one given),
+    //     /// or returns value of label, example: type(@1) = "bus"
+    //     /// Represent int value in query
+    //     | IntLiteral of int
+    //     /// String value (must be specified in quotes, example: "value")
+    //     | StringLiteral of string
+    //     // | NodeVariable TODO: Handle this case
+
+    // module ValueExpr = 
+    //     open NodeVariable
+         
+    //     let allPathIDs = 
+    //         function 
+    //         | Labelling (_, vars) -> List.map identifier vars |> List.distinct
+    //         | _                   -> []
+
+    type NodeConstraint =
         | Labelling of Identifier * NodeVariable list
-        /// Represent int value in query
-        | IntLiteral of int
-        /// String value (must be specified in quotes, example: "value")
-        | StringLiteral of string
-        // | NodeVariable TODO: Handle this case
-
-    module Operand = 
+        | Value of ValueExpr<NodeConstraint>
+    
+    module NodeConstraint = 
         open NodeVariable
 
         let allPathIDs = 
@@ -53,13 +75,10 @@ module AST =
             | Labelling (_, vars) -> List.map identifier vars |> List.distinct
             | _                   -> []
 
-    type NodeConstraint = NodeConstraint of Operand * Operator * Operand
-    
-    module NodeConstraint = 
-        open Operand
-
-        let allPathIDs (NodeConstraint (l, _, r)) = allPathIDs l @ allPathIDs r 
-                                                    |> List.distinct
+        // let allPathIDs  = 
+            
+        //     allPathIDs l @ allPathIDs r 
+        //                                             |> List.distinct
 
 
     type RegularExpression =
@@ -75,9 +94,11 @@ module AST =
         let allPathIDs = 
             let rec get curr = 
                 function 
-                | NodeExp constr -> curr @ allPathIDs constr |> List.distinct
-                | UnionExp (r1, r2) | ConcatExp (r1, r2) -> get (get curr r1) r2
-                | _ -> []
+                | NodeExp constr     -> curr @ allPathIDs constr 
+                                        |> List.distinct
+                | UnionExp (r1, r2)
+                | ConcatExp (r1, r2) -> get (get curr r1) r2
+                | _                  -> []
 
             get []
 
@@ -88,15 +109,19 @@ module AST =
                 target = target
             }
 
-    type ArithOperand =
-        /// SumBy (Path Identifier, Label Identifier)
-        | SumBy of Identifier * Identifier 
-        | IntALiteral of int
-        | Add of ArithOperand * ArithOperand
-        | Mult of ArithOperand * ArithOperand
-
+    // type ArithOperand =
+    //     /// SumBy (Path Identifier, Label Identifier)
+    //     | SumBy of Identifier * Identifier 
+    //     | IntALiteral of int
+    //     | Add of ArithOperand * ArithOperand
+    //     | Mult of ArithOperand * ArithOperand
+   
     type ArithmeticConstraint = 
-        ArithmeticConstraint of ArithOperand * Operator * ArithOperand
+        | Sum of ValueExpr<unit>
+        | Value of ValueExpr<unit>
+
+    type AC = ArithmeticConstraint
+        // ArithmeticConstraint of ArithOperand * Operator * ArithOperand
 
     type BasicQuery = {
             /// Matched nodes
@@ -111,7 +136,9 @@ module AST =
     type LetBody =
         | Query of BasicQuery 
         | Regular of RegularExpression
-        | NodeConstr of NodeConstraint
+        | Node of NodeConstraint
+        | Arith of ArithmeticConstraint
+        // | Value of 
 
     type LetExp = {  
             name : Identifier
@@ -124,7 +151,7 @@ module AST =
             basic   : BasicQuery
         }
 
-    module Query =
+    module Query = 
         let empty = { letExps = []
                       basic   = { nodes                 = []
                                   paths                 = []

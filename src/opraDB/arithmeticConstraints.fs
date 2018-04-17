@@ -101,6 +101,8 @@ module ArithmeticConstraints =
             | Geq -> ctx.MkGe       (lhs, rhs)
             | Ge  -> ctx.MkGt       (lhs, rhs)
             | Le  -> ctx.MkLt       (lhs, rhs)
+            | And -> ctx.MkAnd      (lhs, rhs)
+            | Or  -> ctx.MkOr       (lhs, rhs)
 
         let evalConstraint (ArithmeticConstraint (lhs, op, rhs)) =
             evalOperator (evalOperand lhs) (evalOperand rhs) op
