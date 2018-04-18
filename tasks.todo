@@ -12,9 +12,8 @@ Parser:
     ✔ Parse simple arithmetic constraints (sum by) @today @done(18-02-24 20:11)
     ✔ Parse Let expressions @done(18-04-17 01:35)
     ❑ Parse other arithmetic constraints (max, min, count?)
-    ❑ Add node constraint which returns bool (only one operand in expression) or add bool value @low
-    ❑ Parse complex node constraints (??)
-    ❑ Parse ontologies
+    ❑ Add node constraint which returns bool (only one operand in expression) or add bool value @low @today 
+    ❑ Parse complex node constraints (??) @today 
 
 Query execution:
     ✔ Build NFA @done(17-12-18 23:16)
@@ -27,7 +26,7 @@ Query execution:
     ✔ Matching same final-nodes used in different paths @high @today @done(18-02-21 00:23)
     ✔ Handle cycles (only with matched nodes) @critical @done(18-02-21 16:26)
     ✔ Matching simple arithmetic constraints (no cycles, only sum by) @high @today @done(18-02-25 21:56)
-    ❑ Ontologies (let expressions) @high @today 
+    ❑ Ontologies (let expressions) @high
         ❑ new label: // till thursday
             ❑ on nodes // till thursday
             ❑ on edges // till thursday
@@ -35,9 +34,10 @@ Query execution:
         ❑ query // till friday
         ❑ node constraints
         ❑ value expression // till sunday
-    ❑ Value Expressions in Arithmetic constraints
+    ❑ Value Expressions in Arithmetic constraints @today  
+    ❑ Value Expressions in Regular / Node constraints @today  
     // till saturday
-    ❑ Matching more complex arithmetic constraints (no cycles, max, min, count) @high @today
+    ❑ Matching more complex arithmetic constraints (no cycles, max, min, count) @high
     ❑ Min / Max on all paths @high 
         ❑ Dijkstra
     ❑ Improved matching of arithmetic constraints with cycles @high
@@ -53,10 +53,10 @@ Query execution:
         ✔ Solution exists predicate (for matching nodes) @today @done(18-04-06 18:42)
         ❑ Create answer from solution
     ❑ Existentially qualified paths and nodes 
-    ❑ Return last node before sink node @high @today 
+    ❑ Return last node before sink node @high 
     ❑ Move functions from regularConstraints to queryExecution module @high 
     ❑ Optimisation: Neighbour queries for k-node constraints @high
-    ❑ Bool type
+    ❑ Bool type @today 
     // till sunday
     ❑ Return paths @medium 
     // sunday ??
@@ -92,4 +92,4 @@ To think:
     ✔ Arithmetic constraints for graphs with cycles @done(18-04-06 18:44)
 
     ❑ Registers
-    ❑ Negation
+    ✔ Negation @done(18-04-18 01:23)

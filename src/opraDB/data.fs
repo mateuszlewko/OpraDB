@@ -2,9 +2,9 @@ namespace OpraDB
 
 open Hekate
 
-module Data =
+module Data =     
 
-    type LabelValue = IntVal of int | StringVal of string
+    type LabelValue = Lit of AST.Literal | Str of string
 
     type Labels = Map<string, LabelValue>
 

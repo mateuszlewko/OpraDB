@@ -20,27 +20,21 @@ module AST =
         let identifier = function CurrNodeVar i | NextNodeVar i -> i
    
     /// Represents one of: <=, <, >=, >, =, <>, and, or
-    type BoolOperator  = Leq | Le | Geq | Ge | Eq | Neq | And | Or 
-    type ArithOperator = Add | Sub | Mult | Div | Is
-
-    let getBoolOperator =
-        function
-        | Leq -> (<=)
-        | Le  -> (<)
-        | Geq -> (>=)
-        | Ge  -> (>)
-        | Eq  -> (=)
-        | Neq -> (<>)
-        | And -> (&&)
-        | Or  -> (||)
+    type BoolOperator  = Leq | Le | Geq | Ge | Eq | Neq | And | Or | Is
+    type ArithOperator = Add | Sub | Mult | Div 
 
     // type Literal = IntLit of int | StringLit of string
 
-    type ValueExpr<'ext> = 
+    type Literal = 
         | Int of int 
-        | Bool of bool 
+        // | Bool of bool 
         | Float of float
+        | String of string
         | Null
+
+    type ValueExpr<'ext> = 
+        | Lit of Literal
+        | Labelling of Identifier * NodeVariable list
         | ArithOp of ValueExpr<'ext> * ArithOperator * ValueExpr<'ext>
         | BoolOp of ValueExpr<'ext> * BoolOperator * ValueExpr<'ext>
         | Ext of 'ext
@@ -63,9 +57,9 @@ module AST =
     //         | Labelling (_, vars) -> List.map identifier vars |> List.distinct
     //         | _                   -> []
 
-    type NodeConstraint =
-        | Labelling of Identifier * NodeVariable list
-        | Value of ValueExpr<NodeConstraint>
+    type NodeConstraint = ValueExpr<unit>
+        // | Labelling of Identifier * NodeVariable list
+        // | Value of ValueExpr<NodeConstraint>
     
     module NodeConstraint = 
         open NodeVariable
@@ -120,7 +114,7 @@ module AST =
         | Sum of ValueExpr<unit>
         | Value of ValueExpr<unit>
 
-    type AC = ArithmeticConstraint
+    // type AC = ArithmeticConstraint
         // ArithmeticConstraint of ArithOperand * Operator * ArithOperand
 
     type BasicQuery = {
