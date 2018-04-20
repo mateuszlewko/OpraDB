@@ -91,5 +91,10 @@ To think:
     ❑ Ontologies return type (node set vs int)
     ✔ Arithmetic constraints for graphs with cycles @done(18-04-06 18:44)
 
+    ❑ Type coercion
+        ❑ int -> float
+        ❑ bool -> int
+        ❑ string -> int / float
+        ❑ int / string / bool in bool expression
     ❑ Registers
     ✔ Negation @done(18-04-18 01:23)

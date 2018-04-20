@@ -17,7 +17,7 @@ module QueryData =
         }
 
     type KEdges      = Map<Identifier, MatchedEdge>
-    type ArithStates = Map<Identifier * Identifier, int>
+    type ArithStates = Map<Identifier * Identifier, Literal>
 
     // TODO: This should be renamed to EdgesVector
     [<CustomEquality; CustomComparison>]

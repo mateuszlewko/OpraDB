@@ -20,14 +20,14 @@ module AST =
         let identifier = function CurrNodeVar i | NextNodeVar i -> i
    
     /// Represents one of: <=, <, >=, >, =, <>, and, or
-    type BoolOperator  = Leq | Le | Geq | Ge | Eq | Neq | And | Or | Is
+    type BoolOperator  = Leq | Le | Geq | Ge | Eq | Neq | And | Or | Is | IsNot
     type ArithOperator = Add | Sub | Mult | Div 
 
     // type Literal = IntLit of int | StringLit of string
 
     type Literal = 
         | Int of int 
-        // | Bool of bool 
+        | Bool of bool 
         | Float of float
         | String of string
         | Null
@@ -112,7 +112,7 @@ module AST =
    
     type ArithmeticConstraint = 
         | Sum of ValueExpr<unit>
-        | Value of ValueExpr<unit>
+        | Value of ValueExpr<ArithmeticConstraint>
 
     // type AC = ArithmeticConstraint
         // ArithmeticConstraint of ArithOperand * Operator * ArithOperand

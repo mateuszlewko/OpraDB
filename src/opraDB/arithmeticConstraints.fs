@@ -4,7 +4,7 @@ open FSharpx.Option
 
 open OpraDB.AST
 open OpraDB.QueryData
-open OpraDB.Data
+open OpraDB.NodeConstraints
 open OpraDB.CommonUtils
 
 open FSharpx.Collections
@@ -20,8 +20,11 @@ module ArithmeticConstraints =
             Map.tryFind path mKEdges.currEdges
             >>= fun e  -> Graph.Nodes.tryFind (fst e.lastEdge) graph
             >>= fun (_, labels) -> Map.tryFind labelName labels
-            |> function Some (IntVal i) -> i + curr
-                      | _               -> curr   
+            |> Option.map (opArith Add curr)
+            |> Option.getOrElse curr
+            // |> function Some (Int i)   -> i + curr |> Int
+            //           | Some (Float i) -> i + curr |> Float
+            //           | _              -> curr   
         Map.map addValue curr   
         
     let updateArithStates graph mKEdges =
