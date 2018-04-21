@@ -89,8 +89,8 @@ module ValueExpression =
         
         | l, r -> notSupp op l r |> raise
 
-    let rec valueExpr ext labellingValue =
-        let exp = valueExpr ext labellingValue
+    let rec evalExt ext labellingValue =
+        let exp = evalExt ext labellingValue
 
         function 
         | Lit l                  -> l 
@@ -100,3 +100,5 @@ module ValueExpression =
         | BoolOp (lhs, op, rhs)  -> let lhs, rhs = exp lhs, exp rhs 
                                     evalBool op lhs rhs
         | Ext e                  -> ext e
+
+    let eval = evalExt (fun () -> Null)

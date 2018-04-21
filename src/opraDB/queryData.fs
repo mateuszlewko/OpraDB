@@ -10,16 +10,21 @@ module QueryData =
     /// id of paths applied to it
     type StatesInNFA = Transition list
 
+    // TODO: Rename to TraversedEdge
     type MatchedEdge = {
+            /// Path ID which this edge belongs to
             path      : Identifier
+            /// First node on path
             source    : int Node
+            /// Last visited edge
             lastEdge  : int Edge
         }
 
     type KEdges      = Map<Identifier, MatchedEdge>
-    type ArithStates = Map<Identifier * Identifier, Literal>
+    /// Map from summed ValueExprs to Literal option
+    type ArithStates = Map<ValueExpr<unit>, Literal option>
 
-    // TODO: This should be renamed to EdgesVector
+    // TODO: This should be renamed to EdgeVector
     [<CustomEquality; CustomComparison>]
     type MatchedKEdges = {
             currEdges   : KEdges

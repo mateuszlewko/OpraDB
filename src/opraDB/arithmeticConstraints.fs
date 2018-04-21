@@ -5,6 +5,8 @@ open FSharpx.Option
 open OpraDB.AST
 open OpraDB.QueryData
 open OpraDB.NodeConstraints
+// open OpraDB.Labelling
+open OpraDB.ValueExpression
 open OpraDB.CommonUtils
 
 open FSharpx.Collections
@@ -15,18 +17,28 @@ open Microsoft.Z3
 
 module ArithmeticConstraints =
 
-    let addNodeAttributes graph curr mKEdges  =
-        let addValue (path, ID labelName) curr =
-            Map.tryFind path mKEdges.currEdges
-            >>= fun e -> Graph.Nodes.tryFind (fst e.lastEdge) graph
-            >>= fun (_, labels) -> Map.tryFind labelName labels
-            |> Option.map (opArith Add curr)
-            |> Option.getOrElse curr
-        Map.map addValue curr   
+    let private addNodeAttributes labellingValue arithStates  =
+        let addValue valueExpr curr =
+            /// Null values are treated as neutral for arithmetic constraints
+            let rhs = match eval labellingValue valueExpr with 
+                      | Null  -> None 
+                      | other -> Some other
+            // let rhs = 
+                // Map.tryFind path mKEdges.currEdges
+                // >>= fun e -> Graph.Nodes.tryFind (fst e.lastEdge) graph
+                // >>= (snd >> Map.tryFind labelName)
+
+            match curr, rhs with 
+            | Some v   , None 
+            | None     , Some v   -> Some v 
+            | Some curr, Some rhs -> evalArith Add curr rhs |> Some
+            | None     , None     -> None 
+        Map.map addValue arithStates   
         
     let updateArithStates graph mKEdges =
-        { mKEdges with arithStates = addNodeAttributes graph mKEdges.arithStates 
-                                                       mKEdges }
+        let labelling   = Labelling.value mKEdges.currEdges graph
+        let arithStates = addNodeAttributes labelling mKEdges.arithStates
+        { mKEdges with arithStates = arithStates }
 
     let rec private summedValueExprs =
         let rec get acc = 
@@ -41,16 +53,46 @@ module ArithmeticConstraints =
             | other             -> acc
         get []
 
-    let createArithStates query =
+    let createArithStates query : ArithStates =
         List.collect summedValueExprs query.arithmeticConstraints 
         |> flip Seq.zip (Seq.repeat None)
         |> Map.ofSeq
 
-    let attributesDelta graph attrs cycle = 
+    let private attributesDelta graph attrs (cycle : MatchedKEdges list) = 
         let curr = Seq.map (fun a -> a, None) attrs |> Map.ofSeq
-        List.fold (addNodeAttributes graph) curr cycle
+       
+        let folder state mKEdges = 
+            let labelling = Labelling.value mKEdges.currEdges graph
+            addNodeAttributes labelling state
+        List.fold folder curr cycle
 
-    let findSolution constraints arithStates cyclesDeltas =
+    let private cmpOp (ctx : Context) lhs rhs = 
+        function 
+        | Eq  
+        | Is    -> ctx.MkEq       (lhs, rhs)
+        | Neq 
+        | IsNot -> ctx.MkDistinct (lhs, rhs)
+        | Leq   -> ctx.MkLe       (lhs, rhs)
+        | Geq   -> ctx.MkGe       (lhs, rhs)
+        | Ge    -> ctx.MkGt       (lhs, rhs)
+        | Le    -> ctx.MkLt       (lhs, rhs)
+        | And 
+        | Or    -> failwith "cmp operator required"
+        // | And   -> ctx.MkAnd      (lhs, rhs)
+        // | Or    -> ctx.MkOr       (lhs, rhs)
+
+    let private arithOp (ctx : Context) lhs rhs = 
+        function 
+        | Add  -> ctx.MkAdd (lhs, rhs)
+        | Sub  -> ctx.MkSub (lhs, rhs)
+        | Mult -> ctx.MkMul (lhs, rhs)
+        | Div  -> ctx.MkDiv (lhs, rhs)
+
+    type EvalType = BoolT of BoolExpr | ArithT of ArithExpr
+
+    let findSolution constraints arithStates 
+                     (cyclesDeltas : Map<_, Literal> list) =
+
         // printfn "arith: %A" arithStates
         // printfn "deltas: %A" cyclesDeltas
 
@@ -58,12 +100,23 @@ module ArithmeticConstraints =
         use solver   = Solver.create ctx
         let cycleCnt = List.length cyclesDeltas
 
-        /// Value of alpha-i represents  how many times to traverse i-th cycle
-        let alphas   = Array.init cycleCnt (fun i -> (ctx.MkIntConst (sprintf "alpha-%d" i)))
+        let name     = sprintf "alpha-%d"
+        /// Value of alpha-i represents how many times to traverse i-th cycle
+        let alphas   = Array.init cycleCnt (name >> ctx.MkIntConst )
         /// All mappings from (path, attribute) to delta for a given cycle
         let deltas   = Array.ofList cyclesDeltas
 
-        let mkConst (i : int) = ctx.MkAdd (ctx.MkInt 0, ctx.MkInt i)
+        // let mkConst (i : int) = ctx.MkAdd (ctx.MkInt 0, ctx.MkInt i)
+        let add0 x = ctx.MkAdd (ctx.MkInt 0, x) |> ArithT
+        let wrongT = literalType >> WrongTypeException
+
+
+        let ofLiteral =
+            function
+            | Null    -> ctx.MkInt 0           :> ArithExpr
+            | Int i   -> ctx.MkInt i           :> ArithExpr
+            | Float f -> ctx.MkReal (string f) :> ArithExpr
+            | other   -> wrongT other |> raise
 
         /// Mapping from (path, attribute) to Int expression representing 
         /// sum of alpha_i * delta_i for a given (path, attribute)
@@ -75,46 +128,80 @@ module ArithmeticConstraints =
             let constructExpr id indexes = 
                 let indexes = Array.ofSeq indexes
                 let getAlpha i = 
-                    let delta : int = Map.find id deltas.[i]
-                    ctx.MkMul (alphas.[i], ctx.MkInt delta)
+                    match Map.find id deltas.[i] with 
+                    | Null    -> ctx.MkMul (alphas.[i], ctx.MkInt 0)
+                    | Int i   -> ctx.MkMul (alphas.[i], ctx.MkInt i)
+                    | Float f -> ctx.MkMul (alphas.[i], ctx.MkReal (string f))
+                    | other   -> wrongT other |> raise
 
                 let add l r = ctx.MkAdd (l, r)
                 let arithVal = Map.tryFind id arithStates 
-                               |> Option.getOrElse 0
+                               |> Option.flatten
+                               |> Option.map ofLiteral
+                               |> Option.getOrElse (ctx.MkInt 0 :> ArithExpr)
 
                 Array.map getAlpha indexes
-                |> Array.fold add (mkConst arithVal)
+                |> Array.fold add (arithVal)
 
             Array.indexed deltas 
             |> Array.fold attrIndexes Map.empty
             |> Map.map constructExpr 
 
-        let rec evalOperand =
+        let rec evalArith =
+            function
+            | Sum s      -> Map.tryFind s attrAlphas
+                            |> Option.getOrElse (ctx.MkInt 0 :> ArithExpr) 
+                            |> ArithT
+            | AC.Value v -> evalValue v
+        and evalValue = 
             function 
-            | IntALiteral i -> mkConst i
-            | Add (l, r)    -> ctx.MkAdd (evalOperand l, evalOperand r)
-            | Mult (l, r)   -> ctx.MkMul (evalOperand l, evalOperand r)
-            | SumBy (p, l)  -> Map.tryFind (p, l) attrAlphas 
-                               |> Option.defaultValue (mkConst 0) 
+            | ArithOp (l, op, r) -> match evalValue l, evalValue r with 
+                                    | ArithT l, ArithT r -> 
+                                        arithOp ctx l r op |> ArithT
+                                    | _, _ -> failwith "wrong type"
+            | Labelling _        -> failwith "unsupported"
+            | BoolOp (l, op, r)  -> match evalValue l, evalValue r with 
+                                    | BoolT l , BoolT r  -> 
+                                        match op with 
+                                        | And   -> ctx.MkAnd (l, r)
+                                        | Or    -> ctx.MkOr (l, r)
+                                        | Is 
+                                        | Eq    -> ctx.MkEq (l, r)
+                                        | IsNot 
+                                        | Neq   -> ctx.MkNot (ctx.MkEq (l, r))
+                                        | other -> failwith "wrong type"
+                                        |> BoolT
+                                    
+                                    | ArithT l, ArithT r -> cmpOp ctx l r op
+                                                            |> BoolT
+                                    | l, r -> 
+                                        failwithf "mismatched types %A %A" l r
+                                    
+            | Ext a -> evalArith a
+            | Lit l -> ofLiteral l |> ArithT
+            // | BoolOp (l, op, r) -> let l, r = evalValue l, evalValue r
+            //                        boolOp ctx l r
 
-        let evalOperator lhs rhs = 
-            function 
-            | Eq  -> ctx.MkEq       (lhs, rhs)
-            | Neq -> ctx.MkDistinct (lhs, rhs)
-            | Leq -> ctx.MkLe       (lhs, rhs)
-            | Geq -> ctx.MkGe       (lhs, rhs)
-            | Ge  -> ctx.MkGt       (lhs, rhs)
-            | Le  -> ctx.MkLt       (lhs, rhs)
-            | And -> ctx.MkAnd      (lhs, rhs)
-            | Or  -> ctx.MkOr       (lhs, rhs)
+            // function 
+            // | IntALiteral i -> mkConst i
+            // | Add (l, r)    -> ctx.MkAdd (evalOperand l, evalOperand r)
+            // | Mult (l, r)   -> ctx.MkMul (evalOperand l, evalOperand r)
+            // | SumBy (p, l)  -> Map.tryFind (p, l) attrAlphas 
+            //                    |> Option.defaultValue (mkConst 0) 
 
-        let evalConstraint (ArithmeticConstraint (lhs, op, rhs)) =
-            evalOperator (evalOperand lhs) (evalOperand rhs) op
+       
+
+        // let evalConstraint (ArithmeticConstraint (lhs, op, rhs)) =
+        //     evalOperator (evalOperand lhs) (evalOperand rhs) op
+        let toBool = function 
+                     | BoolT b -> b 
+                     | other   -> failwith "constr must be of bool type"
 
         let constraintsExpr = Array.ofList constraints 
-                              |> Array.map evalConstraint 
-
-        let exprs = Array.map (fun a -> ctx.MkGe (a, ctx.MkInt 0)) alphas
+                              |> Array.map (evalArith >> toBool)
+                              
+        let exprs = alphas 
+                    |> Array.map (fun a -> ctx.MkGe (a, ctx.MkInt 0)) 
                     |> Array.append constraintsExpr
 
         solver.Add exprs
@@ -134,7 +221,8 @@ module ArithmeticConstraints =
 
         let subGraph, visited = Graph.Utils.restoreGraph predecessors mKEdges
         let cyclesAtrrsDelta  = Graph.Utils.allSimpleCycles subGraph
-                                |> List.map (attributesDelta graph attrs)
+                                |> List.map (attributesDelta graph attrs 
+                                             >> Map.choose (konst id))
    
         findSolution constraints mKEdges.arithStates cyclesAtrrsDelta 
         |> foundSolution
