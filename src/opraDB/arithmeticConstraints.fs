@@ -18,31 +18,36 @@ module ArithmeticConstraints =
     let addNodeAttributes graph curr mKEdges  =
         let addValue (path, ID labelName) curr =
             Map.tryFind path mKEdges.currEdges
-            >>= fun e  -> Graph.Nodes.tryFind (fst e.lastEdge) graph
+            >>= fun e -> Graph.Nodes.tryFind (fst e.lastEdge) graph
             >>= fun (_, labels) -> Map.tryFind labelName labels
             |> Option.map (opArith Add curr)
             |> Option.getOrElse curr
-            // |> function Some (Int i)   -> i + curr |> Int
-            //           | Some (Float i) -> i + curr |> Float
-            //           | _              -> curr   
         Map.map addValue curr   
         
     let updateArithStates graph mKEdges =
         { mKEdges with arithStates = addNodeAttributes graph mKEdges.arithStates 
                                                        mKEdges }
 
-    let rec private allPathsAndLabellings =
-        function
-        | Sum v       -> NodeConstraint.allPathIDs v
-        | AC.Value ac -> ValueExpr.allPathIDs allPathsAndLabellings ac
+    let rec private summedValueExprs =
+        let rec get acc = 
+            function
+            | Sum v       -> v::acc
+            | AC.Value va -> getVal acc va
+        and getVal acc = 
+            function 
+            | ArithOp (l, _, r)
+            | BoolOp  (l, _, r) -> getVal (getVal acc r) l
+            | Ext     e         -> get acc e
+            | other             -> acc
+        get []
 
     let createArithStates query =
-        List.collect allPathsAndLabellings query.arithmeticConstraints 
-        |> List.distinct |> flip Seq.zip (Seq.initInfinite (konst (Int 0))) 
+        List.collect summedValueExprs query.arithmeticConstraints 
+        |> flip Seq.zip (Seq.repeat None)
         |> Map.ofSeq
 
     let attributesDelta graph attrs cycle = 
-        let curr = Seq.map (fun a -> a, Int 0) attrs |> Map.ofSeq
+        let curr = Seq.map (fun a -> a, None) attrs |> Map.ofSeq
         List.fold (addNodeAttributes graph) curr cycle
 
     let findSolution constraints arithStates cyclesDeltas =

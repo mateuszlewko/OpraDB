@@ -36,13 +36,12 @@ module QueryData =
         override this.Equals other = 
             match other with 
             | :? MatchedKEdges as other -> 
-                this.currEdges = other.currEdges 
-             && this.nfas      = other.nfas 
+                this.currEdges = other.currEdges && this.nfas = other.nfas 
             | _                -> false
 
         interface System.IComparable with 
             member this.CompareTo other = 
-                compare (this.GetHashCode()) (other.GetHashCode())
+                compare (this.GetHashCode ()) (other.GetHashCode ())
 
     let [<Literal>] NULL_NODE = -1
 

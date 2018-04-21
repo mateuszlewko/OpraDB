@@ -21,11 +21,9 @@ module AST =
     module NodeVariable = 
         let identifier = function CurrNodeVar i | NextNodeVar i -> i
    
-    /// Represents one of: <=, <, >=, >, =, <>, and, or
+    /// Represents one of: <=, <, >=, >, =, <>, and, or, is, isNot
     type BoolOperator  = Leq | Le | Geq | Ge | Eq | Neq | And | Or | Is | IsNot
     type ArithOperator = Add | Sub | Mult | Div 
-
-    // type Literal = IntLit of int | StringLit of string
 
     type Literal = 
         | Int of int 
@@ -41,38 +39,28 @@ module AST =
         | BoolOp of ValueExpr<'ext> * BoolOperator * ValueExpr<'ext>
         | Ext of 'ext
 
-    // type Operand =
-    //     /// LabellingFunction either checks whether there exists
-    //     /// label between specified nodes (or node if only one given),
-    //     /// or returns value of label, example: type(@1) = "bus"
-    //     /// Represent int value in query
-    //     | IntLiteral of int
-    //     /// String value (must be specified in quotes, example: "value")
-    //     | StringLiteral of string
-    //     // | NodeVariable TODO: Handle this case
-
-    module ValueExpr = 
-        open NodeVariable
+    // module ValueExpr = 
+    //     open NodeVariable
          
-        let allPathIDs fromExt = 
-            let ide = identifier
-            let rec get acc = 
-                function 
-                | Labelling (_, vars) -> acc @ List.map ide vars 
-                                         |> List.distinct
-                | ArithOp (l, _, r) 
-                | BoolOp (l, _, r)    -> get [] l @ get acc r |> List.distinct
-                | Ext e               -> fromExt e
-                | Lit _               -> acc
-            get []
+    //     let allPathIDs fromExt = 
+    //         let ide = identifier
+    //         let rec get acc = 
+    //             function 
+    //             | Labelling (_, vars) -> acc @ List.map ide vars 
+    //                                      |> List.distinct
+    //             | ArithOp (l, _, r) 
+    //             | BoolOp (l, _, r)    -> get [] l @ get acc r |> List.distinct
+    //             | Ext e               -> fromExt e
+    //             | Lit _               -> acc
+    //         get []
 
     type NodeConstraint = ValueExpr<unit>
         // | Labelling of Identifier * NodeVariable list
         // | Value of ValueExpr<NodeConstraint>
     
-    module NodeConstraint = 
+    // module NodeConstraint = 
 
-        let allPathIDs = ValueExpr.allPathIDs (konst [])
+    //     let allPathIDs = ValueExpr.allPathIDs (konst [])
 
         // let allPathIDs  = 
             
@@ -87,19 +75,19 @@ module AST =
         | UnionExp of RegularExpression * RegularExpression
         | StarExp of RegularExpression
 
-    module RegularExpression = 
-        open NodeConstraint
+    // module RegularExpression = 
+    //     open NodeConstraint
 
-        let allPathIDs = 
-            let rec get curr = 
-                function 
-                | NodeExp constr     -> curr @ allPathIDs constr 
-                                        |> List.distinct
-                | UnionExp (r1, r2)
-                | ConcatExp (r1, r2) -> get (get curr r1) r2
-                | _                  -> []
+    //     let allPathIDs = 
+    //         let rec get curr = 
+    //             function 
+    //             | NodeExp constr     -> curr @ allPathIDs constr 
+    //                                     |> List.distinct
+    //             | UnionExp (r1, r2)
+    //             | ConcatExp (r1, r2) -> get (get curr r1) r2
+    //             | _                  -> []
 
-            get []
+    //         get []
 
     module PathConstraint =
         let create source path target = {
@@ -108,25 +96,18 @@ module AST =
                 target = target
             }
 
-    // type ArithOperand =
-    //     /// SumBy (Path Identifier, Label Identifier)
-    //     | SumBy of Identifier * Identifier 
-    //     | IntALiteral of int
-    //     | Add of ArithOperand * ArithOperand
-    //     | Mult of ArithOperand * ArithOperand
-   
     type ArithmeticConstraint = 
         | Sum of ValueExpr<unit>
         | Value of ValueExpr<ArithmeticConstraint>
 
     type AC = ArithmeticConstraint
-        // ArithmeticConstraint of ArithOperand * Operator * ArithOperand
 
     type BasicQuery = {
             /// Matched nodes
             nodes                 : Identifier list
             /// Matched paths
             paths                 : Identifier list
+            /// 'SUCH THAT ...' constraints
             pathConstraints       : PathConstraint list
             regularConstraints    : RegularExpression list
             arithmeticConstraints : ArithmeticConstraint list
