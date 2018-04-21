@@ -4,9 +4,7 @@ open Hekate
 
 module Data =     
 
-    type LabelValue = Lit of AST.Literal | Str of string
-
-    type Labels = Map<string, LabelValue>
+    type Labels = Map<string, AST.Literal>
 
     type Graph = MGraph<int, Labels, Labels>
 

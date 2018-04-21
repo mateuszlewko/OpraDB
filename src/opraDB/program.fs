@@ -33,20 +33,20 @@ let main argv =
 
     let pathG : Graph =
         let me = Map.empty
-        let edge = Map.ofList ["edge", StringVal "link"]
-        let edge2 = Map.ofList ["edge", StringVal "link"
-                                "a", StringVal "ok"]
+        let edge = Map.ofList ["edge", String "link"]
+        let edge2 = Map.ofList ["edge", String "link"
+                                "a", String "ok"]
 
         // Graph.create // nodes
-        //              [ 0, Map.ofList ["dest", StringVal "end"]
-        //                1, Map.ofList ["type", StringVal "bus"]
+        //              [ 0, Map.ofList ["dest", String "end"]
+        //                1, Map.ofList ["type", String "bus"]
         //                2, me
         //                3, me
         //                4, me
         //                5, me
-        //                6, Map.ofList ["dest", StringVal "end"]
+        //                6, Map.ofList ["dest", String "end"]
         //                7, me
-        //                8, Map.ofList ["type", StringVal "bus"] 
+        //                8, Map.ofList ["type", String "bus"] 
         //              ]                  
         //              // edges
         //              [ 0, 8, edge
@@ -61,13 +61,13 @@ let main argv =
         //              ]
 
         Graph.create // nodes
-                     [ 0, Map.ofList ["type", StringVal "beg"
-                                      "attr", IntVal 3]
-                       4, Map.ofList ["type", StringVal "beg"]
+                     [ 0, Map.ofList ["type", String "beg"
+                                      "attr", Int 3]
+                       4, Map.ofList ["type", String "beg"]
                        1, me
                        2, me
                        5, me
-                       3, Map.ofList ["type", StringVal "end"] 
+                       3, Map.ofList ["type", String "end"] 
                      ]                  
                      // edges
                      [ //0, 8, edge
