@@ -35,9 +35,13 @@ rule read =
   | white    { read lexbuf }
   | newline  { newline lexbuf; read lexbuf }
   | int      { INT (int (lexeme lexbuf)) }
-  (* | float    { FLOAT (float (lexeme lexbuf)) } *)
-  | "true"   { TRUE }
+  (*| float    { FLOAT (float (lexeme lexbuf)) } *)
+  | "true"   { TRUE  }
   | "false"  { FALSE }
+  | "NULL"   { NULL  }
+  | "NOT"    { NOT   }
+  | "IS"     { IS    }
+
   | '"'      { read_string "" false lexbuf } 
 
   | "NODES"  { NODES  }   

@@ -68,6 +68,7 @@ module ValueExpression =
             | Eq 
             | Is    -> l =  r
             | op    -> notSupp op (Bool l) (Bool r) |> raise
+            >> Bool
 
         match lhs, rhs with 
         | Null, other | other, Null ->
@@ -76,17 +77,18 @@ module ValueExpression =
             | And, Bool false   -> Bool false  
             | Or , Bool true    -> Bool true   
             | other             -> Null
-
-        | Int _ as l     , (Int _ as r)         
-        | (Float _ as l) , (Float _ as r)   
+        // same type expression
+        | Int     _ as l , (Int    _ as r)         
+        | (Float  _ as l), (Float  _ as r)   
         | (String _ as l), (String _ as r) -> get op l r 
-        
-        | Bool l, Bool r         -> bGet l r op |> Bool
+        // bool expression
+        | Bool l, Bool r         -> bGet l r op 
+        // different types expression
         | other, (String _ as s) -> notSupp op s other |> raise
         | (String _ as s), other -> notSupp op s other |> raise
         | Float f as l, (Int r)  -> get op l (Float (float r))
         | Int l, (Float _ as r)  -> get op (Float (float l)) r
-        
+        // all other cases are unsupported
         | l, r -> notSupp op l r |> raise
 
     let rec evalExt ext labellingValue =

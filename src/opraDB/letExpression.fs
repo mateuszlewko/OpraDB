@@ -21,10 +21,10 @@ module LetExpression =
         
     // let private arith lets = 
 
-    let rec regExp lets =
-        function
-        | AnyExp -> AnyExp
-        | NodeExp constr -> AnyExp
+    // let rec regExp lets =
+    //     function
+    //     | AnyExp -> AnyExp
+    //     | NodeExp constr -> AnyExp
 
     let inlineLetExprs letExps query = 
         let lets = List.map (fun l -> l.name, l) letExps |> Map.ofList

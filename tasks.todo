@@ -11,9 +11,9 @@ Parser:
     ✔ Improve syntax (possibly use FsLex and FsYacc) @today @done(18-02-24 04:44)
     ✔ Parse simple arithmetic constraints (sum by) @today @done(18-02-24 20:11)
     ✔ Parse Let expressions @done(18-04-17 01:35)
+    ✔ Parse value expressions @today @done(18-04-22 00:53)
     ❑ Parse other arithmetic constraints (max, min, count?)
-    ❑ Add node constraint which returns bool (only one operand in expression) or add bool value @low @today 
-    ❑ Parse complex node constraints (??) @today 
+    ✔ Add node constraint which returns bool (only one operand in expression) or add bool value @low @today @done(18-04-22 00:53)
 
 Query execution:
     ✔ Build NFA @done(17-12-18 23:16)
@@ -36,7 +36,7 @@ Query execution:
     ❑ Value Expressions in Arithmetic constraints @today  
     ❑ Value Expressions in Regular / Node constraints @today  
     // till saturday
-    ❑ Matching more complex arithmetic constraints (no cycles, max, min, count) @high
+    ❑ Matching more complex arithmetic constraints (max, min, count) @high
     ❑ Min / Max on all paths @high 
         ❑ Dijkstra
     ❑ Improved matching of arithmetic constraints with cycles @high
