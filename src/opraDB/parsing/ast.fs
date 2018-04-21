@@ -1,7 +1,5 @@
 namespace OpraDB
 
-open FSharpx
-
 module AST =
 
     type Identifier = ID of string
@@ -39,34 +37,7 @@ module AST =
         | BoolOp of ValueExpr<'ext> * BoolOperator * ValueExpr<'ext>
         | Ext of 'ext
 
-    // module ValueExpr = 
-    //     open NodeVariable
-         
-    //     let allPathIDs fromExt = 
-    //         let ide = identifier
-    //         let rec get acc = 
-    //             function 
-    //             | Labelling (_, vars) -> acc @ List.map ide vars 
-    //                                      |> List.distinct
-    //             | ArithOp (l, _, r) 
-    //             | BoolOp (l, _, r)    -> get [] l @ get acc r |> List.distinct
-    //             | Ext e               -> fromExt e
-    //             | Lit _               -> acc
-    //         get []
-
     type NodeConstraint = ValueExpr<unit>
-        // | Labelling of Identifier * NodeVariable list
-        // | Value of ValueExpr<NodeConstraint>
-    
-    // module NodeConstraint = 
-
-    //     let allPathIDs = ValueExpr.allPathIDs (konst [])
-
-        // let allPathIDs  = 
-            
-        //     allPathIDs l @ allPathIDs r 
-        //                                             |> List.distinct
-
 
     type RegularExpression =
         | AnyExp
@@ -74,20 +45,6 @@ module AST =
         | ConcatExp of RegularExpression * RegularExpression
         | UnionExp of RegularExpression * RegularExpression
         | StarExp of RegularExpression
-
-    // module RegularExpression = 
-    //     open NodeConstraint
-
-    //     let allPathIDs = 
-    //         let rec get curr = 
-    //             function 
-    //             | NodeExp constr     -> curr @ allPathIDs constr 
-    //                                     |> List.distinct
-    //             | UnionExp (r1, r2)
-    //             | ConcatExp (r1, r2) -> get (get curr r1) r2
-    //             | _                  -> []
-
-    //         get []
 
     module PathConstraint =
         let create source path target = {
