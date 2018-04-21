@@ -1,5 +1,7 @@
 namespace OpraDB
 
+open FSharpx
+
 module AST =
 
     type Identifier = ID of string
@@ -49,25 +51,28 @@ module AST =
     //     | StringLiteral of string
     //     // | NodeVariable TODO: Handle this case
 
-    // module ValueExpr = 
-    //     open NodeVariable
+    module ValueExpr = 
+        open NodeVariable
          
-    //     let allPathIDs = 
-    //         function 
-    //         | Labelling (_, vars) -> List.map identifier vars |> List.distinct
-    //         | _                   -> []
+        let allPathIDs fromExt = 
+            let ide = identifier
+            let rec get acc = 
+                function 
+                | Labelling (_, vars) -> acc @ List.map ide vars 
+                                         |> List.distinct
+                | ArithOp (l, _, r) 
+                | BoolOp (l, _, r)    -> get [] l @ get acc r |> List.distinct
+                | Ext e               -> fromExt e
+                | Lit _               -> acc
+            get []
 
     type NodeConstraint = ValueExpr<unit>
         // | Labelling of Identifier * NodeVariable list
         // | Value of ValueExpr<NodeConstraint>
     
     module NodeConstraint = 
-        open NodeVariable
 
-        let allPathIDs = 
-            function 
-            | Labelling (_, vars) -> List.map identifier vars |> List.distinct
-            | _                   -> []
+        let allPathIDs = ValueExpr.allPathIDs (konst [])
 
         // let allPathIDs  = 
             
@@ -114,7 +119,7 @@ module AST =
         | Sum of ValueExpr<unit>
         | Value of ValueExpr<ArithmeticConstraint>
 
-    // type AC = ArithmeticConstraint
+    type AC = ArithmeticConstraint
         // ArithmeticConstraint of ArithOperand * Operator * ArithOperand
 
     type BasicQuery = {
@@ -130,9 +135,8 @@ module AST =
     type LetBody =
         | Query of BasicQuery 
         | Regular of RegularExpression
-        | Node of NodeConstraint
+        | Value of ValueExpr<unit>
         | Arith of ArithmeticConstraint
-        // | Value of 
 
     type LetExp = {  
             name : Identifier

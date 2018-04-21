@@ -27,13 +27,12 @@ Query execution:
     ✔ Handle cycles (only with matched nodes) @critical @done(18-02-21 16:26)
     ✔ Matching simple arithmetic constraints (no cycles, only sum by) @high @today @done(18-02-25 21:56)
     ❑ Ontologies (let expressions) @high
-        ❑ new label: // till thursday
+        ❑ value expression / new label: // till thursday
             ❑ on nodes // till thursday
             ❑ on edges // till thursday
         ❑ regular constraints // till friday
         ❑ query // till friday
-        ❑ node constraints
-        ❑ value expression // till sunday
+        ❑ arithmetic constraint
     ❑ Value Expressions in Arithmetic constraints @today  
     ❑ Value Expressions in Regular / Node constraints @today  
     // till saturday
@@ -91,10 +90,12 @@ To think:
     ❑ Ontologies return type (node set vs int)
     ✔ Arithmetic constraints for graphs with cycles @done(18-04-06 18:44)
 
-    ❑ Type coercion
+    ❑ Type coercion (strong vs weak)
         ❑ int -> float
         ❑ bool -> int
         ❑ string -> int / float
         ❑ int / string / bool in bool expression
+
+    ❑ Sum null values in SUM (arithmetic constraints)
     ❑ Registers
     ✔ Negation @done(18-04-18 01:23)

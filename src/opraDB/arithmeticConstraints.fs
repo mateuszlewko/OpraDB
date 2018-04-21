@@ -31,22 +31,18 @@ module ArithmeticConstraints =
         { mKEdges with arithStates = addNodeAttributes graph mKEdges.arithStates 
                                                        mKEdges }
 
-    let private allPathsAndLabellings (ArithmeticConstraint (l, _, r)) =
-        let rec fromOp acc = 
-            function
-            | SumBy (p, l)             -> (p, l)::acc
-            | Add (l, r) | Mult (l, r) -> fromOp (fromOp acc l) r
-            | _                        -> acc
-
-        fromOp (fromOp [] l) r
+    let rec private allPathsAndLabellings =
+        function
+        | Sum v       -> NodeConstraint.allPathIDs v
+        | AC.Value ac -> ValueExpr.allPathIDs allPathsAndLabellings ac
 
     let createArithStates query =
         List.collect allPathsAndLabellings query.arithmeticConstraints 
-        |> List.distinct |> flip Seq.zip (Seq.initInfinite (konst 0)) 
+        |> List.distinct |> flip Seq.zip (Seq.initInfinite (konst (Int 0))) 
         |> Map.ofSeq
 
     let attributesDelta graph attrs cycle = 
-        let curr = Seq.map (fun a -> a, 0) attrs |> Map.ofSeq
+        let curr = Seq.map (fun a -> a, Int 0) attrs |> Map.ofSeq
         List.fold (addNodeAttributes graph) curr cycle
 
     let findSolution constraints arithStates cyclesDeltas =
