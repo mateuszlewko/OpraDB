@@ -104,3 +104,16 @@ module ValueExpression =
         | Ext e                  -> ext e
 
     let eval = evalExt (fun () -> Null)
+
+    let rec renameVarsExt renameExt mapping = 
+        let rename = renameVarsExt renameExt mapping
+        function 
+        | Lit _ as l  -> l
+        | Labelling (id, args) -> Labelling (id, List.map mapping args)
+        | ArithOp (l, op, r) -> let l, r = rename l, rename r
+                                ArithOp (l, op, r)
+        | BoolOp  (l, op, r) -> let l, r = rename l, rename r
+                                BoolOp (l, op, r)
+        | Ext e              -> Ext (renameExt e)
+
+    let renameVars mapping = renameVarsExt id mapping

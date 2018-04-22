@@ -3,13 +3,15 @@ namespace OpraDB
 open OpraDB.QueryData
 open OpraDB.AST
 open OpraDB.CommonUtils
-// open OpraDB.ValueExpression
+open OpraDB.ValueExpression
 
 open Hekate
 open FSharpx
 open FSharpx.Option
 
 module Labelling = 
+
+    exception WrongLetTypeException of LetBody
 
     let private toLiteral labelName labels =
         Map.tryFind labelName labels
@@ -24,14 +26,28 @@ module Labelling =
         | CurrNodeVar u -> getNode u fst
         | NextNodeVar v -> getNode v snd
 
-    let letValue kEdges graph letExp args = 
+    let letValue kEdges graph (labelling : Identifier -> NodeVariable list -> Literal) letExp args = 
         match letExp.body with 
-        | Value v -> Null
-        | other   -> Null
+        | Value v -> if List.length args <> List.length letExp.args
+                     then failwith "wrong number of args"
+                     else let mp = List.map NodeVariable.identifier args
+                                   |> List.zip letExp.args  
+                                   |> Map.ofList
+                                   |> flip Map.find
+                                   
+                          let mapping = 
+                              function 
+                              | CurrNodeVar i -> CurrNodeVar (mp i)
+                              | NextNodeVar i -> NextNodeVar (mp i)
 
-    let value letExps kEdges graph (ID label) = 
+                          eval labelling (renameVars mapping v)
+        | other   -> raise (WrongLetTypeException other)
+
+    let rec value letExps kEdges graph (ID label) = 
         match Map.tryFind label letExps with 
-        | Some letExp -> letValue kEdges graph letExp
+        | Some letExp -> 
+                         let labelling : Identifier -> NodeVariable list -> Literal = value letExps kEdges graph
+                         letValue kEdges graph labelling letExp
         | None        ->
             let ofVar  = nodeVarToIx kEdges
             let orNull = Option.getOrElse Null
@@ -51,6 +67,6 @@ module Labelling =
                 } |> orNull
 
             function
-            | [u; v]    -> edgeLabelling u v
+            | [(u : NodeVariable); v]    -> edgeLabelling u v
             | [nodeVar] -> ofVar nodeVar |> nodeLabelling
             | other     -> Null
