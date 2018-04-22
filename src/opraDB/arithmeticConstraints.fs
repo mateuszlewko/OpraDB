@@ -35,8 +35,8 @@ module ArithmeticConstraints =
             | None     , None     -> None 
         Map.map addValue arithStates   
         
-    let updateArithStates graph mKEdges =
-        let labelling   = Labelling.value mKEdges.currEdges graph
+    let updateArithStates letExps graph mKEdges =
+        let labelling   = Labelling.value letExps mKEdges.currEdges graph
         let arithStates = addNodeAttributes labelling mKEdges.arithStates
         { mKEdges with arithStates = arithStates }
 
@@ -58,11 +58,11 @@ module ArithmeticConstraints =
         |> flip Seq.zip (Seq.repeat None)
         |> Map.ofSeq
 
-    let private attributesDelta graph attrs (cycle : MatchedKEdges list) = 
+    let private attributesDelta letExps graph attrs cycle = 
         let curr = Seq.map (fun a -> a, None) attrs |> Map.ofSeq
        
         let folder state mKEdges = 
-            let labelling = Labelling.value mKEdges.currEdges graph
+            let labelling = Labelling.value letExps mKEdges.currEdges graph
             addNodeAttributes labelling state
         List.fold folder curr cycle
 
@@ -215,12 +215,12 @@ module ArithmeticConstraints =
         findSolution constraints arithStates cyclesDeltas
         |> foundSolution
 
-    let inequalitiesSatisfied mKEdges predecessors graph constraints = 
+    let inequalitiesSatisfied mKEdges letExps predecessors graph constraints = 
         let attrs = Map.keys mKEdges.arithStates |> List.ofSeq
 
         let subGraph, visited = Graph.Utils.restoreGraph predecessors mKEdges
         let cyclesAtrrsDelta  = Graph.Utils.allSimpleCycles subGraph
-                                |> List.map (attributesDelta graph attrs 
+                                |> List.map (attributesDelta letExps graph attrs 
                                              >> Map.choose (konst id))
    
         findSolution constraints mKEdges.arithStates cyclesAtrrsDelta 

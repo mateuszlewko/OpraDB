@@ -25,9 +25,9 @@ module AST =
     type ArithOperator = Add | Sub | Mult | Div 
 
     type Literal = 
-        | Int of int 
-        | Bool of bool 
-        | Float of float
+        | Int    of int 
+        | Bool   of bool 
+        | Float  of float
         | String of string
         | Null
 
@@ -42,10 +42,10 @@ module AST =
 
     type RegularExpression =
         | AnyExp
-        | NodeExp of NodeConstraint
+        | NodeExp   of NodeConstraint
         | ConcatExp of RegularExpression * RegularExpression
-        | UnionExp of RegularExpression * RegularExpression
-        | StarExp of RegularExpression
+        | UnionExp  of RegularExpression * RegularExpression
+        | StarExp   of RegularExpression
 
     module PathConstraint =
         let create source path target = {
@@ -55,7 +55,7 @@ module AST =
             }
 
     type ArithmeticConstraint = 
-        | Sum of ValueExpr<unit>
+        | Sum   of ValueExpr<unit>
         | Value of ValueExpr<ArithmeticConstraint>
 
     type AC = ArithmeticConstraint
@@ -72,10 +72,10 @@ module AST =
         }
 
     type LetBody =
-        | Query of BasicQuery 
+        | Query   of BasicQuery 
         | Regular of RegularExpression
-        | Value of ValueExpr<unit>
-        | Arith of ArithmeticConstraint
+        | Value   of ValueExpr<unit>
+        | Arith   of ArithmeticConstraint
 
     type LetExp = {  
             name : Identifier

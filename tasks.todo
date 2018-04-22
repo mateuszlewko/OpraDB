@@ -55,7 +55,7 @@ Query execution:
     ❑ Return last node before sink node @high 
     ❑ Move functions from regularConstraints to queryExecution module @high 
     ❑ Optimisation: Neighbour queries for k-node constraints @high
-    ❑ Bool type @today 
+    ✔ Bool type @today @done(18-04-22 02:39)
     // till sunday
     ❑ Return paths @medium 
     // sunday ??

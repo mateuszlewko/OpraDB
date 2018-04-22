@@ -27,8 +27,11 @@ module QueryExecution =
                 ) query.basic.pathConstraints
 
         let nodesSet = Set.ofList query.basic.nodes
+        let letExps  = query.letExps 
+                       |> List.map (fun l -> let (ID name) = l.name in name, l) 
+                       |> Map.ofList
 
-        matchEdges graph query.basic
+        matchEdges graph letExps query.basic
         |> List.map (mKEdgesToNodes 
                      >> List.filter (fst >> flip Set.contains nodesSet)
                      >> Map.ofList)

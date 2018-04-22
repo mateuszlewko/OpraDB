@@ -7,8 +7,8 @@ module NodeConstraints =
 
     exception WrongTypeException of ValueType 
 
-    let checkKEdges kEdges graph nodeConstr =
-        let labellingValue = Labelling.value kEdges graph
+    let checkKEdges letExps kEdges graph nodeConstr =
+        let labellingValue = Labelling.value letExps kEdges graph
 
         match eval labellingValue nodeConstr with 
         | Bool res -> res 

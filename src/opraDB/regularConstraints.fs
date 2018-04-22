@@ -20,7 +20,7 @@ module RegularConstraints =
 
     /// Get all outward edges of a given node, which have at least one
     /// state in every NFA they belong to.
-    let private nextKEdges graph (mKEdges : MatchedKEdges list) preds =
+    let private nextKEdges letExps graph (mKEdges : MatchedKEdges list) preds =
         /// Move to states reachable within one transition in single NFA
         /// for a given kEdges. Skips empty states.
         let rec makeTransition kEdges transition =
@@ -39,7 +39,7 @@ module RegularConstraints =
             match transition.state with
             | Matched           -> []
             | Constraint constr ->
-                if NodeConstraints.checkKEdges kEdges graph constr
+                if NodeConstraints.checkKEdges letExps kEdges graph constr
                 then ok transition
                 else []
             | Any   -> ok transition
@@ -104,10 +104,10 @@ module RegularConstraints =
         // outKEdges 
         // |> List.choose (fun (pred, curr) -> moveNFAStates curr 
                                            // |> Option.map (tuple2 pred))
-        preds, List.map (updateArithStates graph) es
+        preds, List.map (updateArithStates letExps graph) es
 
     /// Get nodes that match regular constraints in a given query.
-    let matchEdges (graph : Graph) (query : BasicQuery) =
+    let matchEdges (graph : Graph) letExps (query : BasicQuery) =
         let allNFAs = query.regularConstraints 
                       |> List.map (fun e -> [State.ofRegExp e]) 
         let mKEdges =
@@ -136,7 +136,7 @@ module RegularConstraints =
                   currEdges   = kEdges |> Map.ofList
                   arithStates = createArithStates query 
                 }
-                |> updateArithStates graph
+                |> updateArithStates letExps graph
             )
 
         let checkFinalNodes mKEdges =
@@ -168,7 +168,7 @@ module RegularConstraints =
         let checkMatched preds mKEdges =
             checkNFAsInMatchedStates mKEdges 
             && checkFinalNodes mKEdges
-            && inequalitiesSatisfied mKEdges preds graph 
+            && inequalitiesSatisfied mKEdges letExps preds graph 
                                      query.arithmeticConstraints
             
         let mapMk = 
@@ -189,7 +189,7 @@ module RegularConstraints =
                                     
                 result
             else
-                let preds, nextNodes    = nextKEdges graph mNodes preds
+                let preds, nextNodes    = nextKEdges letExps graph mNodes preds
                 let nodesMatched, rest  = List.partition (checkMatched preds) 
                                                          nextNodes
                 let nextNotVis          = nextNodes 
@@ -211,7 +211,7 @@ module RegularConstraints =
                 let visited = nextNodes |> Set.ofList |> Set.union visited
                 bfs visited (nodesMatched @ result) preds nextNotVis
 
-        nextKEdges graph mKEdges Map.empty 
+        nextKEdges letExps graph mKEdges Map.empty 
         |> uncurry (bfs Set.empty []) 
         |> List.distinctBy (fun me -> Map.valueList me.currEdges 
                                       |> List.map basicInfo)
