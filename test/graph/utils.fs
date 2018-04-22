@@ -39,21 +39,19 @@ module ArithmeticConstraints =
 
                 let res = existsSolution constrs Map.empty cyclesDeltas 
                 Expect.isTrue res "found solution correctly"
-                skiptest ""
             }
 
             test "two attributes - solution exists" {
-                // let constrs = [ SumBy (ID "p1", ID "a1"), Leq, IntALiteral 10
-                //                 SumBy (ID "p1", ID "a2"), Geq, IntALiteral 5 
-                //               ] |> List.map ArithmeticConstraint 
-                // let cyclesDeltas = [ Map [ (ID "p1", ID "a1"), 6
-                //                            (ID "p1", ID "a2"), 3 ]
-                //                      Map [ (ID "p1", ID "a1"), -3
-                //                            (ID "p1", ID "a2"), -1 ]
-                //                    ]                
+                let ll p v = Labelling (ID p, [CurrNodeVar (ID v)])
+                let lb1    = ll "p1" "a1"
+                let lb2    = ll "p1" "a2"
+                let constrs = [ Sum lb1 |> Ext, Leq, (Lit (Int 10))
+                                Sum lb2 |> Ext, Geq, (Lit (Int 5)) ]
+                              |> List.map (BoolOp >> AC.Value)
+                let cyclesDeltas = [Map [lb1, Int 6 ; lb2, Int 3]
+                                    Map [lb1, Int -3; lb2, Int -1]]                
 
-                // let res = existsSolution constrs Map.empty cyclesDeltas 
-                // Expect.isTrue res "found solution correctly"
-                skiptest ""
+                let res = existsSolution constrs Map.empty cyclesDeltas 
+                Expect.isTrue res "found solution correctly"
             }
         ]
