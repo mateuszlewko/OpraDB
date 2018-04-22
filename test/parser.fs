@@ -20,8 +20,6 @@ module Parser =
             basic   = { nodes = [ID "x"]; paths = []; pathConstraints = []
                         regularConstraints = []; arithmeticConstraints = [] }
         }
-    let private nodeC = NodeConstraint >> NodeConstr
-
 
     [<Tests>]
     let ``query tests`` =
@@ -33,10 +31,11 @@ module Parser =
                     let p = ID "p"
                     [ { name = ID "in_time"
                         args = [p]
-                        body = nodeC (Labelling (ID "time", 
+                        body = BoolOp (Labelling (ID "time", 
                                                  [CurrNodeVar p])
-                                    , Leq
-                                    , IntLiteral 10) }
+                                      ,Leq
+                                      ,Int 10 |> Lit) 
+                               |> Value }
                     ]
                                
                 Expect.equal ast (createLetExps exp |> Ok) ""

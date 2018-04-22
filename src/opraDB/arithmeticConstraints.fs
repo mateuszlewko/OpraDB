@@ -103,13 +103,12 @@ module ArithmeticConstraints =
         let name     = sprintf "alpha-%d"
         /// Value of alpha-i represents how many times to traverse i-th cycle
         let alphas   = Array.init cycleCnt (name >> ctx.MkIntConst )
-        /// All mappings from (path, attribute) to delta for a given cycle
+        /// All mappings from ValueExpr to delta (Literal) of a given cycle
         let deltas   = Array.ofList cyclesDeltas
 
         // let mkConst (i : int) = ctx.MkAdd (ctx.MkInt 0, ctx.MkInt i)
         let add0 x = ctx.MkAdd (ctx.MkInt 0, x) |> ArithT
         let wrongT = literalType >> WrongTypeException
-
 
         let ofLiteral =
             function
@@ -118,8 +117,8 @@ module ArithmeticConstraints =
             | Float f -> ctx.MkReal (string f) :> ArithExpr
             | other   -> wrongT other |> raise
 
-        /// Mapping from (path, attribute) to Int expression representing 
-        /// sum of alpha_i * delta_i for a given (path, attribute)
+        /// Mapping from ValueExpr to ArithExpr expression representing 
+        /// sum of alpha_i * delta_i for a given SUM ValueExpr
         let attrAlphas = 
             let attrIndexes indexes (i : int, cycle) = 
                 Map.fold (fun indexes key _ -> MultiMap.add key i indexes) 
@@ -130,8 +129,8 @@ module ArithmeticConstraints =
                 let getAlpha i = 
                     match Map.find id deltas.[i] with 
                     | Null    -> ctx.MkMul (alphas.[i], ctx.MkInt 0)
-                    | Int i   -> ctx.MkMul (alphas.[i], ctx.MkInt i)
-                    | Float f -> ctx.MkMul (alphas.[i], ctx.MkReal (string f))
+                    | Int   x -> ctx.MkMul (alphas.[i], ctx.MkInt x)
+                    | Float x -> ctx.MkMul (alphas.[i], ctx.MkReal (string x))
                     | other   -> wrongT other |> raise
 
                 let add l r = ctx.MkAdd (l, r)
@@ -141,7 +140,7 @@ module ArithmeticConstraints =
                                |> Option.getOrElse (ctx.MkInt 0 :> ArithExpr)
 
                 Array.map getAlpha indexes
-                |> Array.fold add (arithVal)
+                |> Array.fold add arithVal
 
             Array.indexed deltas 
             |> Array.fold attrIndexes Map.empty

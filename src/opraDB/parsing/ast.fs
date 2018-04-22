@@ -21,6 +21,7 @@ module AST =
    
     /// Represents one of: <=, <, >=, >, =, <>, and, or, is, isNot
     type BoolOperator  = Leq | Le | Geq | Ge | Eq | Neq | And | Or | Is | IsNot
+    
     type ArithOperator = Add | Sub | Mult | Div 
 
     type Literal = 
