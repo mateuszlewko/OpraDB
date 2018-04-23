@@ -12,6 +12,7 @@ open OpraDB.CommonUtils
 open FSharpx.Collections
 open FSharpx
 open Hekate
+open OpraDB.CommonUtils
 
 open Microsoft.Z3
 
@@ -23,16 +24,13 @@ module ArithmeticConstraints =
             let rhs = match eval labellingValue valueExpr with 
                       | Null  -> None 
                       | other -> Some other
-            // let rhs = 
-                // Map.tryFind path mKEdges.currEdges
-                // >>= fun e -> Graph.Nodes.tryFind (fst e.lastEdge) graph
-                // >>= (snd >> Map.tryFind labelName)
 
             match curr, rhs with 
             | Some v   , None 
             | None     , Some v   -> Some v 
             | Some curr, Some rhs -> evalArith Add curr rhs |> Some
             | None     , None     -> None 
+
         Map.map addValue arithStates   
         
     let updateArithStates letExps graph mKEdges =
@@ -178,20 +176,7 @@ module ArithmeticConstraints =
                                     
             | Ext a -> evalArith a
             | Lit l -> ofLiteral l |> ArithT
-            // | BoolOp (l, op, r) -> let l, r = evalValue l, evalValue r
-            //                        boolOp ctx l r
-
-            // function 
-            // | IntALiteral i -> mkConst i
-            // | Add (l, r)    -> ctx.MkAdd (evalOperand l, evalOperand r)
-            // | Mult (l, r)   -> ctx.MkMul (evalOperand l, evalOperand r)
-            // | SumBy (p, l)  -> Map.tryFind (p, l) attrAlphas 
-            //                    |> Option.defaultValue (mkConst 0) 
-
-       
-
-        // let evalConstraint (ArithmeticConstraint (lhs, op, rhs)) =
-        //     evalOperator (evalOperand lhs) (evalOperand rhs) op
+        
         let toBool = function 
                      | BoolT b -> b 
                      | other   -> failwith "constr must be of bool type"
@@ -215,14 +200,17 @@ module ArithmeticConstraints =
         findSolution constraints arithStates cyclesDeltas
         |> foundSolution
 
-    let inequalitiesSatisfied mKEdges letExps predecessors graph constraints = 
-        let attrs = Map.keys mKEdges.arithStates |> List.ofSeq
+    let inequalitiesSatisfied mKEdges letExps predecessors graph =
+        function
+        | []          -> true 
+        | constraints ->
+            let attrs = Map.keys mKEdges.arithStates |> List.ofSeq
 
-        let subGraph, visited = Graph.Utils.restoreGraph predecessors mKEdges
-        let cyclesAtrrsDelta  = Graph.Utils.allSimpleCycles subGraph
-                                |> List.map (attributesDelta letExps graph attrs 
-                                             >> Map.choose (konst id))
-   
-        findSolution constraints mKEdges.arithStates cyclesAtrrsDelta 
-        |> foundSolution
+            let subGraph, visited = Graph.Utils.restoreGraph predecessors mKEdges
+            let cyclesAtrrsDelta  = Graph.Utils.allSimpleCycles subGraph
+                                    |> List.map (attributesDelta letExps graph attrs 
+                                                 >> Map.choose (konst id))
+       
+            findSolution constraints mKEdges.arithStates cyclesAtrrsDelta 
+            |> foundSolution
    

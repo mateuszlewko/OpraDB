@@ -6,6 +6,8 @@ module CommonUtils =
     let inline internal snd3 (_,a,_) = a
     let inline internal thr3 (_,_,a) = a
 
+    let (>>*) x f = f x |> ignore; x
+
     module List = 
         let rec cartesian =
             function

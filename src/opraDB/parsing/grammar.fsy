@@ -136,7 +136,7 @@ value_expr_arith:
   | labelling                                  { Labelling $1         }
   | value_expr_arith arith_op value_expr_arith { ArithOp ($1, $2, $3) }
   | value_expr_arith bool_op value_expr_arith  { BoolOp  ($1, $2, $3) }
-  | arith_constr                               { Ext $1               }
+  | SUM LPAREN value_expr RPAREN               { Ext (Sum $3)         }
 
 arith_constr: 
   | SUM LPAREN value_expr RPAREN { Sum   $3 }

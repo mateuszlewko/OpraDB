@@ -91,10 +91,10 @@ module ValueExpression =
         // all other cases are unsupported
         | l, r -> notSupp op l r |> raise
 
-    let rec evalExt ext labellingValue =
+    let rec evalExt ext labellingValue valExpr =
         let exp = evalExt ext labellingValue
 
-        function 
+        match valExpr with 
         | Lit l                  -> l 
         | Labelling (ids, vars)  -> labellingValue ids vars 
         | ArithOp (lhs, op, rhs) -> let lhs, rhs = exp lhs, exp rhs
@@ -105,9 +105,10 @@ module ValueExpression =
 
     let eval = evalExt (fun () -> Null)
 
-    let rec renameVarsExt renameExt mapping = 
+    let rec renameVarsExt renameExt mapping valExpr = 
         let rename = renameVarsExt renameExt mapping
-        function 
+
+        match valExpr with  
         | Lit _ as l  -> l
         | Labelling (id, args) -> Labelling (id, List.map mapping args)
         | ArithOp (l, op, r) -> let l, r = rename l, rename r

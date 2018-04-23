@@ -29,8 +29,8 @@ let parseGraph str =
     let pExn str = raise (ParsingErrorException str)
     let parseProperty name label = 
         match label with 
-        | JsonValue.Number i -> IntVal (int i)
-        | JsonValue.String s -> StringVal s
+        | JsonValue.Number i -> Int (int i)
+        | JsonValue.String s -> String s
         | t                  -> pExn (sprintf "Unexpected property type: %A." t)
 
     let parseNode = 
@@ -78,7 +78,9 @@ let mapListToPTable ms =
     prettyTable data |> withHeaders hs
     
 let eval graph str = 
-    let nodes = matchedNodes graph (OpraDB.Parser.parseQuery str)
+    let query = OpraDB.Parser.parseQuery str
+    // printfn "query: %A" query
+    let nodes = matchedNodes graph query
     
     if List.isEmpty nodes then printfn "<empty>"
     else nodes 
