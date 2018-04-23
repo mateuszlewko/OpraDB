@@ -2,6 +2,7 @@ open OpraDB.QueryExecution
 open OpraDB.Data
 open FSharpx.Functional
 open FSharp.Data
+open FSharpx
 open Argu
 open System.IO
 open System
@@ -100,7 +101,7 @@ let run args =
 
     let rec loop currStr =
         let l = Console.ReadLine ()
-
+        
         if isNull l 
         then printfn "Goodbye."
         elif (l.TrimEnd ()).EndsWith ";"

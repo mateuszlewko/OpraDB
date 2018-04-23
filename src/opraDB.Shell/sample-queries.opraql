@@ -10,7 +10,7 @@ WHERE
   , .*(type(@q) = "end")
   , (edge(@q, @'q) = "link")*.
   , .*(a(@q, @'q) = "ok") (a(@q, @'q) = "ok") (a(@q, @'q) = "ok").*
-HAVING 10 < 3 * (SUM p BY attr) + 2 ;
+HAVING 10 < 3 * SUM (attr(@p)) + 2 ;
 
 MATCH NODES s, t, x, y
 SUCH THAT p: s -> t, q: x -> y 
@@ -23,7 +23,7 @@ WHERE
   , .*(type(@p) = "end")
   , (edge(@p, @'p) = "link")*.
   , .*(a(@p, @'p) = "ok") (a(@p, @'p) = "ok") (a(@p, @'p) = "ok").*
-HAVING (SUM p BY time) < 27;
+HAVING SUM (time(@p)) < 130;
 
 MATCH NODES s, t
 SUCH THAT p: s->t
@@ -42,8 +42,9 @@ WHERE
 
 
 
-
+LET other p = time(@p) + 10 IN
 MATCH NODES s, t
 SUCH THAT p: s->t
 WHERE
-    (type(@p) = "beg").*  HAVING SUM (time(@p)) < 100;
+    (type(@p) = "beg").*  
+HAVING SUM (time(@p)) < 100;
