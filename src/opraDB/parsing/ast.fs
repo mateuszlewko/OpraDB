@@ -46,6 +46,7 @@ module AST =
         | ConcatExp of RegularExpression * RegularExpression
         | UnionExp  of RegularExpression * RegularExpression
         | StarExp   of RegularExpression
+        | LetCall   of Identifier * NodeVariable list
 
     module PathConstraint =
         let create source path target = {

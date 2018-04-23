@@ -109,7 +109,7 @@ module RegularConstraints =
     /// Get nodes that match regular constraints in a given query.
     let matchEdges (graph : Graph) letExps (query : BasicQuery) =
         let allNFAs = query.regularConstraints 
-                      |> List.map (fun e -> [State.ofRegExp e]) 
+                      |> List.map (fun e -> [State.ofRegExp letExps e]) 
         let mKEdges =
             let nodeFromIndex = 
                 let rec getIndex ixMap (p : PathConstraint) = 

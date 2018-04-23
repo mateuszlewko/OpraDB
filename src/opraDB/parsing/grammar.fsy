@@ -92,6 +92,7 @@ literal:
   | NULL   { Null         }
 
 labelling: id LPAREN node_vars RPAREN { ($1, $3) }
+let_call: labelling { $1 }
 
 arith_op:
   | PLUS  { Add  }
@@ -124,6 +125,7 @@ reg_expr:
   | LPAREN value_expr RPAREN { NodeExp $2         }
   | LPAREN reg_expr RPAREN   { $2                 }
   | reg_expr reg_expr        { ConcatExp ($1, $2) }
+  | let_call                 { LetCall $1         }
 
 reg_constr_elems: 
   | reg_expr COMMA reg_constr_elems { $1::$3 }
@@ -160,10 +162,10 @@ arg_list:
   | id          { [$1]   }
 
 let_body:
-  | basic_query  { Query   $1 }
-  | reg_expr     { Regular $1 }
   | value_expr   { Value   $1 }
   | arith_constr { Arith   $1 }
+  | reg_expr     { Regular $1 }
+  | basic_query  { Query   $1 }
 
 let_exp:
   | LET id arg_list EQ let_body IN { { name = $2; args = $3; body = $5 } }
