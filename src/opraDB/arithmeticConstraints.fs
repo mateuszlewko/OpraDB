@@ -1,18 +1,14 @@
 namespace OpraDB
 
-open FSharpx.Option
-
 open OpraDB.AST
 open OpraDB.QueryData
 open OpraDB.NodeConstraints
-// open OpraDB.Labelling
 open OpraDB.ValueExpression
 open OpraDB.CommonUtils
 
 open FSharpx.Collections
 open FSharpx
 open Hekate
-open OpraDB.CommonUtils
 
 open Microsoft.Z3
 

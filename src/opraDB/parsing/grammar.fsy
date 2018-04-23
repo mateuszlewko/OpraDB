@@ -76,8 +76,8 @@ operator:
   | NEQ { Neq }
 
 node_var:
-  | AT id      { CurrNodeVar $2 }
-  | AT_APOS id { NextNodeVar $2 }
+  | id      { CurrNodeVar $1 }
+  | APOS id { NextNodeVar $2 }
 
 node_vars:
   | node_var COMMA node_vars { $1::$3 }

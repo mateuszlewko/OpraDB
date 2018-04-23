@@ -27,14 +27,14 @@ Query execution:
     ✔ Handle cycles (only with matched nodes) @critical @done(18-02-21 16:26)
     ✔ Matching simple arithmetic constraints (no cycles, only sum by) @high @today @done(18-02-25 21:56)
     ❑ Ontologies (let expressions) @high
-        ❑ value expression / new label: // till thursday
-            ❑ on nodes // till thursday
-            ❑ on edges // till thursday
+        ✔ value expression / new label: // till thursday @done(18-04-23 03:21)
+            ✔ on nodes // till thursday @done(18-04-23 03:21)
+            ✔ on edges // till thursday @done(18-04-23 03:21)
         ❑ regular constraints // till friday
         ❑ query // till friday
         ❑ arithmetic constraint
-    ❑ Value Expressions in Arithmetic constraints @today  
-    ❑ Value Expressions in Regular / Node constraints @today  
+    ✔ Value Expressions in Arithmetic constraints @today @done(18-04-23 03:22)
+    ✔ Value Expressions in Regular / Node constraints @today @done(18-04-23 03:22)
     // till saturday
     ❑ Matching more complex arithmetic constraints (max, min, count) @high
     ❑ Min / Max on all paths @high 
@@ -43,9 +43,9 @@ Query execution:
         ✔ Store preds @done(18-03-25 00:58)
         ✔ Restore path (sub-graph) @done(18-03-25 04:13)
         ✔ Find all cycles (Johnson's algorithm) @done(18-03-30 16:56)
-        ❑ Compute attributes delta on every cycle
+        ✔ Compute attributes delta on every cycle @done(18-04-23 03:22)
             ✔ on nodes @done(18-03-31 16:09)
-            ❑ on edges
+            ✔ on edges @done(18-04-23 03:22)
         ✔ Solve linear inequalities @today @done(18-04-06 18:42)
         ✔ Add existing arithStates @critical @done(18-04-07 03:13)
         ✔ Remove arithStates from equality checks @critical @done(18-04-07 02:47)

@@ -20,13 +20,16 @@ module QueryData =
             lastEdge  : int Edge
         }
 
+    // TODO: Rename to EdgeVector
     type KEdges      = Map<Identifier, MatchedEdge>
+    
     /// Map from summed ValueExprs to Literal option
     type ArithStates = Map<ValueExpr<unit>, Literal option>
 
     // TODO: This should be renamed to EdgeVector
     [<CustomEquality; CustomComparison>]
     type MatchedKEdges = {
+            // TODO: rename to vector
             currEdges   : KEdges
             /// All states in every nfa
             nfas        : StatesInNFA list

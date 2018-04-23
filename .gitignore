@@ -3,6 +3,8 @@ obj
 .vscode
 .idea
 sample.cql
+src/opraDB/parsing/lexer.fs
 src/opraDB/parsing/grammar.fs
 src/opraDB/parsing/grammar.fsi
-src/opraDB/parsing/lexer.fs
+OpraDB.sln
+OpraDB.sln.DotSettings.*
