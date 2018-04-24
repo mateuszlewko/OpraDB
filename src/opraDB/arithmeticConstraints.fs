@@ -146,13 +146,19 @@ module ArithmeticConstraints =
                             |> Option.getOrElse (ctx.MkInt 0 :> ArithExpr) 
                             |> ArithT
             | AC.Value v -> evalValue v
+            // | AC.LetCall (ID name, args) ->
+            //     match Map.tryFind name letExps with 
+            //     | None -> failwithf "unbound name %s" name 
+            //     | Some letExp ->
+            //         match letExp.body with 
+            //         | Value 
         and evalValue = 
             function 
             | ArithOp (l, op, r) -> match evalValue l, evalValue r with 
                                     | ArithT l, ArithT r -> 
                                         arithOp ctx l r op |> ArithT
                                     | _, _ -> failwith "wrong type"
-            | Labelling _        -> failwith "unsupported"
+            | Labelling _        -> failwith "unsupported" // TODO:
             | BoolOp (l, op, r)  -> match evalValue l, evalValue r with 
                                     | BoolT l , BoolT r  -> 
                                         match op with 

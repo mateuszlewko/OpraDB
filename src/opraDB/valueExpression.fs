@@ -1,6 +1,7 @@
 namespace OpraDB 
 
 open OpraDB.AST
+open FSharpx
 
 module ValueExpression =
 
@@ -118,3 +119,16 @@ module ValueExpression =
         | Ext e              -> Ext (renameExt e)
 
     let renameVars mapping = renameVarsExt id mapping
+
+    let renameVarsFrom letExpArgs passedArgs = 
+        let mp = List.map NodeVariable.identifier passedArgs
+                 |> List.zip letExpArgs
+                 |> Map.ofList
+                 |> flip Map.find
+               
+        let mapping = 
+            function 
+            | CurrNodeVar i -> CurrNodeVar (mp i)
+            | NextNodeVar i -> NextNodeVar (mp i)
+
+        renameVars mapping

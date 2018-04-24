@@ -22,9 +22,9 @@
     <Compile Include="parsing/grammar.fs" />
     <Compile Include="parsing/lexer.fs" />
     <Compile Include="parsing/parser.fs" />
+    <Compile Include="valueExpression.fs" />
     <Compile Include="regexNFA.fs" />
     <Compile Include="queryData.fs" />
-    <Compile Include="valueExpression.fs" />
     <Compile Include="labelling.fs" />
     <Compile Include="letExpression.fs" />
     <Compile Include="nodeConstraints.fs" />

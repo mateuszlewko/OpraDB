@@ -48,6 +48,8 @@ module AST =
         | StarExp   of RegularExpression
         | LetCall   of Identifier * NodeVariable list
 
+    type RE = RegularExpression
+
     module PathConstraint =
         let create source path target = {
                 source = source
@@ -56,8 +58,9 @@ module AST =
             }
 
     type ArithmeticConstraint = 
-        | Sum   of ValueExpr<unit>
-        | Value of ValueExpr<ArithmeticConstraint>
+        | Sum     of ValueExpr<unit>
+        | Value   of ValueExpr<ArithmeticConstraint>
+        // | LetCall of Identifier * NodeVariable list
 
     type AC = ArithmeticConstraint
 

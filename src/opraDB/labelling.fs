@@ -26,27 +26,16 @@ module Labelling =
         | CurrNodeVar u -> getNode u fst
         | NextNodeVar v -> getNode v snd
 
-    let letValue kEdges graph (labelling : Identifier -> NodeVariable list -> Literal) letExp args = 
+    let letValue kEdges graph labelling letExp args = 
         match letExp.body with 
         | Value v -> if List.length args <> List.length letExp.args
                      then failwith "wrong number of args"
-                     else let mp = List.map NodeVariable.identifier args
-                                   |> List.zip letExp.args  
-                                   |> Map.ofList
-                                   |> flip Map.find
-                                   
-                          let mapping = 
-                              function 
-                              | CurrNodeVar i -> CurrNodeVar (mp i)
-                              | NextNodeVar i -> NextNodeVar (mp i)
-
-                          eval labelling (renameVars mapping v)
+                     else eval labelling (renameVarsFrom letExp.args args v)
         | other   -> raise (WrongLetTypeException other)
 
     let rec value letExps kEdges graph (ID label) = 
         match Map.tryFind label letExps with 
-        | Some letExp -> 
-                         let labelling : Identifier -> NodeVariable list -> Literal = value letExps kEdges graph
+        | Some letExp -> let labelling = value letExps kEdges graph
                          letValue kEdges graph labelling letExp
         | None        ->
             let ofVar  = nodeVarToIx kEdges
