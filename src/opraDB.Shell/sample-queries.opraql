@@ -62,7 +62,7 @@ HAVING SUM (time(p)) < 1030;
 
 LET ok p = a(p, 'p) = "ok" IN
 LET ok3 q = .*(time(q) >= 0).* IN
-LET in_time p = SUM (time(p)) < 20 IN
+LET in_time qq = SUM (time(qq)) < 20 IN
 MATCH NODES s, t
 SUCH THAT p: s->t
 WHERE

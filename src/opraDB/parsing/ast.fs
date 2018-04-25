@@ -60,7 +60,6 @@ module AST =
     type ArithmeticConstraint = 
         | Sum     of ValueExpr<unit>
         | Value   of ValueExpr<ArithmeticConstraint>
-        // | LetCall of Identifier * NodeVariable list
 
     type AC = ArithmeticConstraint
 

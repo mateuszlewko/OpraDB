@@ -48,6 +48,23 @@ module ArithmeticConstraints =
             | other             -> acc
         get []
 
+    // let rec inlineLabellings letExps = 
+    //     let doInline name vars = 
+    //         match Map.tryFind name letExps with 
+    //         | None        -> failwith "unbound name: %s" name
+    //         | Some letExp -> 
+    //             match letExp.body with 
+    //             | Value ve ->  
+
+    //     let rec inlineValue ext = 
+    //         function 
+    //         | Labelling (ID name, vars)
+
+    //     let inlineArith = 
+    //         function 
+    //         | Value 
+    //         | Sum _ as s -> s
+
     let createArithStates query : ArithStates =
         List.collect summedValueExprs query.arithmeticConstraints 
         |> flip Seq.zip (Seq.repeat None)
@@ -139,8 +156,9 @@ module ArithmeticConstraints =
             |> Array.fold attrIndexes Map.empty
             |> Map.map constructExpr 
 
-        let rec evalValue evalExt evalArith evalValueUnit valExp =
-            let evalValue = evalValue evalExt evalArith evalValueUnit
+        let rec evalValue evalExt evalArith evalValueUnit env valExp =
+            let evalValueWith = evalValue evalExt evalArith evalValueUnit 
+            let evalValue     = evalValue evalExt evalArith evalValueUnit env
 
             match valExp with
             | ArithOp (l, op, r) -> match evalValue l, evalValue r with 
@@ -148,51 +166,63 @@ module ArithmeticConstraints =
                                         arithOp ctx l r op |> ArithT
                                     | _, _ -> failwith "wrong type"
             | Labelling (ID name, vars) -> 
-                // TODO: rename vars in letExps body
                 match Map.tryFind name letExps with 
                 | None        -> failwithf "unbound name: %s" name
                 | Some letExp -> 
+                    /// rename vars
+                    let mp  = List.map NodeVariable.identifier vars
+                              |> List.zip letExp.args
+                              |> Map.ofList
+                    let env = Map.union env mp 
+                    // printfn "new env: %A" env                  
+
                     match letExp.body with 
-                    | Value v -> evalValueUnit v
-                    | Arith a -> evalArith a
+                    | Value v -> evalValueUnit env v
+                    | Arith a -> evalArith env a
                     | other   -> failwithf "call to %A is unsupported in arithmetic constraint" other
-            | BoolOp (l, op, r)  -> match evalValue l, evalValue r with 
-                                    | BoolT l , BoolT r  -> 
-                                        match op with 
-                                        | And   -> ctx.MkAnd (l, r)
-                                        | Or    -> ctx.MkOr (l, r)
-                                        | Is 
-                                        | Eq    -> ctx.MkEq (l, r)
-                                        | IsNot 
-                                        | Neq   -> ctx.MkNot (ctx.MkEq (l, r))
-                                        | other -> failwith "wrong type"
-                                        |> BoolT
+            | BoolOp (l, op, r) -> match evalValue l, evalValue r with 
+                                   | BoolT l , BoolT r  -> 
+                                       match op with 
+                                       | And   -> ctx.MkAnd (l, r)
+                                       | Or    -> ctx.MkOr (l, r)
+                                       | Is 
+                                       | Eq    -> ctx.MkEq (l, r)
+                                       | IsNot 
+                                       | Neq   -> ctx.MkNot (ctx.MkEq (l, r))
+                                       | other -> failwith "wrong type"
+                                       |> BoolT
                                     
                                     | ArithT l, ArithT r -> cmpOp ctx l r op
                                                             |> BoolT
                                     | l, r -> 
                                         failwithf "mismatched types %A %A" l r
                                     
-            | Ext a -> evalExt a
+            | Ext a -> evalExt env a
             | Lit l -> ofLiteral l |> ArithT
 
-        let rec evalArith arith =
+        let rec evalArith env arith =
             match arith with
-            | Sum s      -> Map.tryFind s attrAlphas
+            | Sum s      -> // printfn "env: %A" env
+                            let mp k = Map.tryFind k env |> Option.getOrElse k
+                            let mapping = mappingOf mp
+                            let s = renameVars mapping s
+                            // printfn "sum of %A" s
+
+                            Map.tryFind s attrAlphas
                             |> Option.getOrElse (ctx.MkInt 0 :> ArithExpr) 
                             |> ArithT
             | AC.Value v -> 
-                let rec evalValueUnit e = 
-                    evalValue (fun () -> failwith "unexpected") evalArith 
-                              evalValueUnit e
-                evalValue (evalArith) evalArith evalValueUnit v
+                let rec evalValueUnit env e = 
+                    evalValue (fun _ () -> failwith "unexpected") evalArith 
+                              evalValueUnit env e
+                evalValue evalArith evalArith evalValueUnit env v
                     
         let toBool = function 
                      | BoolT b -> b 
                      | other   -> failwith "constr must be of bool type"
 
         let constraintsExpr = Array.ofList constraints 
-                              |> Array.map (evalArith >> toBool)
+                              |> Array.map (evalArith Map.empty >> toBool)
                                
         let exprs = alphas 
                     |> Array.map (fun a -> ctx.MkGe (a, ctx.MkInt 0)) 

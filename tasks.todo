@@ -12,7 +12,7 @@ Parser:
     ✔ Parse simple arithmetic constraints (sum by) @today @done(18-02-24 20:11)
     ✔ Parse Let expressions @done(18-04-17 01:35)
     ✔ Parse value expressions @today @done(18-04-22 00:53)
-    ❑ Parse other arithmetic constraints (max, min, count?) @today 
+    ❑ Parse other arithmetic constraints (max, min, count?)
     ✔ Add node constraint which returns bool (only one operand in expression) or add bool value @low @today @done(18-04-22 00:53)
 
 Query execution:
@@ -36,7 +36,7 @@ Query execution:
     ✔ Value Expressions in Arithmetic constraints @today @done(18-04-23 03:22)
     ✔ Value Expressions in Regular / Node constraints @today @done(18-04-23 03:22)
     // till saturday
-    ❑ Matching more complex arithmetic constraints (max, min, count) @high @today 
+    ❑ Matching more complex arithmetic constraints (max, min, count) @high
     ❑ Min / Max on all paths @high 
         ❑ Dijkstra
     ❑ Improved matching of arithmetic constraints with cycles @high
@@ -67,7 +67,7 @@ Query execution:
 Graph / Data storage:
     ✔ Basic graph representation @done(18-01-13 16:03)
     ✔ Graph import @medium @done(18-02-26 03:35)
-    ❑ Import data from csv (tinker pop schema) @high 
+    ❑ Import data from csv (tinker pop schema) @high @today 
     // sunday or next week
     ❑ Sample graph data (real world data)
     ❑ Optimized graph representation and storage @medium

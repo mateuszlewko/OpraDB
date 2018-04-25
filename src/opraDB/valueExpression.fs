@@ -120,19 +120,20 @@ module ValueExpression =
 
     let renameVars mapping = renameVarsExt id mapping
 
+    let mappingOf mp = 
+        function 
+        | CurrNodeVar i -> CurrNodeVar (mp i)
+        | NextNodeVar i -> NextNodeVar (mp i)
+
+
     let renameVarsFrom letExpArgs passedArgs = 
         let mp = List.map NodeVariable.identifier passedArgs
                  |> List.zip letExpArgs
                  |> Map.ofList
                  |> flip Map.find
                
-        let mapping = 
-            function 
-            | CurrNodeVar i -> CurrNodeVar (mp i)
-            | NextNodeVar i -> NextNodeVar (mp i)
+        renameVars (mappingOf mp)
 
-        renameVars mapping
-
-    let convert<'a, 'b> (fromV : ValueExpr<'a> ) : ValueExpr<'b> = 
-        match fromV with 
-        | Lit l -> Lit l
+    // let convert<'a, 'b> (fromV : ValueExpr<'a> ) : ValueExpr<'b> = 
+    //     match fromV with 
+    //     | Lit l -> Lit l
