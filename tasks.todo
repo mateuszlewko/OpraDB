@@ -67,6 +67,7 @@ Query execution:
 Graph / Data storage:
     ✔ Basic graph representation @done(18-01-13 16:03)
     ✔ Graph import @medium @done(18-02-26 03:35)
+    ❑ Import data from csv (tinker pop schema) @high 
     // sunday or next week
     ❑ Sample graph data (real world data)
     ❑ Optimized graph representation and storage @medium

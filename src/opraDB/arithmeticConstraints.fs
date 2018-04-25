@@ -44,6 +44,7 @@ module ArithmeticConstraints =
             | ArithOp (l, _, r)
             | BoolOp  (l, _, r) -> getVal (getVal acc r) l
             | Ext     e         -> get acc e
+            // | Labelling // TODO: Get from labelling
             | other             -> acc
         get []
 
@@ -84,7 +85,7 @@ module ArithmeticConstraints =
 
     type EvalType = BoolT of BoolExpr | ArithT of ArithExpr
 
-    let findSolution constraints arithStates 
+    let findSolution constraints letExps arithStates 
                      (cyclesDeltas : Map<_, Literal> list) =
 
         // printfn "arith: %A" arithStates
@@ -99,10 +100,8 @@ module ArithmeticConstraints =
         let alphas   = Array.init cycleCnt (name >> ctx.MkIntConst )
         /// All mappings from ValueExpr to delta (Literal) of a given cycle
         let deltas   = Array.ofList cyclesDeltas
-
-        // let mkConst (i : int) = ctx.MkAdd (ctx.MkInt 0, ctx.MkInt i)
-        let add0 x = ctx.MkAdd (ctx.MkInt 0, x) |> ArithT
-        let wrongT = literalType >> WrongTypeException
+        /// Raise WrongTypeException for a literal
+        let wrongT   = literalType >> WrongTypeException
 
         let ofLiteral =
             function
@@ -140,25 +139,23 @@ module ArithmeticConstraints =
             |> Array.fold attrIndexes Map.empty
             |> Map.map constructExpr 
 
-        let rec evalArith =
-            function
-            | Sum s      -> Map.tryFind s attrAlphas
-                            |> Option.getOrElse (ctx.MkInt 0 :> ArithExpr) 
-                            |> ArithT
-            | AC.Value v -> evalValue v
-            // | AC.LetCall (ID name, args) ->
-            //     match Map.tryFind name letExps with 
-            //     | None -> failwithf "unbound name %s" name 
-            //     | Some letExp ->
-            //         match letExp.body with 
-            //         | Value 
-        and evalValue = 
-            function 
+        let rec evalValue evalExt evalArith evalValueUnit valExp =
+            let evalValue = evalValue evalExt evalArith evalValueUnit
+
+            match valExp with
             | ArithOp (l, op, r) -> match evalValue l, evalValue r with 
                                     | ArithT l, ArithT r -> 
                                         arithOp ctx l r op |> ArithT
                                     | _, _ -> failwith "wrong type"
-            | Labelling _        -> failwith "unsupported" // TODO:
+            | Labelling (ID name, vars) -> 
+                // TODO: rename vars in letExps body
+                match Map.tryFind name letExps with 
+                | None        -> failwithf "unbound name: %s" name
+                | Some letExp -> 
+                    match letExp.body with 
+                    | Value v -> evalValueUnit v
+                    | Arith a -> evalArith a
+                    | other   -> failwithf "call to %A is unsupported in arithmetic constraint" other
             | BoolOp (l, op, r)  -> match evalValue l, evalValue r with 
                                     | BoolT l , BoolT r  -> 
                                         match op with 
@@ -176,19 +173,32 @@ module ArithmeticConstraints =
                                     | l, r -> 
                                         failwithf "mismatched types %A %A" l r
                                     
-            | Ext a -> evalArith a
+            | Ext a -> evalExt a
             | Lit l -> ofLiteral l |> ArithT
-        
+
+        let rec evalArith arith =
+            match arith with
+            | Sum s      -> Map.tryFind s attrAlphas
+                            |> Option.getOrElse (ctx.MkInt 0 :> ArithExpr) 
+                            |> ArithT
+            | AC.Value v -> 
+                let rec evalValueUnit e = 
+                    evalValue (fun () -> failwith "unexpected") evalArith 
+                              evalValueUnit e
+                evalValue (evalArith) evalArith evalValueUnit v
+                    
         let toBool = function 
                      | BoolT b -> b 
                      | other   -> failwith "constr must be of bool type"
 
         let constraintsExpr = Array.ofList constraints 
                               |> Array.map (evalArith >> toBool)
-                              
+                               
         let exprs = alphas 
                     |> Array.map (fun a -> ctx.MkGe (a, ctx.MkInt 0)) 
                     |> Array.append constraintsExpr
+
+        Array.iter (fun (x : BoolExpr) -> printfn "=> %s" <| x.ToString()) exprs
 
         solver.Add exprs
         Solver.check solver
@@ -198,8 +208,8 @@ module ArithmeticConstraints =
         | Solution _ -> true
         | _          -> false
 
-    let existsSolution constraints arithStates cyclesDeltas = 
-        findSolution constraints arithStates cyclesDeltas
+    let existsSolution constraints letExps arithStates cyclesDeltas = 
+        findSolution constraints letExps arithStates cyclesDeltas
         |> foundSolution
 
     let inequalitiesSatisfied mKEdges letExps predecessors graph =
@@ -213,6 +223,7 @@ module ArithmeticConstraints =
                                     |> List.map (attributesDelta letExps graph attrs 
                                                  >> Map.choose (konst id))
        
-            findSolution constraints mKEdges.arithStates cyclesAtrrsDelta 
+            findSolution constraints letExps mKEdges.arithStates 
+                         cyclesAtrrsDelta 
             |> foundSolution
    

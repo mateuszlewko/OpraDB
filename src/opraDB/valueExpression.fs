@@ -132,3 +132,7 @@ module ValueExpression =
             | NextNodeVar i -> NextNodeVar (mp i)
 
         renameVars mapping
+
+    let convert<'a, 'b> (fromV : ValueExpr<'a> ) : ValueExpr<'b> = 
+        match fromV with 
+        | Lit l -> Lit l
