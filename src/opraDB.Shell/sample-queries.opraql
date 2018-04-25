@@ -70,4 +70,4 @@ WHERE
   , .*(type(p) = "end")
   , (edge(p, 'p) = "link")*.
   , ok3(p)
-HAVING SUM (time(p)) > -10, in_time(p);
+HAVING in_time(p);

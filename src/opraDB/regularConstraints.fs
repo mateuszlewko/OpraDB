@@ -134,7 +134,7 @@ module RegularConstraints =
 
                 { nfas        = allNFAs
                   currEdges   = kEdges |> Map.ofList
-                  arithStates = createArithStates query 
+                  arithStates = createArithStates query letExps
                 }
                 |> updateArithStates letExps graph
             )

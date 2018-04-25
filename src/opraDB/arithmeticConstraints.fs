@@ -34,19 +34,33 @@ module ArithmeticConstraints =
         let arithStates = addNodeAttributes labelling mKEdges.arithStates
         { mKEdges with arithStates = arithStates }
 
-    let rec private summedValueExprs =
-        let rec get acc = 
+    let rec private summedValueExprs env letExps =
+        let rec get env acc = 
             function
-            | Sum v       -> v::acc
-            | AC.Value va -> getVal acc va
-        and getVal acc = 
+            | Sum v       -> let mp k = Map.tryFind k env |> Option.getOrElse k
+                             let mapping = mappingOf mp
+                             (renameVars mapping v) :: acc
+            | AC.Value va -> getVal env acc va
+        and getVal env acc = 
             function 
             | ArithOp (l, _, r)
-            | BoolOp  (l, _, r) -> getVal (getVal acc r) l
-            | Ext     e         -> get acc e
-            // | Labelling // TODO: Get from labelling
+            | BoolOp  (l, _, r) -> getVal env (getVal env acc r) l
+            | Ext     e         -> get env acc e
+            | Labelling (ID name, vars) ->
+                match Map.tryFind name letExps with 
+                | None        -> acc 
+                | Some letExp -> 
+                    let mp  = List.map NodeVariable.identifier vars
+                              |> List.zip letExp.args
+                              |> Map.ofList
+                    let env = Map.union env mp 
+
+                    match letExp.body with 
+                    | Arith a -> acc @ (summedValueExprs env letExps a)
+                    // | Value v -> getVal // ValueExpr probably wouldn't contain SUM (...)
+                    | other  -> failwithf "call to %A is unsupported in arithmetic constraint" other
             | other             -> acc
-        get []
+        get env []
 
     // let rec inlineLabellings letExps = 
     //     let doInline name vars = 
@@ -65,8 +79,9 @@ module ArithmeticConstraints =
     //         | Value 
     //         | Sum _ as s -> s
 
-    let createArithStates query : ArithStates =
-        List.collect summedValueExprs query.arithmeticConstraints 
+    let createArithStates query letExps : ArithStates =
+        query.arithmeticConstraints
+        |> List.collect (summedValueExprs Map.empty letExps) 
         |> flip Seq.zip (Seq.repeat None)
         |> Map.ofSeq
 
@@ -228,7 +243,7 @@ module ArithmeticConstraints =
                     |> Array.map (fun a -> ctx.MkGe (a, ctx.MkInt 0)) 
                     |> Array.append constraintsExpr
 
-        Array.iter (fun (x : BoolExpr) -> printfn "=> %s" <| x.ToString()) exprs
+        // Array.iter (fun (x : BoolExpr) -> printfn "=> %s" <| x.ToString()) exprs
 
         solver.Add exprs
         Solver.check solver
