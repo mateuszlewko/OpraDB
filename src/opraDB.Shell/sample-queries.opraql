@@ -42,12 +42,12 @@ WHERE
   HAVING SUM (time(@p)) < 100;
 
 
-LET other p = time(@p) + 10 IN
+LET other p = time(p) + 10 IN
 MATCH NODES s, t
 SUCH THAT p: s->t
 WHERE
-    (type(@p) = "beg").*  
-HAVING SUM (other(@p)) < 100;
+    (type(p) = "beg").*  
+HAVING SUM (other(p)) < 100;
 
 LET ok p = a(p, 'p) = "ok" IN
 LET ok3 q = (time(q) >= 20).*ok(q).* IN

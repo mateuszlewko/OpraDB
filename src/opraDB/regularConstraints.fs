@@ -79,7 +79,13 @@ module RegularConstraints =
                     List.map2 (fun path e -> 
                         getOutEdges e.lastEdge 
                         |> List.map (
-                            fun x -> path, { e with lastEdge = basicEdge x })) 
+                            fun x -> 
+                                let le = basicEdge x
+                                path, { e with lastEdge     = le
+                                               lastGoodEdge = 
+                                                   if fst le <> NULL_NODE
+                                                   then le else e.lastGoodEdge 
+                                      })) 
                         pathIDs edges
                 
                 List.cartesian nextEdges

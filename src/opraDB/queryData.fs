@@ -13,11 +13,13 @@ module QueryData =
     // TODO: Rename to TraversedEdge
     type MatchedEdge = {
             /// Path ID which this edge belongs to
-            path      : Identifier
+            path         : Identifier
             /// First node on path
-            source    : int Node
+            source       : int Node
             /// Last visited edge
-            lastEdge  : int Edge
+            lastEdge     : int Edge
+            lastGoodEdge : int Edge
+
         }
 
     // TODO: Rename to EdgeVector
@@ -54,9 +56,10 @@ module QueryData =
     let [<Literal>] NULL_NODE = -1
 
     module MatchedEdge =
-        let create path node = { source    = node
-                                 path      = path
-                                 lastEdge  = NULL_NODE, node }
+        let create path node = { source       = node
+                                 path         = path
+                                 lastEdge     = NULL_NODE, node
+                                 lastGoodEdge = NULL_NODE, node }
                                          
         let basicInfo e = e.path, e.source, fst e.lastEdge
         let info e = e.path, e.source, e.lastEdge
