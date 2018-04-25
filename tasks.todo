@@ -31,7 +31,7 @@ Query execution:
             ✔ on nodes // till thursday @done(18-04-23 03:21)
             ✔ on edges // till thursday @done(18-04-23 03:21)
         ✔ regular constraints // till friday @done(18-04-23 23:42)
-        ❑ arithmetic constraint @today 
+        ✔ arithmetic constraint @today @done(18-04-25 22:31)
         ❑ query // till friday
     ✔ Value Expressions in Arithmetic constraints @today @done(18-04-23 03:22)
     ✔ Value Expressions in Regular / Node constraints @today @done(18-04-23 03:22)
