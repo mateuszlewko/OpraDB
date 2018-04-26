@@ -10,7 +10,7 @@ module JsonImport =
 
     exception ParsingErrorException of string
 
-    let parseGraph str = 
+    let private parseGraph str = 
         let pExn str = raise (ParsingErrorException str)
         let parseProperty name label = 
             match label with 

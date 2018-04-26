@@ -6,21 +6,22 @@ open System
 open PrettyTable
 open FSharpx.Collections
 open OpraDB.AST
-open OpraDB.Shell.JsonImport
+open OpraDB.Shell
 
 type DBDataFormat = 
     | Json = 1
-    // | Csv = 2 // TODO: Add csv data format
+    | Xml  = 2
 
 type Arguments =
     | [<ExactlyOnce>] Input_Data of path:string
-    | Input_Data_Format of format:DBDataFormat
+    | [<ExactlyOnce>] Input_Data_Format of format:DBDataFormat
 with
     interface IArgParserTemplate with
         member this.Usage = 
             match this with 
             | Input_Data _        -> "specify input data file path."
-            | Input_Data_Format _ -> "format of input file (json or csv)."
+            | Input_Data_Format _ -> "format of input file (json or \
+                                      graphml-xml)."
 
 let mapListToPTable ms =
     let hs   = List.collect (Map.keys >> List.ofSeq) ms |> List.distinct 
@@ -47,6 +48,14 @@ let run args =
         with :? ArguParseException as e ->
             printfn "%s" e.Message
             exit 0
+
+    let fmt = results.GetResult Input_Data_Format
+    let importGraph = 
+        results.GetResult Input_Data_Format 
+         |> function 
+            | DBDataFormat.Json -> JsonImport.importGraph
+            // | DBDataFormat.Xml  -> XmlImport.importGraph
+            | _                 -> failwith "unknown data format"
 
     let graph = results.GetResult Input_Data |> File.ReadAllText |> importGraph 
 

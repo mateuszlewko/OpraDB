@@ -7,10 +7,11 @@
 
   <ItemGroup>
     <Compile Include="jsonImport.fs" />
+    <Compile Include="xmlImport.fs" />
     <Compile Include="program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="*" />
+    <PackageReference Include="FSharp.Core" Version="4.3.0.0" />
     <PackageReference Include="FSharpx.Collections" Version="*" />
     <PackageReference Include="Argu" Version="*" />
     <PackageReference Include="FSharpx.Extras" Version="*" />
