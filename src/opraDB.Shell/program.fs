@@ -54,24 +54,25 @@ let run args =
         results.GetResult Input_Data_Format 
          |> function 
             | DBDataFormat.Json -> JsonImport.importGraph
-            // | DBDataFormat.Xml  -> XmlImport.importGraph
+            | DBDataFormat.Xml  -> XmlImport.importGraph
             | _                 -> failwith "unknown data format"
 
     let graph = results.GetResult Input_Data |> File.ReadAllText |> importGraph 
 
     let rec loop currStr =
         let l = Console.ReadLine ()
+
         
         if isNull l 
         then printfn "Goodbye."
         elif (l.TrimEnd ()).EndsWith ";"
         then try printfn ""
-                 eval graph (currStr + (l.[0 .. String.length l - 1]))
+                 eval graph (currStr + " " + (l.[0 .. String.length l - 1]))
              with e -> printfn "There was an exception: %A" e
  
              printf "\n> "
              loop ""
-        else loop (currStr + "\n" + l)
+        else loop (currStr + " \n " + l)
 
     // printfn "Graph is: %A" graph
     printf "> "

@@ -4,20 +4,22 @@
     <TargetFramework>net461</TargetFramework>
     <NoWarn>NU1602;NU1701</NoWarn>
   </PropertyGroup>
+  <Import Project="../../tools/fsc.props" />
 
   <ItemGroup>
-    <Compile Include="jsonImport.fs" />
     <Compile Include="xmlImport.fs" />
+    <Compile Include="jsonImport.fs" />
     <Compile Include="program.fs" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="FSharp.Core" Version="4.3.0.0" />
+    <PackageReference Include="FSharp.Core" Version="*" />
     <PackageReference Include="FSharpx.Collections" Version="*" />
     <PackageReference Include="Argu" Version="*" />
     <PackageReference Include="FSharpx.Extras" Version="*" />
     <PackageReference Include="FsPickler" Version="*" />
     <PackageReference Include="FSharp.Data" Version="*" />
     <PackageReference Include="FsPrettyTable" Version="*" />
+    <PackageReference Include="System.Xml.Linq" Version="3.5.21022.801" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\opraDB\opraDB.fsproj" />
