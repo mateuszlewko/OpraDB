@@ -25,7 +25,7 @@ module Parser =
     let ``query tests`` =
         testList "query parsing" [
             test "parsing let-exp" {
-                let query = "LET in_time p = time(@p) <= 10 IN" |> letQuery
+                let query = "LET in_time p = time(p) <= 10 IN" |> letQuery
                 let ast   = tryParse query
                 let exp   = 
                     let p = ID "p"

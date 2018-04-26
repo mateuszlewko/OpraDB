@@ -37,7 +37,7 @@ module ArithmeticConstraints =
                               |> List.map (BoolOp >> AC.Value)
                 let cyclesDeltas = [Map [lb1, Int 4]]                
 
-                let res = existsSolution constrs Map.empty cyclesDeltas 
+                let res = existsSolution constrs Map.empty Map.empty cyclesDeltas 
                 Expect.isTrue res "found solution correctly"
             }
 
@@ -51,7 +51,7 @@ module ArithmeticConstraints =
                 let cyclesDeltas = [Map [lb1, Int 6 ; lb2, Int 3]
                                     Map [lb1, Int -3; lb2, Int -1]]                
 
-                let res = existsSolution constrs Map.empty cyclesDeltas 
+                let res = existsSolution constrs Map.empty Map.empty cyclesDeltas 
                 Expect.isTrue res "found solution correctly"
             }
         ]

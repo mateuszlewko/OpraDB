@@ -1,0 +1,86 @@
+<graphml xmlns='http://graphml.graphdrawing.org/xmlns'>
+  <key id='type'    for='node' attr.name='type'    attr.type='string'></key>
+  <key id='code'    for='node' attr.name='code'    attr.type='string'></key>
+  <key id='icao'    for='node' attr.name='icao'    attr.type='string'></key>
+  <key id='desc'    for='node' attr.name='desc'    attr.type='string'></key>
+  <key id='region'  for='node' attr.name='region'  attr.type='string'></key>
+  <key id='runways' for='node' attr.name='runways' attr.type='int'></key>
+  <key id='longest' for='node' attr.name='longest' attr.type='int'></key>
+  <key id='elev'    for='node' attr.name='elev'    attr.type='int'></key>
+  <key id='country' for='node' attr.name='country' attr.type='string'></key>
+  <key id='city'    for='node' attr.name='city'    attr.type='string'></key>
+  <key id='lat'     for='node' attr.name='lat'     attr.type='double'></key>
+  <key id='lon'     for='node' attr.name='lon'     attr.type='double'></key>
+  <key id='dist'    for='edge' attr.name='dist'    attr.type='int'></key>
+  <key id='labelV'  for='node' attr.name='labelV'  attr.type='string'></key>
+  <key id='labelE'  for='edge' attr.name='labelE'  attr.type='string'></key>
+
+  <graph id='routes' edgedefault='directed'>
+  <node id='0'>
+    <data key='labelV'>version</data>
+    <data key='type'>version</data>
+    <data key='code'>0.77</data>
+    <data key='desc'>Version: 0.77 Generated: 2017-10-06 16:24:40 UTC
+Graph created by Kelvin R. Lawrence
+Please let me know of any errors you find in the graph.</data>
+  </node>
+  <node id='1'>
+    <data key='labelV'>airport</data>
+    <data key='type'>airport</data>
+    <data key='code'>ATL</data>
+    <data key='icao'>KATL</data>
+    <data key='city'>Atlanta</data>
+    <data key='desc'>Hartsfield - Jackson Atlanta International Airport</data>
+    <data key='region'>US-GA</data>
+    <data key='runways'>5</data>
+    <data key='longest'>12390</data>
+    <data key='elev'>1026</data>
+    <data key='country'>US</data>
+    <data key='lat'>33.6366996765137</data>
+    <data key='lon'>-84.4281005859375</data>
+  </node>
+  <node id='2'>
+    <data key='labelV'>airport</data>
+    <data key='type'>airport</data>
+    <data key='code'>ANC</data>
+    <data key='icao'>PANC</data>
+    <data key='city'>Anchorage</data>
+    <data key='desc'>Anchorage Ted Stevens</data>
+    <data key='region'>US-AK</data>
+    <data key='runways'>3</data>
+    <data key='longest'>12400</data>
+    <data key='elev'>151</data>
+    <data key='country'>US</data>
+    <data key='lat'>61.1744003295898</data>
+    <data key='lon'>-149.996002197266</data>
+  </node>
+  <node id='3442'>
+    <data key='type'>country</data>
+    <data key='code'>ER</data>
+    <data key='desc'>Eritrea</data>
+    <data key='labelV'>country</data>
+  </node>
+  <node id='3443'>
+    <data key='type'>country</data>
+    <data key='code'>EE</data>
+    <data key='desc'>Estonia</data>
+    <data key='labelV'>country</data>
+  </node>
+  <edge id='3674' source='3' target='1'>
+    <data key='labelE'>route</data>
+    <data key='dist'>809</data>
+  </edge>
+  <edge id='3675' source='3' target='4'>
+    <data key='labelE'>route</data>
+    <data key='dist'>755</data>
+  </edge>
+  <edge id='3676' source='3' target='5'>
+    <data key='labelE'>route</data>
+    <data key='dist'>1690</data>
+  </edge>
+  <edge id='3677' source='3' target='6'>
+    <data key='labelE'>route</data>
+    <data key='dist'>1339</data>
+  </edge>
+</graph>
+</graphml>
