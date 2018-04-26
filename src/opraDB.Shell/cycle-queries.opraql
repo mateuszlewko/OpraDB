@@ -1,0 +1,37 @@
+
+LET ok p = a(p, 'p) = "ok" IN
+MATCH NODES s, t
+SUCH THAT p: s->t
+WHERE
+    (type(p) = "beg").*
+  , .*(type(p) = "end")
+  , (edge(p, 'p) = "link")*.
+  , .*(ok(p)) (ok(p)) (ok(p)).*
+HAVING SUM (time(p)) > 2030;
+
+LET other p = time(p) + 10 IN
+MATCH NODES s, t
+SUCH THAT p: s->t
+WHERE
+    (type(p) = "beg").*  
+HAVING SUM (other(p)) <= 20;
+
+LET ok p = a(p, 'p) = "ok" IN
+LET ok3 q = .*ok(q).* IN
+MATCH NODES s, t
+SUCH THAT p: s->t
+WHERE
+    (type(p) = "beg").*
+  , .*(type(p) = "end")
+  , (edge(p, 'p) = "link")*.
+HAVING SUM (time(p)) > 30;
+
+LET ok p = a(p, 'p) = "ok" IN
+LET in_time qq = SUM (time(qq)) < 20 IN
+MATCH NODES s, t
+SUCH THAT p: s->t
+WHERE
+    (type(p) = "beg").*
+  , .*(type(p) = "end")
+  , (edge(p, 'p) = "link")*.
+HAVING in_time(p);
