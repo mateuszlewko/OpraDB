@@ -67,9 +67,9 @@ Query execution:
 Graph / Data storage:
     ✔ Basic graph representation @done(18-01-13 16:03)
     ✔ Graph import @medium @done(18-02-26 03:35)
-    ❑ Import data from xml (tinker pop schema) @high @today 
+    ✔ Import data from xml (tinker pop schema) @high @today @done(18-04-26 05:26)
     // sunday or next week
-    ❑ Sample graph data (real world data)
+    ✔ Sample graph data (real world data) @done(18-04-26 05:26)
     ❑ Optimized graph representation and storage @medium
 
 Client / General:
@@ -89,6 +89,7 @@ Docs:
 To think:
     ✔ Paths of different length (loop on sink node) @done(18-04-06 18:44)
     ❑ Ontologies return type (node set vs int)
+    ❑ Ontologies with queries
     ✔ Arithmetic constraints for graphs with cycles @done(18-04-06 18:44)
 
     ❑ Type coercion (strong vs weak)
@@ -100,3 +101,11 @@ To think:
     ❑ Sum null values in SUM (arithmetic constraints)
     ❑ Registers
     ✔ Negation @done(18-04-18 01:23)
+
+To show:
+    ❑ arithmetic constraints with cycles
+    ❑ ontologies (let exps)
+    ❑ value expressions
+    ❑ simplified syntax
+    ❑ graph-ml import
+    ❑ last nodes before sink
