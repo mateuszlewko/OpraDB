@@ -1,0 +1,22 @@
+{
+    "nodes": [
+        { "_id": 1, "time": 1, "type": "beg"}
+      , { "_id": 5, "time": 1, "type": "beg"}
+      , { "_id": 2, "time": 1 }
+      , { "_id": 3, "time": 1 }
+      , { "_id": 4, "time": 1 }
+      , { "_id": 6, "time": 1, "type": "end" }
+      , { "_id": 7, "time": 3 }
+      , { "_id": 8, "time": 1, "type": "end" }
+    ],
+    "edges": [
+        { "_from": 1, "_to": 2, "edge": "route", "a": true }
+      , { "_from": 2, "_to": 3, "edge": "route", "a": true }
+      , { "_from": 3, "_to": 4, "edge": "route", "b": true }
+      , { "_from": 4, "_to": 6, "edge": "route" }
+      , { "_from": 3, "_to": 7, "edge": "route", "a": true, "c": true }
+      , { "_from": 7, "_to": 2, "edge": "route", "a": true }
+      , { "_from": 5, "_to": 3, "edge": "route" }
+      , { "_from": 3, "_to": 8, "edge": "route"}
+    ]
+}
