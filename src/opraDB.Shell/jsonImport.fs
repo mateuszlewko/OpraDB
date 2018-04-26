@@ -14,9 +14,11 @@ module JsonImport =
         let pExn str = raise (ParsingErrorException str)
         let parseProperty name label = 
             match label with 
-            | JsonValue.Number i -> Int (int i)
-            | JsonValue.String s -> String s
-            | t                  -> pExn (sprintf "Unexpected property type: %A." t)
+            | JsonValue.Number i  -> Int (int i)
+            | JsonValue.Float f   -> Float f
+            | JsonValue.String s  -> String s
+            | JsonValue.Boolean b -> Bool b
+            | t                   -> pExn (sprintf "Unexpected property type: %A." t)
 
         let parseNode = 
             function

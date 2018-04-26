@@ -56,6 +56,10 @@ module Labelling =
                 } |> orNull
 
             function
-            | [(u : NodeVariable); v]    -> edgeLabelling u v
-            | [nodeVar] -> ofVar nodeVar |> nodeLabelling
+            | [u; v]    -> edgeLabelling u v
+            | [nodeVar] -> 
+                let res = ofVar nodeVar |> nodeLabelling
+                // if label = "b"
+                // then printfn "res: %A" res
+                res
             | other     -> Null

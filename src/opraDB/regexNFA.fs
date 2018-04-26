@@ -87,7 +87,9 @@ module RegexNFA =
                                                (build continuation e2)
                 | RE.LetCall (ID name, args) -> 
                     match Map.tryFind name letExps with 
-                    | None        -> failwithf "unbound name: %A" name 
+                    | None        -> NodeExp (Labelling (ID name, args))
+                                     |> build continuation
+                                     //failwithf "unbound name: %A" name 
                     | Some letExp ->
                         match letExp.body with 
                         | Value v   -> renameVarsFrom letExp.args args v

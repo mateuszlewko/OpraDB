@@ -50,15 +50,14 @@ WHERE
 HAVING SUM (other(p)) < 100;
 
 LET ok p = a(p, 'p) = "ok" IN
-LET ok3 q = (time(q) >= 20).*ok(q).* IN
+LET ok3 q = .*ok(q).* IN
 MATCH NODES s, t
 SUCH THAT p: s->t
 WHERE
     (type(p) = "beg").*
   , .*(type(p) = "end")
   , (edge(p, 'p) = "link")*.
-  , ok3(p)
-HAVING SUM (time(p)) < 1030;
+HAVING SUM (time(p)) > 30;
 
 LET ok p = a(p, 'p) = "ok" IN
 LET ok3 q = .*(time(q) >= 0).* IN
