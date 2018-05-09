@@ -14,3 +14,4 @@ LET pol p = (country(p) = "PL").* IN
 MATCH NODES a, b SUCH THAT p: a->b
 WHERE (country(p) = "PL")(country(p) = "DE")
     , airport(p), (r(p))*. ;
+

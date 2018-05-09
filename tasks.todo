@@ -12,7 +12,7 @@ Parser:
     ✔ Parse simple arithmetic constraints (sum by) @today @done(18-02-24 20:11)
     ✔ Parse Let expressions @done(18-04-17 01:35)
     ✔ Parse value expressions @today @done(18-04-22 00:53)
-    ❑ Parse other arithmetic constraints (max, min, count?)
+    ❑ Parse other arithmetic constraints (max, min, count?) @high 
     ✔ Add node constraint which returns bool (only one operand in expression) or add bool value @low @today @done(18-04-22 00:53)
 
 Query execution:
@@ -50,13 +50,13 @@ Query execution:
         ✔ Remove arithStates from equality checks @critical @done(18-04-07 02:47)
         ✔ Solution exists predicate (for matching nodes) @today @done(18-04-06 18:42)
         ❑ Create answer from solution
-    ❑ Existentially qualified paths and nodes 
+    ❑ Return specific labels from edges @high 
+    ❑ Existentially qualified paths and nodes @high 
     ✔ Return last node before sink node @high @today @done(18-04-26 00:15)
     ❑ Move functions from regularConstraints to queryExecution module @high 
     ❑ Optimisation: Neighbour queries for k-node constraints @high
     ✔ Bool type @today @done(18-04-22 02:39)
     ❑ Return paths @medium 
-    ❑ Return specific labels from edges @high 
     ❑ Sequence of nodes in path constraints (p: u..v) @high 
     ❑ Match nodes that satisfy regular constraints (as a whole) @high 
     ❑ Maybe represent Regex NFA as Hekate graph (?) @low
@@ -67,15 +67,15 @@ Graph / Data storage:
     ✔ Graph import @medium @done(18-02-26 03:35)
     ✔ Import data from xml (tinker pop schema) @high @today @done(18-04-26 05:26)
     ✔ Sample graph data (real world data) @done(18-04-26 05:26)
-    ❑ Optimized graph representation and storage @medium
+    ❑ Optimized graph representation and storage @low
 
 Client / General:
-    ❑ Separate client from service: @high 
+    ❑ Separate client from service: @low
         ❑ Handle communication between client and service
         ✔ Basic Command line interface @high @done(18-02-26 03:35)
     ❑ Logging with Logary 
-    ❑ Results visualisation WebUI  @high 
-    ❑ Docker installation @high 
+    ❑ Results visualisation WebUI  @low 
+    ❑ Docker installation @medium 
 
 Docs:
     ❑ Examples of usage @high 
