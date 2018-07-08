@@ -61,7 +61,7 @@ let run args =
 
     let rec loop currStr =
         let l = Console.ReadLine ()
-
+         
         
         if isNull l 
         then printfn "Goodbye."
