@@ -12,6 +12,11 @@ module AST =
             path   : Identifier
         }
 
+    type NodeMatched = NodeID of Identifier | NodeLabel of string * Identifier
+
+    module NodeMatched = 
+        let node = function NodeID i | NodeLabel (_, i) -> i
+
     /// NodeVariable x represents either @x or @'x,
     /// for example CurrNodeVar p is @p and NextNodeVar p is @'p
     type NodeVariable = CurrNodeVar of Identifier | NextNodeVar of Identifier
@@ -67,7 +72,7 @@ module AST =
 
     type BasicQuery = {
             /// Matched nodes
-            nodes                 : Identifier list
+            nodes                 : NodeMatched list
             /// Matched paths
             paths                 : Identifier list
             /// 'SUCH THAT ...' constraints

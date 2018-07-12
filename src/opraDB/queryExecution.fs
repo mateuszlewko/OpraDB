@@ -27,7 +27,9 @@ module QueryExecution =
                 ) query.basic.pathConstraints
             |> List.distinct
 
-        let nodesSet = Set.ofList query.basic.nodes
+        let nodesSet = query.basic.nodes |> List.map NodeMatched.node 
+                       |> List.distinct |> Set.ofList 
+
         let letExps  = query.letExps 
                        |> List.map (fun l -> let (ID name) = l.name in name, l) 
                        |> Map.ofList

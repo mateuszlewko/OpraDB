@@ -3,8 +3,10 @@ open FSharpx
 open Argu
 open System.IO
 open System
+open Hekate
 open PrettyTable
 open FSharpx.Collections
+open FSharpx.Option
 open OpraDB.AST
 open OpraDB.Shell
 
@@ -23,23 +25,57 @@ with
             | Input_Data_Format _ -> "format of input file (json or \
                                       graphml-xml)."
 
-let mapListToPTable ms =
-    let hs   = List.collect (Map.keys >> List.ofSeq) ms |> List.distinct 
-    let get  = Option.map (sprintf "%A") >> Option.defaultValue "<null>"  
-    let data = List.map (fun m -> List.map (flip Map.tryFind m >> get) hs) ms 
+type NodeResult = 
+    | ID       of int 
+    | LabelLit of Literal
 
-    prettyTable data |> withHeaders hs
+let mapListToPTable (ms : Map<OpraDB.AST.NodeMatched, NodeResult> list) =
+    let nodeMatchedToStr = 
+        function 
+        | NodeID (Identifier.ID i) -> i 
+        | NodeLabel (label, Identifier.ID i) -> sprintf "%s(%s)" label i
+
+    let nodeResToStr = 
+        function 
+        | ID i                -> sprintf "%d" i 
+        | LabelLit (Int i)    -> sprintf "%d" i 
+        | LabelLit (Bool b)   -> sprintf "%A" b
+        | LabelLit (Float f)  -> sprintf "%f" f
+        | LabelLit (String s) -> s
+        | LabelLit (Null)     -> "<null>"
+
+    let headers = List.collect (Map.keys >> List.ofSeq) ms 
+                  |> List.distinct
+    let data    = 
+        let get = Option.map nodeResToStr >> Option.defaultValue "<null>"  
+        List.map (fun m -> List.map (flip Map.tryFind m >> get) headers) ms 
+
+    prettyTable data |> withHeaders (List.map nodeMatchedToStr headers)
     
 let eval graph str = 
     let query = OpraDB.Parser.parseQuery str
     // printfn "query: %A" query
     let nodes = matchedNodes graph query
     
+    // let findLabel n l =
     if List.isEmpty nodes then printfn "<empty>"
     else nodes 
-      |> List.map (Map.toList >> List.map (fun (ID a, b) -> a, b) >> Map.ofList) 
-      |> mapListToPTable
-      |> printTable
+         |> List.map (fun map -> 
+                List.choose (
+                    function 
+                    | NodeID i as n -> Map.tryFind i map 
+                                       |> Option.map (fun v -> n, ID v)
+                    | NodeLabel (l, i) as n -> 
+                        maybe {
+                            let! v           = Map.tryFind i map 
+                            let! (_, labels) = Graph.Nodes.tryFind v graph 
+                            let! label       = Map.tryFind l labels 
+                            return n, LabelLit label
+                        }
+                ) query.basic.nodes |> Map.ofList
+            ) 
+         |> mapListToPTable
+         |> printTable
 
 let run args = 
     let parser  = ArgumentParser.Create<Arguments> (programName = "opradb")
