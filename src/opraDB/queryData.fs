@@ -19,14 +19,13 @@ module QueryData =
             /// Last visited edge
             lastEdge     : int Edge
             lastGoodEdge : int Edge
-
         }
 
     // TODO: Rename to EdgeVector
     type KEdges      = Map<Identifier, MatchedEdge>
     
     /// Map from summed ValueExprs to Literal option
-    type ArithStates = Map<ValueExpr<unit>, Literal option>
+    type ArithStates = Map<AggregateType * ValueExpr<unit>, Literal option>
 
     // TODO: This should be renamed to EdgeVector
     [<CustomEquality; CustomComparison>]

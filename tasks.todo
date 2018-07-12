@@ -12,7 +12,7 @@ Parser:
     ✔ Parse simple arithmetic constraints (sum by) @today @done(18-02-24 20:11)
     ✔ Parse Let expressions @done(18-04-17 01:35)
     ✔ Parse value expressions @today @done(18-04-22 00:53)
-    ❑ Parse other arithmetic constraints (max, min, count?) @high 
+    ✔ Parse other arithmetic constraints (max, min, count?) @high @done(18-07-12 21:02)
     ✔ Add node constraint which returns bool (only one operand in expression) or add bool value @low @today @done(18-04-22 00:53)
 
 Query execution:
@@ -35,7 +35,7 @@ Query execution:
         ❑ query @high 
     ✔ Value Expressions in Arithmetic constraints @today @done(18-04-23 03:22)
     ✔ Value Expressions in Regular / Node constraints @today @done(18-04-23 03:22)
-    ❑ Matching more complex arithmetic constraints (max, min, count) @high
+    ✔ Matching more complex arithmetic constraints (max, min, count) @high @done(18-07-12 21:35)
     ❑ Min / Max on all paths @high 
         ❑ Dijkstra
     ❑ Improved matching of arithmetic constraints with cycles @high
@@ -53,12 +53,12 @@ Query execution:
     ❑ Return specific labels from edges @high 
     ❑ Existentially qualified paths and nodes @high 
     ✔ Return last node before sink node @high @today @done(18-04-26 00:15)
-    ❑ Move functions from regularConstraints to queryExecution module @high 
-    ❑ Optimisation: Neighbour queries for k-node constraints @high
+    ❑ Move functions from regularConstraints to queryExecution module 
+    ❑ Optimisation: Neighbour queries for k-node constraints
     ✔ Bool type @today @done(18-04-22 02:39)
     ❑ Return paths @medium 
-    ❑ Sequence of nodes in path constraints (p: u..v) @high 
-    ❑ Match nodes that satisfy regular constraints (as a whole) @high 
+    ❑ Sequence of nodes in path constraints (p: u..v)
+    ❑ Match nodes that satisfy regular constraints (as a whole) 
     ❑ Maybe represent Regex NFA as Hekate graph (?) @low
     ❑ Improve equality check in Transition (?) @low
 

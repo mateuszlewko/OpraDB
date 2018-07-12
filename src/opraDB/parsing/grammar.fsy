@@ -33,7 +33,7 @@ open OpraDB.AST
 
 %token LET IN 
 
-%token MATCH NODES PATHS SUCH THAT WHERE HAVING SUM BY
+%token MATCH NODES PATHS SUCH THAT WHERE HAVING SUM BY MIN MAX
 
 %token STAR
 %token LEQ GEQ LE GE NEQ EQ PLUS MINUS DIV MULT AND OR NOT IS
@@ -138,10 +138,15 @@ value_expr_arith:
   | labelling                                  { Labelling $1         }
   | value_expr_arith arith_op value_expr_arith { ArithOp ($1, $2, $3) }
   | value_expr_arith bool_op value_expr_arith  { BoolOp  ($1, $2, $3) }
-  | SUM LPAREN value_expr RPAREN               { Ext (Sum $3)         }
+  /*| SUM LPAREN value_expr RPAREN               { Ext (Sum $3)         }*/
+  | SUM LPAREN value_expr RPAREN { Aggregate (Sum, $3) |> Ext }
+  | MAX LPAREN value_expr RPAREN { Aggregate (Max, $3) |> Ext }
+  | MIN LPAREN value_expr RPAREN { Aggregate (Min, $3) |> Ext }
 
 arith_constr: 
-  | SUM LPAREN value_expr RPAREN { Sum   $3 }
+  | SUM LPAREN value_expr RPAREN { Aggregate (Sum, $3) }
+  | MAX LPAREN value_expr RPAREN { Aggregate (Max, $3) }
+  | MIN LPAREN value_expr RPAREN { Aggregate (Min, $3) }
   | value_expr_arith             { AC.Value $1 }
 
 arith_constr_elems: 

@@ -22,7 +22,7 @@ module AST =
     /// Represents one of: <=, <, >=, >, =, <>, and, or, is, isNot
     type BoolOperator  = Leq | Le | Geq | Ge | Eq | Neq | And | Or | Is | IsNot
     
-    type ArithOperator = Add | Sub | Mult | Div 
+    type ArithOperator = Add | Sub | Mult | Div | Max | Min
 
     type Literal = 
         | Int    of int 
@@ -56,10 +56,12 @@ module AST =
                 path   = path
                 target = target
             }
+         
+    type AggregateType = Sum | Max | Min 
 
     type ArithmeticConstraint = 
-        | Sum     of ValueExpr<unit>
-        | Value   of ValueExpr<ArithmeticConstraint>
+        | Aggregate of AggregateType * ValueExpr<unit>
+        | Value     of ValueExpr<ArithmeticConstraint>
 
     type AC = ArithmeticConstraint
 

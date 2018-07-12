@@ -15,7 +15,7 @@ open Microsoft.Z3
 module ArithmeticConstraints =
 
     let private addNodeAttributes labellingValue arithStates  =
-        let addValue valueExpr curr =
+        let addValue (aggType, valueExpr) curr =
             /// Null values are treated as neutral for arithmetic constraints
             let rhs = match eval labellingValue valueExpr with 
                       | Null  -> None 
@@ -24,7 +24,12 @@ module ArithmeticConstraints =
             match curr, rhs with 
             | Some v   , None 
             | None     , Some v   -> Some v 
-            | Some curr, Some rhs -> evalArith Add curr rhs |> Some
+            | Some curr, Some rhs -> 
+                let op = match aggType with 
+                         | Sum -> Add 
+                         | Max -> ArithOperator.Max 
+                         | Min -> ArithOperator.Min
+                evalArith op curr rhs |> Some
             | None     , None     -> None 
 
         Map.map addValue arithStates   
@@ -34,18 +39,20 @@ module ArithmeticConstraints =
         let arithStates = addNodeAttributes labelling mKEdges.arithStates
         { mKEdges with arithStates = arithStates }
 
-    let rec private summedValueExprs env letExps =
+    let rec private arithValueExprs env letExps =
         let rec get env acc = 
             function
-            | Sum v       -> let mp k = Map.tryFind k env |> Option.getOrElse k
-                             let mapping = mappingOf mp
-                             (renameVars mapping v) :: acc
-            | AC.Value va -> getVal env acc va
+            | Aggregate (op,  v) -> 
+                let mp k = Map.tryFind k env |> Option.getOrElse k
+                let mapping = mappingOf mp
+                (op, renameVars mapping v)::acc
+            | AC.Value va        -> getVal env acc va
+
         and getVal env acc = 
             function 
             | ArithOp (l, _, r)
-            | BoolOp  (l, _, r) -> getVal env (getVal env acc r) l
-            | Ext     e         -> get env acc e
+            | BoolOp  (l, _, r)         -> getVal env (getVal env acc r) l
+            | Ext     e                 -> get env acc e
             | Labelling (ID name, vars) ->
                 match Map.tryFind name letExps with 
                 | None        -> acc 
@@ -56,10 +63,11 @@ module ArithmeticConstraints =
                     let env = Map.union env mp 
 
                     match letExp.body with 
-                    | Arith a -> acc @ (summedValueExprs env letExps a)
+                    | Arith a -> acc @ (arithValueExprs env letExps a)
                     // | Value v -> getVal // ValueExpr probably wouldn't contain SUM (...)
                     | other  -> failwithf "call to %A is unsupported in arithmetic constraint" other
-            | other             -> acc
+            | other -> acc
+
         get env []
 
     // let rec inlineLabellings letExps = 
@@ -81,7 +89,7 @@ module ArithmeticConstraints =
 
     let createArithStates query letExps : ArithStates =
         query.arithmeticConstraints
-        |> List.collect (summedValueExprs Map.empty letExps) 
+        |> List.collect (arithValueExprs Map.empty letExps) 
         |> flip Seq.zip (Seq.repeat None)
         |> Map.ofSeq
 
@@ -114,6 +122,8 @@ module ArithmeticConstraints =
         | Sub  -> ctx.MkSub (lhs, rhs)
         | Mult -> ctx.MkMul (lhs, rhs)
         | Div  -> ctx.MkDiv (lhs, rhs)
+        | op   -> 
+            failwithf "Unexpected operator: %A in arithmetic constraint\n" op
 
     type EvalType = BoolT of BoolExpr | ArithT of ArithExpr
 
@@ -158,8 +168,8 @@ module ArithmeticConstraints =
                     | Float x -> ctx.MkMul (alphas.[i], ctx.MkReal (string x))
                     | other   -> wrongT other |> raise
 
-                let add l r = ctx.MkAdd (l, r)
-                let arithVal = Map.tryFind id arithStates 
+                let add l r  = ctx.MkAdd (l, r)
+                let arithVal = Map.tryFind (Sum, id) arithStates 
                                |> Option.flatten
                                |> Option.map ofLiteral
                                |> Option.getOrElse (ctx.MkInt 0 :> ArithExpr)
@@ -217,16 +227,24 @@ module ArithmeticConstraints =
 
         let rec evalArith env arith =
             match arith with
-            | Sum s      -> // printfn "env: %A" env
-                            let mp k = Map.tryFind k env |> Option.getOrElse k
-                            let mapping = mappingOf mp
-                            let s = renameVars mapping s
-                            // printfn "sum of %A" s
+            | Aggregate (Sum, s) -> 
+                // printfn "env: %A" env
+                let mp k = Map.tryFind k env |> Option.getOrElse k
+                let mapping = mappingOf mp
+                let s = renameVars mapping s
+                // printfn "sum of %A" s
 
-                            Map.tryFind s attrAlphas
-                            |> Option.getOrElse (ctx.MkInt 0 :> ArithExpr) 
-                            |> ArithT
-            | AC.Value v -> 
+                Map.tryFind s attrAlphas
+                // FIXME: TODO: Maybe should be value from arithStates instead of 0?
+                |> Option.getOrElse (ctx.MkInt 0 :> ArithExpr) 
+                |> ArithT
+            | Aggregate (op, s)  -> 
+                Map.tryFind (op, s) arithStates 
+                |> Option.flatten
+                |> Option.map ofLiteral
+                |> Option.getOrElse (ctx.MkInt 0 :> ArithExpr)
+                |> ArithT
+            | AC.Value v         -> 
                 let rec evalValueUnit env e = 
                     evalValue (fun _ () -> failwith "unexpected") evalArith 
                               evalValueUnit env e
@@ -261,12 +279,22 @@ module ArithmeticConstraints =
         function
         | []          -> true 
         | constraints ->
-            let attrs = Map.keys mKEdges.arithStates |> List.ofSeq
+            let summedAttrs = 
+                Map.keys mKEdges.arithStates |> List.ofSeq
+                |> List.filter (function (Sum, _) -> true | _ -> false)
 
             let subGraph, visited = Graph.Utils.restoreGraph predecessors mKEdges
-            let cyclesAtrrsDelta  = Graph.Utils.allSimpleCycles subGraph
-                                    |> List.map (attributesDelta letExps graph attrs 
-                                                 >> Map.choose (konst id))
+            let cyclesAtrrsDelta  = 
+                Graph.Utils.allSimpleCycles subGraph
+                |> List.map (attributesDelta letExps graph summedAttrs 
+                             >> Map.toList
+                             >> List.choose 
+                                    (function ((Sum, x), Some v) -> Some (x, v)
+                                                   | _           -> None)
+                             >> Map.ofList                                                
+                            )
+                // |> Map.choose (function (Sum, x) -> konst (Some x) 
+                //                        | _       -> konst None)                            
        
             findSolution constraints letExps mKEdges.arithStates 
                          cyclesAtrrsDelta 

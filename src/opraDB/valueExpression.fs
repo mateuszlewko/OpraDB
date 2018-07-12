@@ -18,13 +18,17 @@ module ValueExpression =
         | String _ -> StringT 
         | Null     -> NullT 
 
+    type private AO = ArithOperator
+
     let rec evalArith op lhs rhs = 
         let inline get op =    
             match op with
-            | Add  -> (+)
-            | Sub  -> (-)
-            | Mult -> (*)
-            | Div  -> (/)
+            | Add    -> (+)
+            | Sub    -> (-)
+            | Mult   -> (*)
+            | Div    -> (/)
+            | AO.Max -> max
+            | AO.Min -> min  
 
         let notSupp op l r = 
             NotSupportedArithOpException (op, l, r) 

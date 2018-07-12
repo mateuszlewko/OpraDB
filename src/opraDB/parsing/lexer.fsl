@@ -51,6 +51,8 @@ rule read =
   | "WHERE"  { WHERE  }   
   | "HAVING" { HAVING }   
   | "SUM"    { SUM    } 
+  | "MIN"    { MIN    } 
+  | "MAX"    { MAX    } 
   | "BY"     { BY     }
   | "LET"    { LET    } 
   | "IN"     { IN     }
