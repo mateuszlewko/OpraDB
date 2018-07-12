@@ -141,8 +141,7 @@ module RegularConstraints =
                 { nfas        = allNFAs
                   currEdges   = kEdges |> Map.ofList
                   arithStates = createArithStates query letExps
-                }
-                |> updateArithStates letExps graph
+                } |> updateArithStates letExps graph
             )
 
         let checkFinalNodes mKEdges =

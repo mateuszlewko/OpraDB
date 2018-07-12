@@ -49,7 +49,7 @@ Query execution:
         ✔ Add existing arithStates @critical @done(18-04-07 03:13)
         ✔ Remove arithStates from equality checks @critical @done(18-04-07 02:47)
         ✔ Solution exists predicate (for matching nodes) @today @done(18-04-06 18:42)
-        ❑ Create answer from solution
+        ❑ Create answer from solution (like "traversed cycle a-b-c-a 4 times")
     ❑ Return specific labels from edges @high 
     ❑ Existentially qualified paths and nodes @high 
     ✔ Return last node before sink node @high @today @done(18-04-26 00:15)
