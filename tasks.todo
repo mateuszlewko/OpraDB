@@ -14,7 +14,7 @@ Parser:
     ✔ Parse value expressions @today @done(18-04-22 00:53)
     ✔ Parse other arithmetic constraints (max, min, count?) @high @done(18-07-12 21:02)
     ✔ Add node constraint which returns bool (only one operand in expression) or add bool value @low @today @done(18-04-22 00:53)
-    ❑ Parse matching of node labels 
+    ✔ Parse matching of node labels @done(18-07-13 00:52)
 
 Query execution:
     ✔ Build NFA @done(17-12-18 23:16)
@@ -39,7 +39,7 @@ Query execution:
     ✔ Matching more complex arithmetic constraints (max, min, count) @high @done(18-07-12 21:35)
     ❑ Min / Max on all paths @high 
         ❑ Dijkstra
-    ❑ Improved matching of arithmetic constraints with cycles @high
+    ✔ Improved matching of arithmetic constraints with cycles @done(18-07-13 00:53)
         ✔ Store preds @done(18-03-25 00:58)
         ✔ Restore path (sub-graph) @done(18-03-25 04:13)
         ✔ Find all cycles (Johnson's algorithm) @done(18-03-30 16:56)
@@ -50,8 +50,8 @@ Query execution:
         ✔ Add existing arithStates @critical @done(18-04-07 03:13)
         ✔ Remove arithStates from equality checks @critical @done(18-04-07 02:47)
         ✔ Solution exists predicate (for matching nodes) @today @done(18-04-06 18:42)
-        ❑ Create answer from solution (like "traversed cycle a-b-c-a 4 times")
-    ❑ Return specific labels from nodes @high 
+    ❑ Create answer from solution (like "traversed cycle a-b-c-a 4 times" or path)
+    ✔ Return specific labels from nodes @high @done(18-07-13 00:52)
     ❑ Existentially qualified paths and nodes @high 
     ✔ Return last node before sink node @high @today @done(18-04-26 00:15)
     ❑ Move functions from regularConstraints to queryExecution module 
