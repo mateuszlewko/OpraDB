@@ -26,17 +26,19 @@ module Labelling =
         | CurrNodeVar u -> getNode u fst
         | NextNodeVar v -> getNode v snd
 
-    let letValue kEdges graph labelling letExp args = 
+    let letValue letQueriesRes kEdges graph labelling letExp args : Literal = 
         match letExp.body with 
         | Value v -> if List.length args <> List.length letExp.args
                      then failwith "wrong number of args"
-                     else eval labelling (renameVarsFrom letExp.args args v)
+                     else eval letQueriesRes kEdges labelling 
+                            (renameVarsFrom letExp.args args v)
         | other   -> raise (WrongLetTypeException other)
 
-    let rec value letExps kEdges graph (ID label) = 
+    let rec value letExps letQueriesRes kEdges graph (ID label) = 
         match Map.tryFind label letExps with 
-        | Some letExp -> let labelling = value letExps kEdges graph
-                         letValue kEdges graph labelling letExp
+        | Some letExp -> 
+            let labelling = value letExps letQueriesRes kEdges graph
+            letValue letQueriesRes kEdges graph labelling letExp
         | None        ->
             let ofVar  = nodeVarToIx kEdges
             let orNull = Option.getOrElse Null
@@ -59,7 +61,5 @@ module Labelling =
             | [u; v]    -> edgeLabelling u v
             | [nodeVar] -> 
                 let res = ofVar nodeVar |> nodeLabelling
-                // if label = "b"
-                // then printfn "res: %A" res
                 res
             | other     -> Null

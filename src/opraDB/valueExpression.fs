@@ -96,8 +96,8 @@ module ValueExpression =
         // all other cases are unsupported
         | l, r -> notSupp op l r |> raise
 
-    let rec evalExt ext labellingValue valExpr =
-        let exp = evalExt ext labellingValue
+    let rec evalExt ext letQueriesRes kEdges labellingValue valExpr =
+        let exp = evalExt ext letQueriesRes kEdges labellingValue
 
         match valExpr with 
         | Lit l                  -> l 
@@ -106,10 +106,12 @@ module ValueExpression =
                                     evalArith op lhs rhs
         | BoolOp (lhs, op, rhs)  -> let lhs, rhs = exp lhs, exp rhs 
                                     evalBool op lhs rhs
-        | ResultOfQuery (q, ids) ->                                   
+        | ResultOfQuery (q, ids) -> let results = Map.find q letQueriesRes
+                                    let resSets = Lazy.force results  
+                                    failwith "TODO:"
         | Ext e                  -> ext e
 
-    let eval = evalExt (fun () -> Null)
+    let eval letQueriesRes = evalExt (fun () -> Null) letQueriesRes
 
     let rec renameVarsExt renameExt mapping valExpr = 
         let rename = renameVarsExt renameExt mapping

@@ -14,12 +14,14 @@ open Microsoft.Z3
 
 module ArithmeticConstraints =
 
-    let private addNodeAttributes labellingValue arithStates  =
+    let private addNodeAttributes letQueriesRes kEdges labellingValue 
+                                  arithStates =
         let addValue (aggType, valueExpr) curr =
             /// Null values are treated as neutral for arithmetic constraints
-            let rhs = match eval labellingValue valueExpr with 
-                      | Null  -> None 
-                      | other -> Some other
+            let rhs = 
+                match eval letQueriesRes kEdges labellingValue valueExpr with 
+                | Null  -> None 
+                | other -> Some other
 
             match curr, rhs with 
             | Some v   , None 
@@ -34,9 +36,12 @@ module ArithmeticConstraints =
 
         Map.map addValue arithStates   
         
-    let updateArithStates letExps graph mKEdges =
-        let labelling   = Labelling.value letExps mKEdges.currEdges graph
-        let arithStates = addNodeAttributes labelling mKEdges.arithStates
+    let updateArithStates letExps letQueriesRes graph mKEdges =
+        let labelling   = 
+            Labelling.value letExps letQueriesRes mKEdges.currEdges graph
+        let arithStates = 
+            addNodeAttributes letQueriesRes mKEdges.currEdges labelling 
+                mKEdges.arithStates
         { mKEdges with arithStates = arithStates }
 
     let rec private arithValueExprs env letExps =
@@ -93,12 +98,13 @@ module ArithmeticConstraints =
         |> flip Seq.zip (Seq.repeat None)
         |> Map.ofSeq
 
-    let private attributesDelta letExps graph attrs cycle = 
+    let private attributesDelta letExps letQueriesRes graph attrs cycle = 
         let curr = Seq.map (fun a -> a, None) attrs |> Map.ofSeq
        
         let folder state mKEdges = 
-            let labelling = Labelling.value letExps mKEdges.currEdges graph
-            addNodeAttributes labelling state
+            let labelling = 
+                Labelling.value letExps letQueriesRes mKEdges.currEdges graph
+            addNodeAttributes letQueriesRes mKEdges.currEdges labelling state
         List.fold folder curr cycle
 
     let private cmpOp (ctx : Context) lhs rhs = 
@@ -275,7 +281,7 @@ module ArithmeticConstraints =
         findSolution constraints letExps arithStates cyclesDeltas
         |> foundSolution
 
-    let inequalitiesSatisfied mKEdges letExps predecessors graph =
+    let inequalitiesSatisfied mKEdges letExps letQueriesRes predecessors graph =
         function
         | []          -> true 
         | constraints ->
@@ -286,7 +292,8 @@ module ArithmeticConstraints =
             let subGraph, visited = Graph.Utils.restoreGraph predecessors mKEdges
             let cyclesAtrrsDelta  = 
                 Graph.Utils.allSimpleCycles subGraph
-                |> List.map (attributesDelta letExps graph summedAttrs 
+                |> List.map (attributesDelta letExps letQueriesRes graph 
+                                summedAttrs 
                              >> Map.toList
                              >> List.choose 
                                     (function ((Sum, x), Some v) -> Some (x, v)
