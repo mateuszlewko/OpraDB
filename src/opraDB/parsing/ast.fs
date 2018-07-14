@@ -37,11 +37,12 @@ module AST =
         | Null
 
     type ValueExpr<'ext> = 
-        | Lit of Literal
-        | Labelling of Identifier * NodeVariable list
-        | ArithOp of ValueExpr<'ext> * ArithOperator * ValueExpr<'ext>
-        | BoolOp of ValueExpr<'ext> * BoolOperator * ValueExpr<'ext>
-        | Ext of 'ext
+        | Lit           of Literal
+        | Labelling     of Identifier * NodeVariable list
+        | ResultOfQuery of string * NodeVariable list
+        | ArithOp       of ValueExpr<'ext> * ArithOperator * ValueExpr<'ext>
+        | BoolOp        of ValueExpr<'ext> * BoolOperator * ValueExpr<'ext>
+        | Ext           of 'ext
 
     type NodeConstraint = ValueExpr<unit>
 

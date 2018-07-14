@@ -89,13 +89,14 @@ module RegexNFA =
                     match Map.tryFind name letExps with 
                     | None        -> NodeExp (Labelling (ID name, args))
                                      |> build continuation
-                                     //failwithf "unbound name: %A" name 
                     | Some letExp ->
                         match letExp.body with 
                         | Value v   -> renameVarsFrom letExp.args args v
                                        |> NodeExp |> build continuation 
                         | Regular r -> renameRegExp letExp.args args r
                                        |> build continuation 
+                        | Query _   -> ResultOfQuery (name, args) |> NodeExp 
+                                       |> build continuation
                         | other     -> failwithf "invalid type of %s in regular constraints" 
                                                  name
 

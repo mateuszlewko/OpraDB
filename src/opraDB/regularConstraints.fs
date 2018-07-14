@@ -82,9 +82,9 @@ module RegularConstraints =
                             fun x -> 
                                 let le = basicEdge x
                                 path, { e with lastEdge     = le
-                                               lastGoodEdge = 
+                                               lastProperEdge = 
                                                    if fst le <> NULL_NODE
-                                                   then le else e.lastGoodEdge 
+                                                   then le else e.lastProperEdge 
                                       })) 
                         pathIDs edges
                 
@@ -113,7 +113,7 @@ module RegularConstraints =
         preds, List.map (updateArithStates letExps graph) es
 
     /// Get nodes that match regular constraints in a given query.
-    let matchEdges (graph : Graph) letExps (query : BasicQuery) =
+    let matchEdges (graph : Graph) letExps queriesResults query =
         let allNFAs = query.regularConstraints 
                       |> List.map (fun e -> [State.ofRegExp letExps e]) 
         let mKEdges =

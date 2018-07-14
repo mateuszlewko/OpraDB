@@ -106,6 +106,7 @@ module ValueExpression =
                                     evalArith op lhs rhs
         | BoolOp (lhs, op, rhs)  -> let lhs, rhs = exp lhs, exp rhs 
                                     evalBool op lhs rhs
+        | ResultOfQuery (q, ids) ->                                   
         | Ext e                  -> ext e
 
     let eval = evalExt (fun () -> Null)
@@ -114,13 +115,14 @@ module ValueExpression =
         let rename = renameVarsExt renameExt mapping
 
         match valExpr with  
-        | Lit _ as l  -> l
-        | Labelling (id, args) -> Labelling (id, List.map mapping args)
-        | ArithOp (l, op, r) -> let l, r = rename l, rename r
-                                ArithOp (l, op, r)
-        | BoolOp  (l, op, r) -> let l, r = rename l, rename r
-                                BoolOp (l, op, r)
-        | Ext e              -> Ext (renameExt e)
+        | Lit _ as l              -> l
+        | Labelling (id, args)    -> Labelling (id, List.map mapping args)
+        | ArithOp (l, op, r)      -> let l, r = rename l, rename r
+                                     ArithOp (l, op, r)
+        | BoolOp  (l, op, r)      -> let l, r = rename l, rename r
+                                     BoolOp (l, op, r)
+        | ResultOfQuery (q, args) -> ResultOfQuery (q, List.map mapping args)
+        | Ext e                   -> Ext (renameExt e)
 
     let renameVars mapping = renameVarsExt id mapping
 
@@ -129,7 +131,6 @@ module ValueExpression =
         | CurrNodeVar i -> CurrNodeVar (mp i)
         | NextNodeVar i -> NextNodeVar (mp i)
 
-
     let renameVarsFrom letExpArgs passedArgs = 
         let mp = List.map NodeVariable.identifier passedArgs
                  |> List.zip letExpArgs
@@ -137,7 +138,3 @@ module ValueExpression =
                  |> flip Map.find
                
         renameVars (mappingOf mp)
-
-    // let convert<'a, 'b> (fromV : ValueExpr<'a> ) : ValueExpr<'b> = 
-    //     match fromV with 
-    //     | Lit l -> Lit l

@@ -19,7 +19,10 @@ WHERE route(p), beg_end(p), .*(b(p, 'p) | a(p, 'p)).*,
 
 LET route p = (edge(p, 'p) = "route")*. IN
 LET beg_end p = (type(p) = "beg").*(type(p) = "end") IN
+LET beginRoute s = 
+    MATCH NODES s SUCH THAT p: s -> t
+    WHERE route(s) IN 
 MATCH NODES s, type(s), t, time(s)
 SUCH THAT p: s->t
-WHERE beg_end(p) 
+WHERE beg_end(p), beginRoute(s)
 HAVING SUM (time(p)) > 1;

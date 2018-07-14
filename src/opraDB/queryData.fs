@@ -18,7 +18,8 @@ module QueryData =
             source       : int Node
             /// Last visited edge
             lastEdge     : int Edge
-            lastGoodEdge : int Edge
+            /// Last visited edge which doesn't begin in sink-node
+            lastProperEdge : int Edge
         }
 
     // TODO: Rename to EdgeVector
@@ -58,7 +59,7 @@ module QueryData =
         let create path node = { source       = node
                                  path         = path
                                  lastEdge     = NULL_NODE, node
-                                 lastGoodEdge = NULL_NODE, node }
+                                 lastProperEdge = NULL_NODE, node }
                                          
         let basicInfo e = e.path, e.source, fst e.lastEdge
         let info e = e.path, e.source, e.lastEdge
