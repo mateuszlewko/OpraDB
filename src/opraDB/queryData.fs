@@ -1,7 +1,7 @@
 namespace OpraDB
 
 open OpraDB.AST
-open OpraDB.RegexNFA
+open OpraDB.RegexNFAData
 open Hekate
 
 module QueryData =

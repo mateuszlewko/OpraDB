@@ -1,6 +1,7 @@
 namespace OpraDB 
 
 open OpraDB.AST
+open OpraDB.QueryData
 open FSharpx
 
 module ValueExpression =
@@ -96,6 +97,8 @@ module ValueExpression =
         // all other cases are unsupported
         | l, r -> notSupp op l r |> raise
 
+    let private getNodesMap kEdges = 
+        Map.map (fun _ (e : MatchedEdge) -> fst e.lastProperEdge) kEdges
     let rec evalExt ext letQueriesRes kEdges labellingValue valExpr =
         let exp = evalExt ext letQueriesRes kEdges labellingValue
 
@@ -107,8 +110,9 @@ module ValueExpression =
         | BoolOp (lhs, op, rhs)  -> let lhs, rhs = exp lhs, exp rhs 
                                     evalBool op lhs rhs
         | ResultOfQuery (q, ids) -> let results = Map.find q letQueriesRes
-                                    let resSets = Lazy.force results  
-                                    failwith "TODO:"
+                                    let resSets = Lazy.force results 
+                                    Set.contains (getNodesMap kEdges) resSets 
+                                    |> Bool
         | Ext e                  -> ext e
 
     let eval letQueriesRes = evalExt (fun () -> Null) letQueriesRes

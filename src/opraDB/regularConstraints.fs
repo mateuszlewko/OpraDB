@@ -4,6 +4,7 @@ open FSharpx.Functional
 
 open OpraDB.AST
 open OpraDB.RegexNFA
+open OpraDB.RegexNFAData
 open OpraDB.QueryData
 open OpraDB.QueryData.MatchedEdge
 open OpraDB.Data
