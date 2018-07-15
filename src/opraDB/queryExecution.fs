@@ -46,6 +46,7 @@ module QueryExecution =
         |> List.map (mKEdgesToNodes 
                      >> List.filter (fst >> flip Set.contains nodesSet)
                      >> Map.ofList)
+        |> List.distinct                     
 
     and createResultsMapForLetQueries graph letExps queries =
         let matchedNodes q = matchedNodes graph { letExps = letExps; basic = q } 

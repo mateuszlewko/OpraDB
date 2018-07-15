@@ -121,7 +121,7 @@ module ValueExpression =
         | ResultOfQuery (q, ids) -> 
             let results = Map.find q letQueriesRes
             let resSets = Lazy.force results 
-            printfn "res sets: %A" resSets 
+            // printfn "res sets: %A" resSets 
             // let mapper = getNodesMapper kEdges
             let curr = List.choose (getNodesMapper kEdges)  ids
             // printfn "nodes map: %A" nodesMap 

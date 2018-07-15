@@ -137,7 +137,7 @@ module ArithmeticConstraints =
     let findSolution constraints letExps arithStates 
                      (cyclesDeltas : Map<_, Literal> list) =
 
-        printfn "arith: %A" arithStates
+        // printfn "arith: %A" arithStates
         // printfn "deltas: %A" cyclesDeltas
 
         use ctx      = Context.create ()
@@ -280,10 +280,10 @@ module ArithmeticConstraints =
     let foundSolution = 
         function
         | Solution _ -> 
-            printfn "FOUND solution"
+            // printfn "FOUND solution"
             true
         | _          -> 
-            printfn "NOT found solution"
+            // printfn "NOT found solution"
             false
 
     let existsSolution constraints letExps arithStates cyclesDeltas = 
@@ -311,7 +311,9 @@ module ArithmeticConstraints =
                             )
                 // |> Map.choose (function (Sum, x) -> konst (Some x) 
                 //                        | _       -> konst None)                            
-       
+            // MatchedKEdges.basicInfo mKEdges
+            // |> List.iter (MatchedEdge.basicInfo >> printfn "res-edge: %A")
+               
             findSolution constraints letExps mKEdges.arithStates 
                          cyclesAtrrsDelta 
             |> foundSolution
