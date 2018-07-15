@@ -1,0 +1,17 @@
+LET route q = labelE(q, 'q) = "route" IN
+MATCH NODES city(a), city(b) SUCH THAT p: a->b
+WHERE (city(p) = "Wroclaw").*, (route(p)). ;
+
+LET route q = labelE(q, 'q) = "route" IN
+LET airport p = (type(p) = "airport").* IN 
+LET wroc p = (city(p) = "Wroclaw").* IN
+MATCH NODES code(a), code(b) SUCH THAT p: a->b
+WHERE wroc(p), airport(p), (route(p))(true) ;
+
+LET route q = labelE(q, 'q) = "route" IN
+LET airport p = (type(p) = "airport").* IN 
+LET pol p = (country(p) = "PL").* IN
+MATCH NODES code(a), code(b) SUCH THAT p: a->b
+WHERE (country(p) = "PL")(country(p) = "DE")
+    , airport(p), (route(p))*. ;
+

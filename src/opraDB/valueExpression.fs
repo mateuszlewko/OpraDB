@@ -158,7 +158,6 @@ module ValueExpression =
         let mp = List.map NodeVariable.identifier passedArgs
                  |> List.zip letExpArgs
                  |> Map.ofList
-                 |> (fun m k -> printfn "trying to find: %A" k
-                                Map.find k m)
+                 |> flip Map.find
                
         renameVars (mappingOf mp)

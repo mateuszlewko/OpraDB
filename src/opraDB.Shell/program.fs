@@ -50,8 +50,10 @@ let mapListToPTable (ms : Map<OpraDB.AST.NodeMatched, NodeResult> list) =
         let get = Option.map nodeResToStr >> Option.defaultValue "<null>"  
         List.map (fun m -> List.map (flip Map.tryFind m >> get) headers) ms 
 
-    prettyTable data |> withHeaders (List.map nodeMatchedToStr headers)
-    
+    prettyTable data 
+    |> withHeaders (List.map nodeMatchedToStr headers)
+    |> horizontalAlignment FsPrettyTable.Types.Left
+
 let eval graph str = 
     let query = OpraDB.Parser.parseQuery str
     // printfn "query: %A" query
