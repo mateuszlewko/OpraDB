@@ -27,13 +27,13 @@ Query execution:
     ✔ Matching same final-nodes used in different paths @high @today @done(18-02-21 00:23)
     ✔ Handle cycles (only with matched nodes) @critical @done(18-02-21 16:26)
     ✔ Matching simple arithmetic constraints (no cycles, only sum by) @high @today @done(18-02-25 21:56)
-    ❑ Ontologies (let expressions) @high
+    ✔ Ontologies (let expressions) @high @done(18-07-15 15:03)
         ✔ value expression / new label: // till thursday @done(18-04-23 03:21)
             ✔ on nodes @done(18-04-23 03:21)
             ✔ on edges @done(18-04-23 03:21)
         ✔ regular constraints @done(18-04-23 23:42)
         ✔ arithmetic constraint @today @done(18-04-25 22:31)
-        ❑ query @high 
+        ✔ query @high @done(18-07-15 15:03)
     ✔ Value Expressions in Arithmetic constraints @today @done(18-04-23 03:22)
     ✔ Value Expressions in Regular / Node constraints @today @done(18-04-23 03:22)
     ✔ Matching more complex arithmetic constraints (max, min, count) @high @done(18-07-12 21:35)

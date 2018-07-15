@@ -97,8 +97,12 @@ module ValueExpression =
         // all other cases are unsupported
         | l, r -> notSupp op l r |> raise
 
-    let private getNodesMap kEdges = 
-        Map.map (fun _ (e : MatchedEdge) -> fst e.lastProperEdge) kEdges
+    let private getNodesMapper kEdges = 
+        let map = Map.map (fun _ (e : MatchedEdge) -> e.lastProperEdge) kEdges
+        function 
+        | CurrNodeVar i -> Map.tryFind i map |> Option.map fst
+        | NextNodeVar i -> Map.tryFind i map |> Option.map snd
+
     let rec evalExt ext letQueriesRes kEdges labellingValue valExpr =
         let exp = evalExt ext letQueriesRes kEdges labellingValue
 
@@ -109,10 +113,17 @@ module ValueExpression =
                                     evalArith op lhs rhs
         | BoolOp (lhs, op, rhs)  -> let lhs, rhs = exp lhs, exp rhs 
                                     evalBool op lhs rhs
-        | ResultOfQuery (q, ids) -> let results = Map.find q letQueriesRes
-                                    let resSets = Lazy.force results 
-                                    Set.contains (getNodesMap kEdges) resSets 
-                                    |> Bool
+        | ResultOfQuery (q, ids) -> 
+            let results = Map.find q letQueriesRes
+            let resSets = Lazy.force results 
+            // printfn "res sets: %A" resSets 
+            // let mapper = getNodesMapper kEdges
+            let curr = List.choose (getNodesMapper kEdges)  ids
+            // printfn "nodes map: %A" nodesMap 
+            // printfn "ids: %A" ids
+            // failwith ""
+            Set.contains curr resSets 
+            |> Bool
         | Ext e                  -> ext e
 
     let eval letQueriesRes = evalExt (fun () -> Null) letQueriesRes
