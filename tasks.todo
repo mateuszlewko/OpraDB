@@ -37,7 +37,7 @@ Query execution:
     ✔ Value Expressions in Arithmetic constraints @today @done(18-04-23 03:22)
     ✔ Value Expressions in Regular / Node constraints @today @done(18-04-23 03:22)
     ✔ Matching more complex arithmetic constraints (max, min, count) @high @done(18-07-12 21:35)
-    ❑ Min / Max on all paths @high 
+    ❑ Min / Max on all paths 
         ❑ Dijkstra
     ✔ Improved matching of arithmetic constraints with cycles @done(18-07-13 00:53)
         ✔ Store preds @done(18-03-25 00:58)
@@ -59,7 +59,7 @@ Query execution:
     ✔ Bool type @today @done(18-04-22 02:39)
     ❑ Return paths @medium 
     ❑ Sequence of nodes in path constraints (p: u..v)
-    ❑ Match nodes that satisfy regular constraints (as a whole) 
+    ❑ Match nodes that satisfy regular constraints (as a whole)
     ❑ Maybe represent Regex NFA as Hekate graph (?) @low
     ❑ Improve equality check in Transition (?) @low
 

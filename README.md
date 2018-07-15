@@ -5,7 +5,33 @@ Main purpose of this project is to show expressive power of [OPRA](https://arxiv
 
 This is a work in progress.
 
-## How to build (Linux)
+## Quick start with Docker (Recommended)
+
+1. Install [docker](TODO: link to docker)
+2. Get container image:
+
+   * (Option A) Download latest image
+
+       ```bash
+       TODO: Download container image
+       ```
+
+   * (Option B) You can also build container image from local sources
+
+       * First, clone repository:
+    
+           ```bash
+           git clone ... TODO: Clone repo
+           ```
+    
+3. Run container with OpraDB client and loaded database:
+    ```bash
+    TODO: docker run
+    ```
+
+## How to build from source (Linux)
+
+TODO: Build section
 
 * Install [dotnet core](https://www.microsoft.com/net/learn/get-started/linuxubuntu)
 * `git clone https://github.com/mateuszlewko/OpraDB.git`
@@ -25,3 +51,21 @@ This is a work in progress.
 * Add [Ionide](https://marketplace.visualstudio.com/items?itemName=Ionide.Ionide-fsharp) plugin to VS Code:  
   * launch VS Code Quick Open (Ctrl+P)
   * paste: `ext install Ionide.Ionide-fsharp`
+
+## Examples
+
+### Basics
+
+#### Graph
+
+#### Syntax
+
+#### Constraints
+
+### Node and regular constraints
+
+### Arithmetic constraints
+
+#### Handling cycles
+
+### Comparison with  Gremlin (Apache TinkerPop)
