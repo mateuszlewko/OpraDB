@@ -1,0 +1,35 @@
+{
+    "nodes": [
+        { "_id": 1, "crowd": 2, "start": 1 }
+      , { "_id": 2, "crowd": 10 }
+      , { "_id": 3, "crowd": 5 }
+      , { "_id": 4, "crowd": 5 }
+      , { "_id": 5, "crowd": 2 }
+      , { "_id": 6, "crowd": 5 }
+      , { "_id": 7, "crowd": 5, "start": 1 }
+      , { "_id": 8, "crowd": 5 }
+      , { "_id": 9, "crowd": 5 }
+      , { "_id": 10, "crowd": 5 }
+    ],
+    "directed_edges": [
+        { "_from": 1, "_to": 2, "dist": 3 }
+      , { "_from": 2, "_to": 1, "dist": 3 }
+      , { "_from": 2, "_to": 3, "dist": 5 }
+      , { "_from": 3, "_to": 2, "dist": 5 }
+      , { "_from": 3, "_to": 4, "dist": 5 }
+      , { "_from": 4, "_to": 3, "dist": 5 }
+      , { "_from": 5, "_to": 4, "dist": 1 }
+      , { "_from": 3, "_to": 5, "dist": 6 }
+      , { "_from": 5, "_to": 3, "dist": 6 }
+      , { "_from": 5, "_to": 9, "dist": 1 }
+      , { "_from": 4, "_to": 9, "dist": 1 }
+      , { "_from": 7, "_to": 10, "dist": 1 }
+      , { "_from": 10, "_to": 1, "dist": 8 }
+      , { "_from": 1, "_to": 10, "dist": 8 }
+      , { "_from": 10, "_to": 6, "dist": 1 }
+      , { "_from": 6, "_to": 5, "dist": 1 }
+      , { "_from": 6, "_to": 8, "dist": 1 }
+      , { "_from": 9, "_to": 8, "dist": 1 }
+      , { "_from": 8, "_to": 9, "dist": 1 }
+    ]
+}

@@ -1,0 +1,8 @@
+LET crowded xx = 
+    MATCH NODES xx 
+    SUCH THAT q: xx -> y 
+    WHERE .*(crowd(q) >= 10)
+    HAVING SUM (dist(q, 'q)) <= 10 IN 
+MATCH NODES x, y 
+SUCH THAT p: x -> y
+WHERE (crowded(p) = false)*, (start(p) IS NOT NULL).* ;
