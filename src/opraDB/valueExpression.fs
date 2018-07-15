@@ -21,7 +21,8 @@ module ValueExpression =
 
     type private AO = ArithOperator
 
-    let rec evalArith op lhs rhs = 
+    // TODO: Is neutralNull necessary?
+    let rec evalArith neutralNull op lhs rhs = 
         let inline get op =    
             match op with
             | Add    -> (+)
@@ -35,6 +36,8 @@ module ValueExpression =
             NotSupportedArithOpException (op, l, r) 
                     
         match lhs, rhs with 
+        | Null, other 
+        | other, Null when neutralNull     -> other
         | Null, _ | _, Null                -> Null
         | Int l, Int r                     -> (get op) l r |> Int
         | Float l, Float r                 -> (get op) l r |> Float
@@ -43,8 +46,10 @@ module ValueExpression =
                                               | op  -> notSupp op ls rs |> raise
         | String _ as s, other 
         | other, (String _ as s)  -> notSupp op s other |> raise
-        | Float f as l, (Int r)   -> evalArith op l (Float (float r))
-        | (Int l), (Float f as r) -> evalArith op (Float (float l)) r
+        | Float f as l, (Int r)   -> 
+            evalArith neutralNull op l (Float (float r))
+        | (Int l), (Float f as r) -> 
+            evalArith neutralNull op (Float (float l)) r
         | Bool _ as b, other 
         | other , (Bool _ as b)   -> notSupp op b other |> raise
 
@@ -110,13 +115,13 @@ module ValueExpression =
         | Lit l                  -> l 
         | Labelling (ids, vars)  -> labellingValue ids vars 
         | ArithOp (lhs, op, rhs) -> let lhs, rhs = exp lhs, exp rhs
-                                    evalArith op lhs rhs
+                                    evalArith false op lhs rhs
         | BoolOp (lhs, op, rhs)  -> let lhs, rhs = exp lhs, exp rhs 
                                     evalBool op lhs rhs
         | ResultOfQuery (q, ids) -> 
             let results = Map.find q letQueriesRes
             let resSets = Lazy.force results 
-            // printfn "res sets: %A" resSets 
+            printfn "res sets: %A" resSets 
             // let mapper = getNodesMapper kEdges
             let curr = List.choose (getNodesMapper kEdges)  ids
             // printfn "nodes map: %A" nodesMap 
@@ -138,7 +143,7 @@ module ValueExpression =
                                      ArithOp (l, op, r)
         | BoolOp  (l, op, r)      -> let l, r = rename l, rename r
                                      BoolOp (l, op, r)
-        | ResultOfQuery (q, args) -> ResultOfQuery (q, List.map mapping args)
+        | ResultOfQuery (q, args) -> ResultOfQuery (q, args)
         | Ext e                   -> Ext (renameExt e)
 
     let renameVars mapping = renameVarsExt id mapping
@@ -149,9 +154,11 @@ module ValueExpression =
         | NextNodeVar i -> NextNodeVar (mp i)
 
     let renameVarsFrom letExpArgs passedArgs = 
+        // printfn "renaming from: %A to %A"(letExpArgs) (passedArgs)
         let mp = List.map NodeVariable.identifier passedArgs
                  |> List.zip letExpArgs
                  |> Map.ofList
-                 |> flip Map.find
+                 |> (fun m k -> printfn "trying to find: %A" k
+                                Map.find k m)
                
         renameVars (mappingOf mp)

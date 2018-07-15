@@ -9,7 +9,7 @@
       , { "_id": 7, "time": 3 }
       , { "_id": 8, "time": 1, "type": "end" }
     ],
-    "edges": [
+    "directed_edges": [
         { "_from": 1, "_to": 2, "edge": "route", "a": true }
       , { "_from": 2, "_to": 3, "edge": "route", "a": true }
       , { "_from": 3, "_to": 4, "edge": "route", "b": true }

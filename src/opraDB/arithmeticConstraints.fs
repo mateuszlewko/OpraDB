@@ -23,6 +23,7 @@ module ArithmeticConstraints =
                 | Null  -> None 
                 | other -> Some other
 
+            // printfn "expr: %A has val: %A" valueExpr rhs
             match curr, rhs with 
             | Some v   , None 
             | None     , Some v   -> Some v 
@@ -31,7 +32,7 @@ module ArithmeticConstraints =
                          | Sum -> Add 
                          | Max -> ArithOperator.Max 
                          | Min -> ArithOperator.Min
-                evalArith op curr rhs |> Some
+                evalArith true op curr rhs |> Some
             | None     , None     -> None 
 
         Map.map addValue arithStates   
@@ -136,20 +137,21 @@ module ArithmeticConstraints =
     let findSolution constraints letExps arithStates 
                      (cyclesDeltas : Map<_, Literal> list) =
 
-        // printfn "arith: %A" arithStates
+        printfn "arith: %A" arithStates
         // printfn "deltas: %A" cyclesDeltas
 
         use ctx      = Context.create ()
         use solver   = Solver.create ctx
         let cycleCnt = List.length cyclesDeltas
 
-        let name     = sprintf "alpha-%d"
+        let name      = sprintf "alpha-%d"
         /// Value of alpha-i represents how many times to traverse i-th cycle
-        let alphas   = Array.init cycleCnt (name >> ctx.MkIntConst )
+        let alphas    = Array.init cycleCnt (name >> ctx.MkIntConst )
         /// All mappings from ValueExpr to delta (Literal) of a given cycle
-        let deltas   = Array.ofList cyclesDeltas
+        let deltas    = Array.ofList cyclesDeltas
         /// Raise WrongTypeException for a literal
-        let wrongT   = literalType >> WrongTypeException
+        let wrongT    = literalType >> WrongTypeException
+        let arith0 () = ctx.MkInt 0 :> ArithExpr
 
         let ofLiteral =
             function
@@ -178,7 +180,7 @@ module ArithmeticConstraints =
                 let arithVal = Map.tryFind (Sum, id) arithStates 
                                |> Option.flatten
                                |> Option.map ofLiteral
-                               |> Option.getOrElse (ctx.MkInt 0 :> ArithExpr)
+                               |> Option.getOrElse (arith0 ())
 
                 Array.map getAlpha indexes
                 |> Array.fold add arithVal
@@ -242,7 +244,10 @@ module ArithmeticConstraints =
 
                 Map.tryFind s attrAlphas
                 // FIXME: TODO: Maybe should be value from arithStates instead of 0?
-                |> Option.getOrElse (ctx.MkInt 0 :> ArithExpr) 
+                |> Option.getOrElse (Map.tryFind (Sum, s) arithStates
+                                     |> Option.flatten
+                                     |> Option.map ofLiteral
+                                     |> Option.getOrElse (arith0 ()))
                 |> ArithT
             | Aggregate (op, s)  -> 
                 Map.tryFind (op, s) arithStates 
@@ -274,8 +279,12 @@ module ArithmeticConstraints =
 
     let foundSolution = 
         function
-        | Solution _ -> true
-        | _          -> false
+        | Solution _ -> 
+            printfn "FOUND solution"
+            true
+        | _          -> 
+            printfn "NOT found solution"
+            false
 
     let existsSolution constraints letExps arithStates cyclesDeltas = 
         findSolution constraints letExps arithStates cyclesDeltas

@@ -48,9 +48,8 @@ module QueryExecution =
                      >> Map.ofList)
 
     and createResultsMapForLetQueries graph letExps queries =
-        let matchedNodes q       = matchedNodes graph { letExps = letExps
-                                                        basic   = q } 
-                                                        
+        let matchedNodes q = matchedNodes graph { letExps = letExps; basic = q } 
+
         let argsToNodes args res = List.map (fun arg -> Map.find arg res) args
         let solutions args q     = matchedNodes q |> List.map (argsToNodes args) 
                                                   |> Set.ofList

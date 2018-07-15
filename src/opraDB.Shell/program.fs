@@ -94,6 +94,8 @@ let run args =
             | _                 -> failwith "unknown data format"
 
     let graph = results.GetResult Input_Data |> File.ReadAllText |> importGraph 
+     
+    printfn "Loaded graph."
 
     let rec loop currStr =
         let l = Console.ReadLine ()

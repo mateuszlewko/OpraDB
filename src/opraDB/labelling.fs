@@ -27,12 +27,17 @@ module Labelling =
         | NextNodeVar v -> getNode v snd
 
     let letValue letQueriesRes kEdges graph labelling letExp args : Literal = 
-        match letExp.body with 
-        | Value v -> if List.length args <> List.length letExp.args
-                     then failwith "wrong number of args"
-                     else eval letQueriesRes kEdges labelling 
-                            (renameVarsFrom letExp.args args v)
-        | other   -> raise (WrongLetTypeException other)
+        let rec onBody = 
+            function 
+            | Value v -> if List.length args <> List.length letExp.args
+                         then failwith "wrong number of args"
+                         else eval letQueriesRes kEdges labelling 
+                                (renameVarsFrom letExp.args args v)
+            | Query q -> let (ID name) = letExp.name
+                         ResultOfQuery (name, args) |> Value |> onBody
+            | other   -> raise (WrongLetTypeException other)
+        
+        onBody letExp.body 
 
     let rec value letExps letQueriesRes kEdges graph (ID label) = 
         match Map.tryFind label letExps with 

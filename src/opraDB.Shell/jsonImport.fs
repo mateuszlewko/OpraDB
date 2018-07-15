@@ -48,7 +48,7 @@ module JsonImport =
             let properties = Map.ofArray properties 
             let prop p     = Map.tryFind p properties
 
-            match prop "edges", prop "nodes" with 
+            match prop "directed_edges", prop "nodes" with 
             | Some (JsonValue.Array edges), Some (JsonValue.Array nodes) -> 
                let map f = Array.map f >> Array.toList
                map parseNode nodes, map parseEdge edges
