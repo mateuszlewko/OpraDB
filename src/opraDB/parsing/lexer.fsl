@@ -41,6 +41,8 @@ rule read =
   | "NULL"   { NULL  }
   | "NOT"    { NOT   }
   | "IS"     { IS    }
+  | "AND"    { AND   }
+  | "OR"     { OR    }
 
   | '"'      { read_string "" false lexbuf } 
 

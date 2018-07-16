@@ -164,6 +164,34 @@ SUCH THAT p: a -> b, q: a -> c
 
 #### Node and regular constraints
 
+Regular constraint specifies how correct paths should look like. It consists of 
+node constraints and operators: `|`, `*`. Each node constraint describes one of the nodes on a given path.
+
+Example node constrains:
+
+- `(access_level(people) > 3 OR position(people) = "CTO")` this constraint will be     true if *current* node on path `people` has property `access_level` that is 
+  greater
+  than 3 or property `position` is "CTO"
+
+*Current node* is currently checked node when traversing a path.
+
+- `(distance(cities, 'cities) < 10)` Tick before node name (`'node`) is current node's 
+  successor when traversing a path. Node will satisfy this constraint, if outgoing edge (to successor) has property `distance` and its values is less than 10.
+
+Regular constraint can just be a sequence of node constraints, like this:
+
+```cypher
+(name(friends) = "Bol")(name(friends) = "Alice")(name(friends) = "Mateusz")
+```
+
+Path `friends` satisfies this constraint as long as it contains three nodes which 
+are connected by some edges, and `name` of first node is *Bob*, second *Alice* and 
+third *Mateusz*.
+
+However, regular constraints can act as regular expression on paths, where instead 
+of letters and digits we have *node constraints*. This is where we can make use of 
+union `|` and Kleene-star `*` operators.
+
 #### Arithmetic constraints
 
 ### Handling cycles
