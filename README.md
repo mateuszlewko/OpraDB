@@ -54,6 +54,8 @@ TODO: Build section
 
 ## Examples
 
+Read this sections to get a brief understanding of how to write queries in [Opra QL](https://arxiv.org/pdf/1710.04419.pdf).
+
 ### Basics
 
 #### Graph
@@ -104,7 +106,44 @@ specify at least one matched node or node property.
 
 **Note:** Returning matched paths is currently **not supported**.
 
+* List of matched nodes (`MATCH NODES`):
+
+    Example:
+
+    ```cypher
+    MATCH NODES a, b, someNode, property(someNode), name(someNode)
+    ...
+    ```
+    By specifying node or node's property in matched nodes, we're essentially 
+    defining an alias to this node, which we can use in latter constraints.
+
+    Usually we want to return node's property like `name(x)`. Providing just an
+    alias `x` will return ids of all nodes that matched `x`'s constraints.
+
+* `MATCH ... PATHS`:
+    Behaviour for matching paths is similar to nodes, however current versions
+    doesn't return paths.
+
 ### Constraints
+
+#### Path constraints
+
+```cypher
+path1 : beginNode -> endNode
+```
+
+Path constraints are here to specify that there is path called `path1` from node
+`beginNode` to `endNode`. Both nodes could be bound earlier in *matched nodes list*,
+but they don't have to be. In case a node wasn't bound earlier, it will be existentially quantified (meaning that is just needs to exists). This rule applies for all occurrences of nodes or paths not bound in `MATCH ...` list.
+
+Multiple path constraints can be specified in query by separating them with comma.
+
+Example:
+
+```cypher
+MATCH NODES name(a), name(b), name(c)
+SUCH THAT p: a -> b, q: a -> c
+```
 
 #### Node and regular constraints
 
