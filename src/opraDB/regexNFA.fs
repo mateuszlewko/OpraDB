@@ -14,7 +14,7 @@ module RegexNFA =
         | ConcatExp (l, r) -> ConcatExp (rename l, rename r)
         | UnionExp  (l, r) -> UnionExp (rename l, rename r)
         | StarExp s        -> StarExp (rename s)
-        | LetCall (ID name as id, vars) ->
+        | LetCall (id, vars) ->
             let pArgs = List.map NodeVariable.identifier passedArgs
             let mp    = List.zip letExpArgs passedArgs |> Map.ofList
             let map nodeV v = Map.tryFind v mp |> Option.defaultValue (nodeV v)

@@ -19,11 +19,11 @@ This is a work in progress.
    * (Option B) You can also build container image from local sources
 
        * First, clone repository:
-    
+
            ```bash
            git clone ... TODO: Clone repo
            ```
-    
+
 3. Run container with OpraDB client and loaded database:
     ```bash
     TODO: docker run
@@ -58,14 +58,58 @@ TODO: Build section
 
 #### Graph
 
+Let's start by defining OpraDB graph. Graph consists of directed edges and nodes.
+Each node and edge can have a set of properties. Property has a:
+
+* key `string`
+* value of one of the following types: `string`, `int`, `bool`, `float`.
+
+Undirected graphs can be represented by adding two directed edges for each undirected edge,
+in both directions.
+
+Example graph in `json` format:
+
+```json
+{
+    "nodes": [
+        { "_id": 1, "crowd": 2, "start": 1 }
+      , { "_id": 2, "crowd": 10 }
+    ],
+    "directed_edges": [
+        { "_from": 1, "_to": 2, "dist": 3 }
+      , { "_from": 2, "_to": 1, "dist": 3 }
+    ]
+}
+```
+
+**Note:** All nodes must have field `_id` with *positive* integer value. Edges
+must have `_from` and `_to` properties, which point to node ids *already defined*
+in `nodes` object (see example above).
+
 #### Syntax
 
-#### Constraints
+Query has following syntax:
 
-### Node and regular constraints
+```cypher
+MATCH NODES <list of matched (returned) nodes or node properties>  
+      PATHS <list of matched paths>
+      SUCH THAT <path constraints>
+      WHERE <regular constraints>
+      HAVING <arithmetic constraints>
+```
 
-### Arithmetic constraints
+`MATCH`, `NODES`, `PATHS`, `SUCH THAT`, `WHERE` and `HAVING` are most used
+keywords and they all must be uppercase. When creating a query you should always
+specify at least one matched node or node property.
 
-#### Handling cycles
+**Note:** Returning matched paths is currently **not supported**.
+
+### Constraints
+
+#### Node and regular constraints
+
+#### Arithmetic constraints
+
+### Handling cycles
 
 ### Comparison with  Gremlin (Apache TinkerPop)

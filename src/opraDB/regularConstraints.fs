@@ -118,6 +118,9 @@ module RegularConstraints =
     let matchEdges graph letExps letQueriesRes query =
         let allNFAs = query.regularConstraints 
                       |> List.map (fun e -> [State.ofRegExp letExps e]) 
+
+        printfn "All nfas: %A" allNFAs
+
         let mKEdges =
             let nodeFromIndex = 
                 let rec getIndex ixMap (p : PathConstraint) = 
@@ -129,7 +132,8 @@ module RegularConstraints =
 
             // all k-nodes
             Graph.Nodes.toList graph |> List.map fst
-            |> konst |> List.init (Map.count nodeFromIndex) |> List.cartesian
+            |> konst |> List.init (Map.count nodeFromIndex) 
+            |> List.cartesian
             // map them to MatchedKEdges
             |> List.map (fun es -> 
                 let esArr  = Array.ofList es
@@ -145,6 +149,8 @@ module RegularConstraints =
                   arithStates = createArithStates query letExps
                 } |> updateArithStates letExps letQueriesRes graph
             )
+          
+        printfn "initial mKEdges: %A" mKEdges
 
         let checkFinalNodes mKEdges =
             let endNodeNames = query.pathConstraints 
@@ -172,11 +178,16 @@ module RegularConstraints =
             mKEdges.nfas
             |> List.forall (List.exists (fun t -> t.state = Matched))
 
+        let failedCheck name = 
+            printfn "Failed check %s" name 
+            false
+
         let checkMatched preds mKEdges =
-            checkNFAsInMatchedStates mKEdges 
-            && checkFinalNodes mKEdges
-            && inequalitiesSatisfied mKEdges letExps letQueriesRes preds graph 
+            (checkNFAsInMatchedStates mKEdges || failedCheck "nfas in matched")
+            && (checkFinalNodes mKEdges || failedCheck "check final nodes")
+            && (inequalitiesSatisfied mKEdges letExps letQueriesRes preds graph 
                                      query.arithmeticConstraints
+                || failedCheck "inequalitiesSatisfied")
             
         let mapMk = 
             List.map (fun mk -> 
