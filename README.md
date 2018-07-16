@@ -5,6 +5,23 @@ Main purpose of this project is to show expressive power of [OPRA](https://arxiv
 
 This is a work in progress.
 
+- [OpraDB](#opradb)
+    - [Quick start with Docker (Recommended)](#quick-start-with-docker-recommended)
+    - [How to build from source (Linux)](#how-to-build-from-source-linux)
+    - [How to edit in Visual Studio Code](#how-to-edit-in-visual-studio-code)
+    - [Examples](#examples)
+        - [Basics](#basics)
+            - [Graph](#graph)
+            - [Syntax](#syntax)
+        - [Constraints](#constraints)
+            - [Path constraints](#path-constraints)
+            - [Node and regular constraints](#node-and-regular-constraints)
+            - [Arithmetic constraints](#arithmetic-constraints)
+        - [Handling cycles](#handling-cycles)
+        - [Comparison with Gremlin (Apache TinkerPop)](#comparison-with-gremlin-apache-tinkerpop)
+        - [Future work](#future-work)
+            - [TODO list](#todo-list)
+
 ## Quick start with Docker (Recommended)
 
 1. Install [docker](TODO: link to docker)
@@ -33,10 +50,10 @@ This is a work in progress.
 
 TODO: Build section
 
-* Install [dotnet core](https://www.microsoft.com/net/learn/get-started/linuxubuntu)
-* `git clone https://github.com/mateuszlewko/OpraDB.git`
-* `cd OpraDB/src`
-* `dotnet build`
+- Install [dotnet core](https://www.microsoft.com/net/learn/get-started/linuxubuntu)
+- `git clone https://github.com/mateuszlewko/OpraDB.git`
+- `cd OpraDB/src`
+- `dotnet build`
 
     Run main project with (assuming you're in `src` folder):
     `dotnet run --no-build`
@@ -46,11 +63,11 @@ TODO: Build section
 
 ## How to edit in [Visual Studio Code](https://code.visualstudio.com/)
 
-* Install [mono](http://www.mono-project.com/download/)
-* Install [F#](http://fsharp.org/use/linux/)
-* Add [Ionide](https://marketplace.visualstudio.com/items?itemName=Ionide.Ionide-fsharp) plugin to VS Code:  
-  * launch VS Code Quick Open (Ctrl+P)
-  * paste: `ext install Ionide.Ionide-fsharp`
+- Install [mono](http://www.mono-project.com/download/)
+- Install [F#](http://fsharp.org/use/linux/)
+- Add [Ionide](https://marketplace.visualstudio.com/items?itemName=Ionide.Ionide-fsharp) plugin to VS Code:  
+  - launch VS Code Quick Open (Ctrl+P)
+  - paste: `ext install Ionide.Ionide-fsharp`
 
 ## Examples
 
@@ -152,3 +169,11 @@ SUCH THAT p: a -> b, q: a -> c
 ### Handling cycles
 
 ### Comparison with  Gremlin (Apache TinkerPop)
+
+### Future work
+
+#### TODO list
+
+- Returning paths 
+- Finding shortest paths
+- Time and memory optimizations

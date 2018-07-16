@@ -1,0 +1,1 @@
+MATCH NODES x, y SUCH THAT p: x -> y;

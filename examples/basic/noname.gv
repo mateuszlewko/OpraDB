@@ -1,0 +1,15 @@
+digraph G {
+	graph [layout=dot rankdir=LR]
+	{2} -> 1 [ label="dist: 3" ];
+  {7} -> 10 [ label="dist: 1" ];
+  1 -> 10 [ label="dist: 8" ];
+  {1} -> 2 [ label="dist: 3" ];
+  {3} -> 2 [ label="dist: 5" ];
+  {2 4} -> 3 [ label="dist: 5" ];
+  5 -> 3 [ label="dist: 6" ];
+  {3 5} -> 4
+  {3 6} -> 5
+  {10} -> 6
+  {6 9} -> 8
+  {4 5 8} -> 9
+}
