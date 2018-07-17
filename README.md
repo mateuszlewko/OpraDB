@@ -299,8 +299,8 @@ MATCH ...
 - Regular constraint or arithmetic constraint:
 
 ```ocaml
-LET route p = (isAirport(p) AND (flight(p, 'p) IS NOT NULL))*. IN 
-LET inRange p = SUM (dist(p)) < 100 IN 
+LET route p = (isAirport(p) AND (flight(p, 'p) IS NOT NULL))*. IN
+LET inRange p = SUM (dist(p)) < 100 IN
 MATCH ...SUCH THAT path: ...
 WHERE route(path)
 HAVING inRange(p)
@@ -311,7 +311,7 @@ HAVING inRange(p)
 ```ocaml
 LET shop x = type(x) = "shop" IN
 LET shopsNearHome s =
-    MATCH NODES s 
+    MATCH NODES s
     SUCH THAT p: s -> home
     WHERE (shop(p)).*(address(p) = "My home location")
     HAVING SUM (distance(p)) < 4 IN
@@ -345,13 +345,39 @@ In these examples we'll use following graph:
 
 ![alt text](./examples/basic/graph-img.png "Graph")
 
-Labels with values above nodes and edge are properties. Numbers are node ids.
-Graph in `json` format can be found [here](./examples/basic/graph.json).
+Labels with values above nodes and edge are properties. Numbers are node identifiers.
+This graph in `json` format can be found [here](./examples/basic/graph.json).
 
+- Plan a route that avoids crowded places.
 
-TODO: Graph picture
+  ```ocaml
+  LET crowded x =
+      MATCH NODES x
+      SUCH THAT q: x -> y
+      WHERE .*(crowd(q) >= 10)
+      HAVING SUM (dist(q, 'q)) <= 10 IN
+  MATCH NODES x, y
+  SUCH THAT p: x -> y
+  WHERE (crowded(p) = false)*, (start(p) IS NOT NULL).* ;
+  ```
+  
+  Expected result:
 
-TODO: 3x non trivial graph query
+  | x | y  |
+  |---|----|
+  | 7 | 9  |
+  | 7 | 8  |
+  | 7 | 5  |
+  | 7 | 6  |
+  | 7 | 10 |
+
+- Traverse cycle multiple times to satisfy arithmetic constraint.
+
+  This query shows OpraDB's ability to find non trivial paths that satisfy complex arithmetic constraints efficiently. 
+
+  TODO: Query with cycle
+
+- TODO: All nodes that lie on a cycle TODO: new graph + image
 
 ## Comparison with Gremlin (Apache TinkerPop)
 
@@ -360,6 +386,40 @@ I'll compare these graph query languages on [air routes](TODO:link) dataset.
 TODO: Mention that OpraDB also supports graphml data format
 
 TODO: comparison, queries in both languages
+
+- query 1 TODO:
+
+  OpraQL:
+
+  ```ocaml
+  LET r q = labelE(q, 'q) = "route" IN
+  MATCH NODES a, b SUCH THAT p: a->b
+  WHERE (city(p) = "Wroclaw").*, (r(p)). ;
+  ```
+
+  Gremlin:
+
+  ```groovy
+  g.V().has('code', 'WRO').repeat(out().has('airport', 'country', 'UK'))\
+  .emit().times(4).path().by('code')
+  ```
+
+- query 2 TODO:
+
+  OpraQL:
+
+  ```ocaml
+  LET r q = labelE(q, 'q) = "route" IN
+  MATCH NODES a, b SUCH THAT p: a->b
+  WHERE (city(p) = "Wroclaw").*, (r(p)). ;
+  ```
+
+  Gremlin:
+
+  ```groovy
+  g.V().has('code', 'WRO').repeat(out().has('airport', 'country', 'UK'))\
+  .emit().times(4).path().by('code')
+  ```
 
 ## Future work
 
