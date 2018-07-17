@@ -22,6 +22,7 @@ way and with a minimum effort, is where this query language really excels.
         - [Constraints](#constraints)
             - [Path constraints](#path-constraints)
             - [Node and regular constraints](#node-and-regular-constraints)
+            - [Regular constraint as regular expression for path](#regular-constraint-as-regular-expression-for-path)
             - [Arithmetic constraints](#arithmetic-constraints)
         - [Let expression (Ontologies)](#let-expression-ontologies)
         - [Handling cycles](#handling-cycles)
@@ -31,7 +32,7 @@ way and with a minimum effort, is where this query language really excels.
 
 ## Quick start with Docker (Recommended)
 
-1. Install [docker](TODO: link to docker)
+1. Install [docker](TODO:link_to_docker)
 2. Get container image:
 
    * (Option A) Download latest image
@@ -72,7 +73,7 @@ TODO: Build section
 
 - Install [mono](http://www.mono-project.com/download/)
 - Install [F#](http://fsharp.org/use/linux/)
-- Add [Ionide](https://marketplace.visualstudio.com/items?itemName=Ionide.Ionide-fsharp) plugin to VS Code:  
+- Add [Ionide](https://marketplace.visualstudio.com/items?itemName=Ionide.Ionide-fsharp) plugin to VS Code:
   - launch VS Code Quick Open (Ctrl+P)
   - paste: `ext install Ionide.Ionide-fsharp`
 
@@ -117,7 +118,7 @@ in `nodes` object (see example above).
 Query has following syntax:
 
 ```cypher
-MATCH NODES <list of matched (returned) nodes or node properties>  
+MATCH NODES <list of matched (returned) nodes or node properties>
       PATHS <list of matched paths>
       SUCH THAT <path constraints>
       WHERE <regular constraints>
@@ -130,7 +131,7 @@ specify at least one matched node or node property.
 
 **Note:** Returning matched paths is currently **not supported**.
 
-* List of matched nodes (`MATCH NODES`):
+- List of matched nodes (`MATCH NODES`):
 
     Example:
 
@@ -138,13 +139,13 @@ specify at least one matched node or node property.
     MATCH NODES a, b, someNode, property(someNode), name(someNode)
     ...
     ```
-    By specifying node or node's property in matched nodes, we're essentially 
+    By specifying node or node's property in matched nodes, we're essentially
     defining an alias to this node, which we can use in latter constraints.
 
     Usually we want to return node's property like `name(x)`. Providing just an
     alias `x` will return ids of all nodes that matched `x`'s constraints.
 
-* `MATCH ... PATHS`:
+- `MATCH ... PATHS`:
     Behaviour for matching paths is similar to nodes, however current versions
     doesn't return paths.
 
@@ -171,18 +172,18 @@ SUCH THAT p: a -> b, q: a -> c
 
 #### Node and regular constraints
 
-Regular constraint specifies how correct paths should look like. It consists of 
+Regular constraint specifies how correct paths should look like. It consists of
 node constraints and operators: `|`, `*`. Each node constraint describes one of the nodes on a given path.
 
 Example node constrains:
 
-- `(access_level(people) > 3 OR position(people) = "CTO")` this constraint will be     true if *current* node on path `people` has property `access_level` that is 
+- `(access_level(people) > 3 OR position(people) = "CTO")` this constraint will be     true if *current* node on path `people` has property `access_level` that is
   greater
   than 3 or property `position` is "CTO"
 
 *Current node* is currently checked node when traversing a path.
 
-- `(distance(cities, 'cities) < 10)` Tick before node name (`'node`) is current node's 
+- `(distance(cities, 'cities) < 10)` Tick before node name (`'node`) is current node's
   successor when traversing a path. Node will satisfy this constraint, if outgoing edge (to successor) has property `distance` and its values is less than 10.
 
 Regular constraint can just be a sequence of node constraints, like this:
@@ -191,19 +192,67 @@ Regular constraint can just be a sequence of node constraints, like this:
 (name(friends) = "Bol")(name(friends) = "Alice")(name(friends) = "Mateusz")
 ```
 
-Path `friends` satisfies this constraint as long as it contains three nodes which 
-are connected by some edges, and `name` of first node is *Bob*, second *Alice* and 
+Path `friends` satisfies this constraint as long as it contains three nodes which
+are connected by some edges, and `name` of first node is *Bob*, second *Alice* and
 third *Mateusz*.
 
-However, regular constraints can act as regular expression on paths, where instead 
-of letters and digits we have *node constraints*. This is where we can make use of 
+However, regular constraints can act as regular expression on paths, where instead
+of letters and digits we have *node constraints*. This is where we can make use of
 union `|` and Kleene-star `*` operators.
 
+#### Regular constraint as regular expression for path
+
+Following query returns pairs of cities in Poland and USA for which
+there exists flight path:
+
+```cypher
+MATCH NODES x y
+SUCH THAT p: x -> y
+WHERE (country(p) = "Poland").*(country(p) = "USA"),
+      (flight(p, 'p) IS NOT NULL)*.
+```
+
+Expression `(<node constraint>)*` will be satisfied by sequence of nodes on a path,
+of any length (possibly zero). Dot `.` means that any node will match this
+constraint.
+
+In above query we have two regular constraints.
+First checks that path begins and ends in appropriate countries, however, we can
+flight through any country (hence `.*`). Second, ensures that there exists a flight
+connection between consecutive nodes.
+
+**Note:** Dot at the end (match any) is necessary, because when checking the constraint
+for last node on a path, we don't need to ensure that there is a property `flight`
+on edge outgoing from last node (there may not be).
+
+In next example let's that we want to travel from Poland to USA only through specific countries:
+
+```cypher
+MATCH NODES x y
+SUCH THAT p: x -> y
+WHERE (country(p) = "Poland")((country(p) = "Canada") | (country(p) = "Germany"))*
+(country(p) = "USA"), (flight(p, 'p) IS NOT NULL)*.
+```
+
 #### Arithmetic constraints
+
+In order to constrain arithmetic properties of paths, you can use following
+keywords: `SUM`, `MAX`, `MIN`. They will perform aggregated operation on nodes or edges. Sum will
 
 ### Let expression (Ontologies)
 
 ### Handling cycles
+
+As arithmetic expressions can be quite complicated and they can be applied on
+graphs with positive and negative cycles, OpraDB uses following algorithm to check whether paths satisfies this constraints:
+
+1. First all paths that satisfy regular constraints are found.
+2. For each path, we retrieve all simple cycles (using Johnson's algorithm) and
+   calculate delta value of each property (that exists in arithmetic constrains).
+3. With all aggregated values for every property and delta of properties value
+   for each cycle, we construct a set of linear inequalities that include variables representing number of times to traverse a given cycle.
+4. We solve this set of inequalities using [Z3](TODO:link) solver to find out 
+   how many times to traverse each cycle. If no positive solutions where found it means that path doesn't satisfy arithmetic constraints.
 
 ### Comparison with  Gremlin (Apache TinkerPop)
 
@@ -211,7 +260,7 @@ union `|` and Kleene-star `*` operators.
 
 #### TODO list
 
-- Returning paths 
+- Returning paths
 - Finding shortest paths
 - Time and memory optimizations
 
