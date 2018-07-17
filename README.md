@@ -27,8 +27,7 @@ way and with a minimum effort, is where this query language really excels.
         - [Let expression (Ontologies)](#let-expression-ontologies)
         - [Handling cycles](#handling-cycles)
         - [Comparison with Gremlin (Apache TinkerPop)](#comparison-with-gremlin-apache-tinkerpop)
-        - [Future work](#future-work)
-            - [TODO list](#todo-list)
+        - [Future work (TODO list)](#future-work-todo-list)
 
 ## Quick start with Docker (Recommended)
 
@@ -206,7 +205,7 @@ Following query returns pairs of cities in Poland and USA for which
 there exists flight path:
 
 ```cypher
-MATCH NODES x y
+MATCH NODES x, y
 SUCH THAT p: x -> y
 WHERE (country(p) = "Poland").*(country(p) = "USA"),
       (flight(p, 'p) IS NOT NULL)*.
@@ -228,7 +227,7 @@ on edge outgoing from last node (there may not be).
 In next example let's that we want to travel from Poland to USA only through specific countries:
 
 ```cypher
-MATCH NODES x y
+MATCH NODES x, y
 SUCH THAT p: x -> y
 WHERE (country(p) = "Poland")((country(p) = "Canada") | (country(p) = "Germany"))*
 (country(p) = "USA"), (flight(p, 'p) IS NOT NULL)*.
@@ -237,31 +236,55 @@ WHERE (country(p) = "Poland")((country(p) = "Canada") | (country(p) = "Germany")
 #### Arithmetic constraints
 
 In order to constrain arithmetic properties of paths, you can use following
-keywords: `SUM`, `MAX`, `MIN`. They will perform aggregated operation on nodes or edges. Sum will
+keywords: `SUM`, `MAX`, `MIN`. They will perform aggregated operation on nodes or
+edges. Then they can be compared to other aggregated operations or constants inside
+`HAVING` clause.
+
+Example:
+
+```cypher
+MATCH NODES x, y
+SUCH THAT p: x -> y
+WHERE (country(p) = "Poland").*(country(p) = "USA"),
+      (flight(p, 'p) IS NOT NULL)*.
+HAVING SUM (dist(p)) < 8000, MAX (duration(p, 'p)) <= 6
+```
+
+This will constrain length of trip from Poland to USA, to be shorter than 8000 km 
+and make sure none of the flights exceeds 6 hours.
+
+Following query ensures that return trip will be shorter than the first one:
+
+```cypher
+MATCH NODES x, y
+SUCH THAT p: x -> y, q: y -> x
+WHERE (country(p) = "Poland").*(country(p) = "USA"),
+      (flight(p, 'p) IS NOT NULL)*.
+HAVING SUM (dist(p)) < 8000, SUM (dist(q)) < SUM (dist(p))
+```
 
 ### Let expression (Ontologies)
 
 ### Handling cycles
 
-As arithmetic expressions can be quite complicated and they can be applied on
-graphs with positive and negative cycles, OpraDB uses following algorithm to check whether paths satisfies this constraints:
+As arithmetic constraints can be quite complicated and they can be applied on
+graphs with positive and negative cycles, OpraDB uses following algorithm to check whether paths satisfy these constraints:
 
 1. First all paths that satisfy regular constraints are found.
 2. For each path, we retrieve all simple cycles (using Johnson's algorithm) and
    calculate delta value of each property (that exists in arithmetic constrains).
-3. With all aggregated values for every property and delta of properties value
-   for each cycle, we construct a set of linear inequalities that include variables representing number of times to traverse a given cycle.
-4. We solve this set of inequalities using [Z3](TODO:link) solver to find out 
+3. With all aggregated values for every property and delta of property values
+   for each cycle, we construct a set of linear inequalities, that includes variables representing number of times to traverse a given cycle.
+4. We solve this set of inequalities using [Z3](TODO:link) solver to find out
    how many times to traverse each cycle. If no positive solutions where found it means that path doesn't satisfy arithmetic constraints.
 
 ### Comparison with  Gremlin (Apache TinkerPop)
 
-### Future work
-
-#### TODO list
+### Future work (TODO list)
 
 - Returning paths
 - Finding shortest paths
 - Time and memory optimizations
+- Results visualization with web client
 
 If you have any thoughts or request, feel free to create an issue or add a pull request.
