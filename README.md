@@ -345,6 +345,9 @@ In these examples we'll use following graph:
 
 ![alt text](./examples/basic/graph-img.png "Graph")
 
+Labels with values above nodes and edge are properties. Numbers are node ids.
+Graph in `json` format can be found [here](./examples/basic/graph.json).
+
 
 TODO: Graph picture
 
