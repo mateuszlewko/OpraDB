@@ -1,11 +1,17 @@
 # OpraDB
 
-OpraDB is graph database that uses [OPRA query language](https://arxiv.org/abs/1710.04419) and is written in [F#](http://fsharp.org/) with [dotnet core](https://www.microsoft.com/net/learn/get-started/linuxubuntu).
-Main purpose of this project is to show expressive power of [OPRA](https://arxiv.org/pdf/1710.04419.pdf) queries.
+OpraDB is graph database that uses [OPRA query language](https://arxiv.org/abs/1710.04419) and is written in [F#](http://fsharp.org/).
+Main purpose of this project is to show the expressive power of [OPRA](https://arxiv.org/pdf/1710.04419.pdf) queries.
 
-This is a work in progress.
+Ability to express complex path properties in a modular
+way and with a minimum effort, is where this query language really excels.
+
+**Note:** This is a work in progress, although usable version is already available.
+
+## Table of Contents
 
 - [OpraDB](#opradb)
+    - [Table of Contents](#table-of-contents)
     - [Quick start with Docker (Recommended)](#quick-start-with-docker-recommended)
     - [How to build from source (Linux)](#how-to-build-from-source-linux)
     - [How to edit in Visual Studio Code](#how-to-edit-in-visual-studio-code)
@@ -17,6 +23,7 @@ This is a work in progress.
             - [Path constraints](#path-constraints)
             - [Node and regular constraints](#node-and-regular-constraints)
             - [Arithmetic constraints](#arithmetic-constraints)
+        - [Let expression (Ontologies)](#let-expression-ontologies)
         - [Handling cycles](#handling-cycles)
         - [Comparison with Gremlin (Apache TinkerPop)](#comparison-with-gremlin-apache-tinkerpop)
         - [Future work](#future-work)
@@ -194,6 +201,8 @@ union `|` and Kleene-star `*` operators.
 
 #### Arithmetic constraints
 
+### Let expression (Ontologies)
+
 ### Handling cycles
 
 ### Comparison with  Gremlin (Apache TinkerPop)
@@ -205,3 +214,5 @@ union `|` and Kleene-star `*` operators.
 - Returning paths 
 - Finding shortest paths
 - Time and memory optimizations
+
+If you have any thoughts or request, feel free to create an issue or add a pull request.
