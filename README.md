@@ -118,7 +118,7 @@ in `nodes` object (see example above).
 
 Query has following syntax:
 
-```cypher
+```ocaml
 MATCH NODES <list of matched (returned) nodes or node properties>
       PATHS <list of matched paths>
       SUCH THAT <path constraints>
@@ -136,7 +136,7 @@ specify at least one matched node or node property.
 
     Example:
 
-    ```cypher
+    ```ocaml
     MATCH NODES a, b, someNode, property(someNode), name(someNode)
     ...
     ```
@@ -154,7 +154,7 @@ specify at least one matched node or node property.
 
 #### Path constraints
 
-```cypher
+```ocaml
 path1 : beginNode -> endNode
 ```
 
@@ -166,7 +166,7 @@ Multiple path constraints can be specified in query by separating them with comm
 
 Example:
 
-```cypher
+```ocaml
 MATCH NODES name(a), name(b), name(c)
 SUCH THAT p: a -> b, q: a -> c
 ```
@@ -189,7 +189,7 @@ Example node constrains:
 
 Regular constraint can just be a sequence of node constraints, like this:
 
-```cypher
+```ocaml
 (name(friends) = "Bol")(name(friends) = "Alice")(name(friends) = "Mateusz")
 ```
 
@@ -206,7 +206,7 @@ union `|` and Kleene-star `*` operators.
 Following query returns pairs of cities in Poland and USA for which
 there exists flight path:
 
-```cypher
+```ocaml
 MATCH NODES x, y
 SUCH THAT p: x -> y
 WHERE (country(p) = "Poland").*(country(p) = "USA"),
@@ -228,7 +228,7 @@ on edge outgoing from last node (there may not be).
 
 In next example let's that we want to travel from Poland to USA only through specific countries:
 
-```cypher
+```ocaml
 MATCH NODES x, y
 SUCH THAT p: x -> y
 WHERE (country(p) = "Poland")((country(p) = "Canada") | (country(p) = "Germany"))*
@@ -244,7 +244,7 @@ edges. Then they can be compared to other aggregated operations or constants ins
 
 Example:
 
-```cypher
+```ocaml
 MATCH NODES x, y
 SUCH THAT p: x -> y
 WHERE (country(p) = "Poland").*(country(p) = "USA"),
@@ -257,7 +257,7 @@ and make sure none of the flights exceeds 6 hours.
 
 Following query ensures that return trip will be shorter than the first one:
 
-```cypher
+```ocaml
 MATCH NODES x, y
 SUCH THAT p: x -> y, q: y -> x
 WHERE (country(p) = "Poland").*(country(p) = "USA"),
@@ -289,7 +289,7 @@ MATCH ...
 
   Which can be used as part of other constraints:
 
-  ```cypher
+  ```ocaml
   ...
   MATCH ...
   WHERE (isAirport(p)).*
