@@ -252,7 +252,7 @@ WHERE (country(p) = "Poland").*(country(p) = "USA"),
 HAVING SUM (dist(p)) < 8000, MAX (duration(p, 'p)) <= 6
 ```
 
-This will constrain length of trip from Poland to USA, to be shorter than 8000 km 
+This will constrain length of trip from Poland to USA, to be shorter than 8000 km
 and make sure none of the flights exceeds 6 hours.
 
 Following query ensures that return trip will be shorter than the first one:
@@ -267,7 +267,64 @@ HAVING SUM (dist(p)) < 8000, SUM (dist(q)) < SUM (dist(p))
 
 ### Let expression (Ontologies)
 
-TODO: explanation, query examples
+You may have already noticed that some constraints are duplicated and make queries more obscure. Let expressions allow to modularize and greatly simplify a query while maintaining it's expressive power.
+
+Let syntax is as follows:
+
+```ocaml
+LET <name> <list of bound nodes or paths> =
+    <let body> IN
+LET ... = ... IN
+MATCH ...
+```
+
+`Let body` can be one of:
+
+- Value expression or node constraint:
+
+  ```ocaml
+  LET duration x = 60 * distance(x) / speedLimit(x) IN
+  LET isAirport x = type(x) = "airport" IN
+  ```
+
+  Which can be used as part of other constraints:
+
+  ```cypher
+  ...
+  MATCH ...
+  WHERE (isAirport(p)).*
+  HAVING SUM (duration(p)) < 10
+  ```
+
+- Regular constraint or arithmetic constraint:
+
+```ocaml
+LET route p = (isAirport(p) AND (flight(p, 'p) IS NOT NULL))*. IN 
+LET inRange p = SUM (dist(p)) < 100 IN 
+MATCH ...SUCH THAT path: ...
+WHERE route(path)
+HAVING inRange(p)
+```
+
+- Query:
+
+```ocaml
+LET shop x = type(x) = "shop" IN
+LET shopsNearHome s =
+    MATCH NODES s 
+    SUCH THAT p: s -> home
+    WHERE (shop(p)).*(address(p) = "My home location")
+    HAVING SUM (distance(p)) < 4 IN
+
+MATCH NODES address(shop)
+SUCH THAT p: work -> shop
+WHERE (address(p) = "My work location").*(shopsNearHome(p))
+HAVING SUM (distnace(p)) < 4
+```
+
+Above query returns location of all shops near home and work.
+
+**Note:** All `let` expressions must come before `match` query, and they can't be mutually recursive.
 
 ### Handling cycles
 
