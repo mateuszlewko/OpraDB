@@ -6,7 +6,7 @@ Main purpose of this project is to show the expressive power of [OPRA](https://a
 Ability to express complex path properties in a modular
 way and with a minimum effort, is where this query language really excels.
 
-**Note:** This is a work in progress, although usable version is already available.
+**Note:** Although this is a work in progress, usable version is already available.
 
 ## Table of Contents
 
@@ -15,7 +15,7 @@ way and with a minimum effort, is where this query language really excels.
     - [Quick start with Docker (Recommended)](#quick-start-with-docker-recommended)
     - [How to build from source (Linux)](#how-to-build-from-source-linux)
     - [How to edit in Visual Studio Code](#how-to-edit-in-visual-studio-code)
-    - [Examples](#examples)
+    - [How to write Opra queries](#how-to-write-opra-queries)
         - [Basics](#basics)
             - [Graph](#graph)
             - [Syntax](#syntax)
@@ -26,8 +26,10 @@ way and with a minimum effort, is where this query language really excels.
             - [Arithmetic constraints](#arithmetic-constraints)
         - [Let expression (Ontologies)](#let-expression-ontologies)
         - [Handling cycles](#handling-cycles)
-        - [Comparison with Gremlin (Apache TinkerPop)](#comparison-with-gremlin-apache-tinkerpop)
-        - [Future work (TODO list)](#future-work-todo-list)
+    - [Examples](#examples)
+    - [Comparison with Gremlin (Apache TinkerPop)](#comparison-with-gremlin-apache-tinkerpop)
+    - [Future work](#future-work)
+    - [Contribution](#contribution)
 
 ## Quick start with Docker (Recommended)
 
@@ -76,9 +78,9 @@ TODO: Build section
   - launch VS Code Quick Open (Ctrl+P)
   - paste: `ext install Ionide.Ionide-fsharp`
 
-## Examples
+## How to write Opra queries
 
-Read this sections to get a brief understanding of how to write queries in [Opra QL](https://arxiv.org/pdf/1710.04419.pdf).
+Read this sections to get a brief understanding of [Opra QL](https://arxiv.org/pdf/1710.04419.pdf) and OpraDB.
 
 ### Basics
 
@@ -265,6 +267,8 @@ HAVING SUM (dist(p)) < 8000, SUM (dist(q)) < SUM (dist(p))
 
 ### Let expression (Ontologies)
 
+TODO: explanation, query examples
+
 ### Handling cycles
 
 As arithmetic constraints can be quite complicated and they can be applied on
@@ -278,13 +282,27 @@ graphs with positive and negative cycles, OpraDB uses following algorithm to che
 4. We solve this set of inequalities using [Z3](TODO:link) solver to find out
    how many times to traverse each cycle. If no positive solutions where found it means that path doesn't satisfy arithmetic constraints.
 
-### Comparison with  Gremlin (Apache TinkerPop)
+## Examples
 
-### Future work (TODO list)
+TODO: Graph picture
 
-- Returning paths
-- Finding shortest paths
-- Time and memory optimizations
-- Results visualization with web client
+TODO: 3x non trivial graph query
 
-If you have any thoughts or request, feel free to create an issue or add a pull request.
+## Comparison with Gremlin (Apache TinkerPop)
+
+I'll compare these graph query languages on [air routes](TODO:link) dataset.
+
+TODO: Mention that OpraDB also supports graphml data format
+
+TODO: comparison, queries in both languages
+
+## Future work
+
+- [ ] Returning paths.
+- [ ] Finding shortest paths.
+- [ ] Time and memory optimizations.
+- [ ] Results visualization with web client.
+
+## Contribution
+
+If you have any thoughts or request, feel free to create an issue or add a pull request. Feedback is welcome.
