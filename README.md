@@ -267,9 +267,9 @@ HAVING SUM (dist(p)) < 8000, SUM (dist(q)) < SUM (dist(p))
 
 ### Let expression (Ontologies)
 
-You may have already noticed that some constraints are duplicated and make queries more obscure. Let expressions allow to modularize and greatly simplify a query while maintaining it's expressive power.
+You may have already noticed that some constraints are duplicated and make queries more obscure. `Let expressions` allow to modularize and greatly simplify a query while maintaining it's expressive power.
 
-Let syntax is as follows:
+`Let` syntax is as follows:
 
 ```ocaml
 LET <name> <list of bound nodes or paths> =
@@ -340,6 +340,11 @@ graphs with positive and negative cycles, OpraDB uses following algorithm to che
    how many times to traverse each cycle. If no positive solutions where found it means that path doesn't satisfy arithmetic constraints.
 
 ## Examples
+
+In these examples we'll use following graph:
+
+![alt text](./examples/basic/graph-img.png "Graph")
+
 
 TODO: Graph picture
 
