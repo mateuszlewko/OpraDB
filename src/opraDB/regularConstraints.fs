@@ -119,7 +119,7 @@ module RegularConstraints =
         let allNFAs = query.regularConstraints 
                       |> List.map (fun e -> [State.ofRegExp letExps e]) 
 
-        printfn "All nfas: %A" allNFAs
+        // printfn "All nfas: %A" allNFAs
 
         let mKEdges =
             let nodeFromIndex = 
@@ -129,6 +129,8 @@ module RegularConstraints =
                     | Some ix -> ixMap
 
                 List.fold getIndex Map.empty query.pathConstraints
+
+            // printfn "nodeFromIndex cnt: %d" (Map.count nodeFromIndex)
 
             // all k-nodes
             Graph.Nodes.toList graph |> List.map fst
@@ -150,7 +152,7 @@ module RegularConstraints =
                 } |> updateArithStates letExps letQueriesRes graph
             )
           
-        printfn "initial mKEdges: %A" mKEdges
+        // printfn "initial mKEdges: %A" mKEdges
 
         let checkFinalNodes mKEdges =
             let endNodeNames = query.pathConstraints 
@@ -179,7 +181,7 @@ module RegularConstraints =
             |> List.forall (List.exists (fun t -> t.state = Matched))
 
         let failedCheck name = 
-            printfn "Failed check %s" name 
+            // printfn "Failed check %s" name 
             false
 
         let checkMatched preds mKEdges =

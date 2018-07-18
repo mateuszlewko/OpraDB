@@ -379,46 +379,45 @@ This graph in `json` format can be found [here](./examples/basic/graph.json).
 
 - TODO: All nodes that lie on a cycle TODO: new graph + image
 
-## Comparison with Gremlin (Apache TinkerPop)
+## Comparison with [Gremlin (Apache TinkerPop)](http://tinkerpop.apache.org/)
 
-I'll compare these graph query languages on [air routes](TODO:link) dataset.
+Now, we'll compare these graph query languages on [air routes](./examples/flight-routes/air-routes.graphml) dataset (contains description of the data).
 
-TODO: Mention that OpraDB also supports graphml data format
+**Note:** This graph is in [graphml format](https://en.wikipedia.org/wiki/GraphML?oldformat=true), which is also supported by OpraDB (apart from json).
 
-TODO: comparison, queries in both languages
-
-- query 1 TODO:
+- All flight connections outgoing from Wroclaw (WRO) airport:
 
   OpraQL:
 
   ```ocaml
   LET r q = labelE(q, 'q) = "route" IN
-  MATCH NODES a, b SUCH THAT p: a->b
-  WHERE (city(p) = "Wroclaw").*, (r(p)). ;
+  MATCH NODES code(a), code(b) SUCH THAT p: a->b
+  WHERE (code(p) = "WRO").*, (r(p)). ;
   ```
 
   Gremlin:
 
   ```groovy
-  g.V().has('code', 'WRO').repeat(out().has('airport', 'country', 'UK'))\
-  .emit().times(4).path().by('code')
+  g.V().has('code', 'WRO').out('route').path().by('code')
   ```
 
-- query 2 TODO:
+- Connections from any airport in Poland to any airport in Germany that go through Munich.
 
   OpraQL:
 
   ```ocaml
-  LET r q = labelE(q, 'q) = "route" IN
-  MATCH NODES a, b SUCH THAT p: a->b
-  WHERE (city(p) = "Wroclaw").*, (r(p)). ;
+  LET route q = labelE(q, 'q) = "route" IN
+  MATCH NODES code(a), code(b) SUCH THAT p: a -> b
+  WHERE (country(p) = "PL")(city(p) = "Munich")(country(p) = "DE"),
+        (route(p))(route(p)). ;
   ```
 
   Gremlin:
 
   ```groovy
-  g.V().has('code', 'WRO').repeat(out().has('airport', 'country', 'UK'))\
-  .emit().times(4).path().by('code')
+  g.V().has('airport','country', 'PL').as('pl').out('route') \
+       .has('airport', 'city', 'Munich').out('route').has('country', 'DE') \
+       .as('de').select('pl', 'de').by('code').by('code')
   ```
 
 ## Future work
@@ -426,6 +425,7 @@ TODO: comparison, queries in both languages
 - [ ] Returning paths.
 - [ ] Finding shortest paths.
 - [ ] Time and memory optimizations.
+- [ ] Improve query execution time complexity for multiple paths
 - [ ] Results visualization with web client.
 
 ## Contribution
