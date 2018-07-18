@@ -360,7 +360,7 @@ This graph in `json` format can be found [here](./examples/basic/graph.json).
   SUCH THAT p: x -> y
   WHERE (crowded(p) = false)*, (start(p) IS NOT NULL).* ;
   ```
-  
+
   Expected result:
 
   | x | y  |
@@ -373,7 +373,7 @@ This graph in `json` format can be found [here](./examples/basic/graph.json).
 
 - Traverse cycle multiple times to satisfy arithmetic constraint.
 
-  This query shows OpraDB's ability to find non trivial paths that satisfy complex arithmetic constraints efficiently. 
+  This query shows OpraDB's ability to efficiently find non trivial paths that satisfy complex arithmetic constraints.
 
   TODO: Query with cycle
 
