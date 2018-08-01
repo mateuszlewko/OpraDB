@@ -27,6 +27,8 @@ way and with a minimum effort, is where this query language really excels.
         - [Let expression (Ontologies)](#let-expression-ontologies)
         - [Handling cycles](#handling-cycles)
     - [Examples](#examples)
+        - [General](#general)
+        - [Simple cycle](#simple-cycle)
     - [Comparison with Gremlin (Apache TinkerPop)](#comparison-with-gremlin-apache-tinkerpop)
     - [Future work](#future-work)
     - [Contribution](#contribution)
@@ -341,15 +343,26 @@ graphs with positive and negative cycles, OpraDB uses following algorithm to che
 
 ## Examples
 
-**More examples can be found [here](./examples).**
+**All examples can be found [here](./examples).**
+
+### General
 
 In these examples we'll use following graph:
 
-![alt text](./examples/basic/graph-img.png "Graph")
+![alt text](./examples/general/graph-img.png "Graph")
 
-This graph in `json` format can be found [here](./examples/basic/graph.json).
+This graph in `json` format can be found [here](./examples/general/graph.json).
 Every node has a label indicating level of crowdedness. All edges have
 specified distance. Nodes `1` and `7` have a `start` label.
+
+- Get all nodes.
+
+  ```ocaml
+  MATCH NODES x SUCH THAT p: x -> y
+  ```
+
+  Set of nodes is selected for paths, so there needs to be at least one 
+  path to return anything.
 
 - Plan a route that avoids crowded places, and starts from node with label `start`.
 
@@ -393,8 +406,43 @@ specified distance. Nodes `1` and `7` have a `start` label.
   | 7 | 9  |
   | 7 | 8  |
 
-- TODO: Graph with letters
-- TODO: All nodes that lie on a cycle TODO: new graph + image
+### Simple cycle
+
+Next graph is simple cycle with label `a = 1` or `b = 1`
+on each node.
+
+![alt text](./examples/simple_cycle/graph-img.png "Graph")
+
+- Paths where number of nodes labeled `a` is greater by two.
+
+  ```ocaml
+  MATCH NODES x, y SUCH THAT p : x -> y
+  HAVING SUM (a(p)) = (2 + SUM (b(p)));
+  ```
+
+  Expected result:
+
+  | x | y  |
+  |---|----|
+  | 7 | 3  |
+  | 1 | 4  |
+  | 2 | 3  |
+  | 1 | 2  |
+
+- Paths where number of nodes labeled `a` is two times 
+  number of `b` nodes.
+
+  ```ocaml
+  MATCH NODES x, y SUCH THAT p : x -> y
+  HAVING SUM (a(p)) = (2 * SUM (b(p)));
+  ```
+
+  Expected result:
+
+  | x | y  |
+  |---|----|
+  | 2 | 4  |
+  | 7 | 2  |
 
 ## Comparison with [Gremlin (Apache TinkerPop)](http://tinkerpop.apache.org/)
 

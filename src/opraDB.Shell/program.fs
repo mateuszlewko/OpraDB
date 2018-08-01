@@ -55,7 +55,12 @@ let mapListToPTable (ms : Map<OpraDB.AST.NodeMatched, NodeResult> list) =
     |> horizontalAlignment FsPrettyTable.Types.Left
 
 let eval graph str = 
-    let query = OpraDB.Parser.parseQuery str
+    let query = 
+        try OpraDB.Parser.parseQuery str
+        with e -> 
+            printfn "There was an exception while parsing query:\n---%s\n---"
+                str
+            reraise ()
     // printfn "query: %A" query
     let nodes = matchedNodes graph query
     

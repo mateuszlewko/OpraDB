@@ -1,0 +1,5 @@
+MATCH NODES x, y
+SUCH THAT p: x -> y
+WHERE (start(p) IS NOT NULL).*
+HAVING (10 + SUM (crowd(p))) >= SUM (dist(p, 'p) * 5),
+       SUM (dist(p, 'p)) > 10000000;
