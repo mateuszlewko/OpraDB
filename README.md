@@ -82,7 +82,10 @@ way and with a minimum effort, is where this query language really excels.
     `mono bin/Debug/net462/opraDB.Shell.exe`
 
     Quick start with example graph:
-    `mono bin/Debug/net462/opraDB.Shell.exe --input-data ../../examples/simple-cycle/graph.json --input-data-format json`
+
+    ```bash
+    mono bin/Debug/net462/opraDB.Shell.exe -g ../../examples/simple-cycle/graph.json -f json
+    ```
 
     <!-- Run tests with (assuming you're in `test` folder):
     `dotnet run --no-build` -->
