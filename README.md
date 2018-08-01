@@ -25,6 +25,7 @@ way and with a minimum effort, is where this query language really excels.
             - [Regular constraint as regular expression for path](#regular-constraint-as-regular-expression-for-path)
             - [Arithmetic constraints](#arithmetic-constraints)
         - [Let expression (Ontologies)](#let-expression-ontologies)
+            - [Counting](#counting)
         - [Handling cycles](#handling-cycles)
     - [Examples](#examples)
         - [General](#general)
@@ -59,18 +60,32 @@ way and with a minimum effort, is where this query language really excels.
 
 ## How to build from source (Linux)
 
-TODO: Build section
-
 - Install [dotnet core](https://www.microsoft.com/net/learn/get-started/linuxubuntu)
+- Install [mono](https://www.mono-project.com/download/stable/)
+- Set `FrameworkPathOverride` to mono `4.6.*` libs:
+  
+  ```bash
+  export FrameworkPathOverride=/usr/lib/mono/4.6.2-api
+  ```
+
+- (Optional) You can also add above line to your `.bashrc`:
+  
+  ```bash
+  echo 'export FrameworkPathOverride=/usr/lib/mono/4.6.2-api' >> ~/.bashrc
+  ```
+    
 - `git clone https://github.com/mateuszlewko/OpraDB.git`
-- `cd OpraDB/src`
+- `cd OpraDB/src/opraDB.Shell`
 - `dotnet build`
 
-    Run main project with (assuming you're in `src` folder):
-    `dotnet run --no-build`
+    Run console client with (assuming you're in `opraDB.Shell` folder):
+    `mono bin/Debug/net462/opraDB.Shell.exe`
 
-    Run tests with (assuming you're in `test` folder):
-    `dotnet run --no-build`
+    Quick start with example graph:
+    `mono bin/Debug/net462/opraDB.Shell.exe --input-data ../../examples/simple-cycle/graph.json --input-data-format json`
+
+    <!-- Run tests with (assuming you're in `test` folder):
+    `dotnet run --no-build` -->
 
 ## How to edit in [Visual Studio Code](https://code.visualstudio.com/)
 
@@ -286,7 +301,7 @@ MATCH ...
 
   ```ocaml
   LET duration x = 60 * distance(x) / speedLimit(x) IN
-  LET isAirport x = type(x) = "airport" IN
+  LET isAirport x = type(x) = "airport" IN 
   ```
 
   Which can be used as part of other constraints:
@@ -327,6 +342,26 @@ HAVING SUM (distnace(p)) < 4
 Above query returns location of all shops near home and work.
 
 **Note:** All `let` expressions must come before `match` query, and they can't be mutually recursive.
+
+#### Counting
+
+There is no expression for counting, however we can easily define
+ontology that will return number of nodes on paths. 
+
+```ocaml
+LET realNode n = IF _id(n) IS NOT NULL
+                 THEN 1
+                 ELSE 0 IN
+LET count p = SUM (realNode(p)) IN 
+
+MATCH ...
+HAVIN count(p) < 10;
+```
+
+**Note:** Label `_id` on nodes and labels `_from` and `_to` on edges are
+required in graph description, but they can also be used in queries.
+They're all integers. Special internal sink node doesn't have any of those
+labels.
 
 ### Handling cycles
 

@@ -15,15 +15,17 @@ type DBDataFormat =
     | Xml  = 2
 
 type Arguments =
-    | [<ExactlyOnce>] Input_Data of path:string
-    | [<ExactlyOnce>] Input_Data_Format of format:DBDataFormat
+    | [<ExactlyOnce; AltCommandLine("-g")>] 
+      Input_Data of path:string
+    | [<ExactlyOnce; AltCommandLine("-f")>] 
+      Input_Data_Format of format:DBDataFormat
 with
     interface IArgParserTemplate with
         member this.Usage = 
             match this with 
-            | Input_Data _        -> "specify input data file path."
+            | Input_Data _        -> "specify graph input data file path."
             | Input_Data_Format _ -> "format of input file (json or \
-                                      graphml-xml)."
+                                      graphml/xml)."
 
 type NodeResult = 
     | ID       of int 

@@ -76,14 +76,19 @@ module XmlImport =
      
     let parseDatas = Array.choose parseData >> Map.ofArray
 
+    let private append name id = Map.add name (Int id)
+
     let parseNodes (nodes : GraphML.Node array) = 
         let parseNode (node : GraphML.Node) = 
-            node.Id, parseDatas node.Datas 
+            node.Id, parseDatas node.Datas |> append "_id" node.Id
         Array.map parseNode nodes |> Array.toList
 
     let parseEdges (edges : GraphML.Edge array) = 
         let parseEdge (edge : GraphML.Edge) = 
             let labels = parseDatas edge.Datas
+                         |> append "_from" edge.Source
+                         |> append "_from" edge.Target
+                         
             edge.Source, edge.Target, labels
         Array.map parseEdge edges |> Array.toList
 
