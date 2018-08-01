@@ -411,7 +411,7 @@ specified distance. Nodes `1` and `7` have a `start` label.
 Next graph is simple cycle with label `a = 1` or `b = 1`
 on each node.
 
-![alt text](./examples/simple_cycle/graph-img.png "Graph")
+![alt text](./examples/simple-cycle/graph-img.png "Graph")
 
 - Paths where number of nodes labeled `a` is greater by two.
 
@@ -443,6 +443,19 @@ on each node.
   |---|----|
   | 2 | 4  |
   | 7 | 2  |
+
+- Constrain path length.
+  
+  ```ocaml
+  LET realNode n = IF _id(n) IS NOT NULL
+                   THEN 1
+                   ELSE 0 IN
+  LET count p = SUM (realNode(p)) IN  
+  MATCH NODES x, y
+  SUCH THAT p : x -> y
+  HAVING SUM (a(p)) = (2 + SUM (b(p)))
+       , count(p) = 4 ;
+  ```
 
 ## Comparison with [Gremlin (Apache TinkerPop)](http://tinkerpop.apache.org/)
 

@@ -118,6 +118,13 @@ module ValueExpression =
                                     evalArith false op lhs rhs
         | BoolOp (lhs, op, rhs)  -> let lhs, rhs = exp lhs, exp rhs 
                                     evalBool op lhs rhs
+        | IfExp (cond, thenExp, elseExp) -> 
+            match exp cond with 
+            | Bool true  -> exp thenExp
+            | Bool false -> exp elseExp 
+            | other      -> sprintf "Non boolean result from if condition: %A"
+                                other |> failwith 
+                                         
         | ResultOfQuery (q, ids) -> 
             let results = Map.find q letQueriesRes
             let resSets = Lazy.force results 
@@ -143,6 +150,9 @@ module ValueExpression =
                                      ArithOp (l, op, r)
         | BoolOp  (l, op, r)      -> let l, r = rename l, rename r
                                      BoolOp (l, op, r)
+        | IfExp (c, th, el)       -> 
+            let c, th, el = rename c, rename th, rename el                              
+            IfExp (c, th, el)
         | ResultOfQuery (q, args) -> ResultOfQuery (q, args)
         | Ext e                   -> Ext (renameExt e)
 

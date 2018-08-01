@@ -42,6 +42,7 @@ module AST =
         | ResultOfQuery of string * NodeVariable list
         | ArithOp       of ValueExpr<'ext> * ArithOperator * ValueExpr<'ext>
         | BoolOp        of ValueExpr<'ext> * BoolOperator * ValueExpr<'ext>
+        | IfExp         of ValueExpr<'ext> * ValueExpr<'ext> * ValueExpr<'ext>
         | Ext           of 'ext
 
     type NodeConstraint = ValueExpr<unit>

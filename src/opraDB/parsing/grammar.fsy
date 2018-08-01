@@ -38,6 +38,8 @@ open OpraDB.AST
 %token STAR
 %token LEQ GEQ LE GE NEQ EQ PLUS MINUS DIV MULT AND OR NOT IS
 
+%token IF ELSE THEN
+
 %left AND OR
 %left LEQ GEQ EQ LE GE NEQ 
 %left PLUS MINUS
@@ -125,6 +127,8 @@ value_expr:
   | labelling                      { Labelling $1         }
   | value_expr arith_op value_expr { ArithOp ($1, $2, $3) }
   | value_expr bool_op value_expr  { BoolOp ($1, $2, $3)  }
+  | IF value_expr THEN value_expr 
+    ELSE value_expr                { IfExp ($2, $4, $6)   }
 
 reg_expr:
   | DOT                      { AnyExp             }
@@ -146,7 +150,8 @@ value_expr_arith:
   | labelling                                  { Labelling $1         }
   | value_expr_arith arith_op value_expr_arith { ArithOp ($1, $2, $3) }
   | value_expr_arith bool_op value_expr_arith  { BoolOp  ($1, $2, $3) }
-  /*| SUM LPAREN value_expr RPAREN               { Ext (Sum $3)         }*/
+  | IF value_expr_arith THEN value_expr_arith 
+    ELSE value_expr_arith                      { IfExp ($2, $4, $6)   }
   | SUM LPAREN value_expr RPAREN { Aggregate (Sum, $3) |> Ext }
   | MAX LPAREN value_expr RPAREN { Aggregate (Max, $3) |> Ext }
   | MIN LPAREN value_expr RPAREN { Aggregate (Min, $3) |> Ext }

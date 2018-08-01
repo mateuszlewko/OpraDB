@@ -43,6 +43,9 @@ rule read =
   | "IS"     { IS    }
   | "AND"    { AND   }
   | "OR"     { OR    }
+  | "IF"     { IF    }
+  | "ELSE"   { ELSE  }
+  | "THEN"   { THEN  }
 
   | '"'      { read_string "" false lexbuf } 
 
