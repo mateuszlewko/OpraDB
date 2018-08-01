@@ -150,6 +150,7 @@ value_expr_arith:
   | SUM LPAREN value_expr RPAREN { Aggregate (Sum, $3) |> Ext }
   | MAX LPAREN value_expr RPAREN { Aggregate (Max, $3) |> Ext }
   | MIN LPAREN value_expr RPAREN { Aggregate (Min, $3) |> Ext }
+  | LPAREN value_expr_arith RPAREN { $2 }
 
 arith_constr: 
   | SUM LPAREN value_expr RPAREN { Aggregate (Sum, $3) }

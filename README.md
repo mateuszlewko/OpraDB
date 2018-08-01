@@ -111,7 +111,7 @@ Example graph in `json` format:
 ```
 
 **Note:** All nodes must have field `_id` with *positive* integer value. Edges
-must have `_from` and `_to` properties, which point to node ids *already defined*
+must have `_from` and `_to` properties, which point to node IDs *already defined*
 in `nodes` object (see example above).
 
 #### Syntax
@@ -132,7 +132,7 @@ specify at least one matched node or node property.
 
 **Note:** Returning matched paths is currently **not supported**.
 
-- List of matched nodes (`MATCH NODES`):
+- List of matched nodes (`MATCH NODES n1, n2, ..., property1(n1)`):
 
     Example:
 
@@ -144,11 +144,11 @@ specify at least one matched node or node property.
     defining an alias to this node, which we can use in latter constraints.
 
     Usually we want to return node's property like `name(x)`. Providing just an
-    alias `x` will return ids of all nodes that matched `x`'s constraints.
+    alias `x` will return IDs of all nodes that matched `x`'s constraints.
 
-- `MATCH ... PATHS`:
-    Behaviour for matching paths is similar to nodes, however current versions
-    doesn't return paths.
+- `MATCH ... PATHS p1, p2, ..., pn`:
+    Behaviour for matching paths is similar to nodes, however current version
+    doesn't returning paths.
 
 ### Constraints
 
@@ -160,7 +160,7 @@ path1 : beginNode -> endNode
 
 Path constraints are here to specify that there is path called `path1` from node
 `beginNode` to `endNode`. Both nodes could be bound earlier in *matched nodes list*,
-but they don't have to be. In case a node wasn't bound earlier, it will be existentially quantified (meaning that is just needs to exists). This rule applies for all occurrences of nodes or paths not bound in `MATCH ...` list.
+but they don't have to be. In case a node wasn't bound earlier, it will be existentially quantified. This rule applies for all occurrences of nodes or paths not bound in `MATCH ...` list.
 
 Multiple path constraints can be specified in query by separating them with comma.
 
@@ -184,8 +184,8 @@ Example node constrains:
 
 *Current node* is currently checked node when traversing a path.
 
-- `(distance(cities, 'cities) < 10)` Tick before node name (`'node`) is current node's
-  successor when traversing a path. Node will satisfy this constraint, if outgoing edge (to successor) has property `distance` and its values is less than 10.
+- `(distance(cities, 'cities) < 10)` **Apostrophe before node's name (`'cities`) is current node's
+  successor when traversing a path.** Node will satisfy this constraint, if outgoing edge (to successor) has property `distance` and its values is less than 10.
 
 Regular constraint can just be a sequence of node constraints, like this:
 
@@ -226,7 +226,7 @@ connection between consecutive nodes.
 for last node on a path, we don't need to ensure that there is a property `flight`
 on edge outgoing from last node (there may not be).
 
-In next example let's that we want to travel from Poland to USA only through specific countries:
+In next example we want to travel from Poland to USA only through specific countries:
 
 ```ocaml
 MATCH NODES x, y
@@ -336,19 +336,22 @@ graphs with positive and negative cycles, OpraDB uses following algorithm to che
    calculate delta value of each property (that exists in arithmetic constrains).
 3. With all aggregated values for every property and delta of property values
    for each cycle, we construct a set of linear inequalities, that includes variables representing number of times to traverse a given cycle.
-4. We solve this set of inequalities using [Z3](TODO:link) solver to find out
+4. We solve this set of inequalities using [Z3](https://github.com/Z3Prover/z3) solver to find out
    how many times to traverse each cycle. If no positive solutions where found it means that path doesn't satisfy arithmetic constraints.
 
 ## Examples
+
+**More examples can be found [here](./examples).**
 
 In these examples we'll use following graph:
 
 ![alt text](./examples/basic/graph-img.png "Graph")
 
-Labels with values above nodes and edge are properties. Numbers are node identifiers.
 This graph in `json` format can be found [here](./examples/basic/graph.json).
+Every node has a label indicating level of crowdedness. All edges have
+specified distance. Nodes `1` and `7` have a `start` label.
 
-- Plan a route that avoids crowded places.
+- Plan a route that avoids crowded places, and starts from node with label `start`.
 
   ```ocaml
   LET crowded x =
@@ -375,8 +378,22 @@ This graph in `json` format can be found [here](./examples/basic/graph.json).
 
   This query shows OpraDB's ability to efficiently find non trivial paths that satisfy complex arithmetic constraints.
 
-  TODO: Query with cycle
+  ```ocaml
+  MATCH NODES x, y
+  SUCH THAT p: x -> y
+  WHERE (start(p) IS NOT NULL).*
+  HAVING (10 + SUM (crowd(p))) >= SUM (dist(p, 'p) * 5),
+         SUM (dist(p, 'p)) > 10000000;
+  ```
 
+  Expected result:
+
+  | x | y  |
+  |---|----|
+  | 7 | 9  |
+  | 7 | 8  |
+
+- TODO: Graph with letters
 - TODO: All nodes that lie on a cycle TODO: new graph + image
 
 ## Comparison with [Gremlin (Apache TinkerPop)](http://tinkerpop.apache.org/)
