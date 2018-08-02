@@ -52,7 +52,7 @@ Query execution:
         ✔ Solution exists predicate (for matching nodes) @today @done(18-04-06 18:42)
     ❑ Create answer from solution (like "traversed cycle a-b-c-a 4 times" or path)
     ✔ Return specific labels from nodes @high @done(18-07-13 00:52)
-    ❑ Existentially qualified paths and nodes @high 
+    ✔ Existentially qualified paths and nodes @high @done(18-08-02 19:18)
     ✔ Return last node before sink node @high @today @done(18-04-26 00:15)
     ❑ Move functions from regularConstraints to queryExecution module 
     ❑ Optimisation: Neighbour queries for k-node constraints
