@@ -12,7 +12,6 @@ way and with a minimum effort, is where this query language really excels.
 
 - [OpraDB](#opradb)
     - [Table of Contents](#table-of-contents)
-    - [Quick start with Docker (Recommended)](#quick-start-with-docker-recommended)
     - [How to build from source (Linux)](#how-to-build-from-source-linux)
     - [How to edit in Visual Studio Code](#how-to-edit-in-visual-studio-code)
     - [How to write Opra queries](#how-to-write-opra-queries)
@@ -34,10 +33,10 @@ way and with a minimum effort, is where this query language really excels.
     - [Future work](#future-work)
     - [Contribution](#contribution)
 
-## Quick start with Docker (Recommended)
+<!-- ## Quick start with Docker (Recommended)
 
-1. Install [docker](TODO:link_to_docker)
-2. Get container image:
+- Install [docker](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-docker-ce-1)
+- Get container image:
 
    * (Option A) Download latest image
 
@@ -53,10 +52,10 @@ way and with a minimum effort, is where this query language really excels.
            git clone ... TODO: Clone repo
            ```
 
-3. Run container with OpraDB client and loaded database:
+- Run container with OpraDB client and loaded database:
     ```bash
     TODO: docker run
-    ```
+    ``` -->
 
 ## How to build from source (Linux)
 
@@ -304,7 +303,7 @@ MATCH ...
 
   ```ocaml
   LET duration x = 60 * distance(x) / speedLimit(x) IN
-  LET isAirport x = type(x) = "airport" IN 
+  LET isAirport x = type(x) = "airport" IN
   ```
 
   Which can be used as part of other constraints:
